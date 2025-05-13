@@ -29,17 +29,33 @@
 
     <!-- 主要内容区 -->
     <div class="main-content">
-      <div class="vertical-line"></div>
-      <div class="horizontal-line"></div>
-      <!-- <DataCard v-for="i in 4" :key="i" /> -->
+      <!-- 左侧面板 -->
+      <div class="panel left-panel">
+        <div class="left-box box-1"></div>
+        <div class="left-box box-2"></div>
+        <div class="left-box box-3"></div>
+      </div>
+
+      <!-- 中间面板 -->
+      <div class="panel center-panel">
+        <div class="center-box box-1"></div>
+        <div class="center-box box-2"></div>
+      </div>
+
+      <!-- 右侧面板 -->
+      <div class="panel right-panel">
+        <div class="right-box box-1"><TaskInfoBox /></div>
+        <div class="right-box box-2"></div>
+        <div class="right-box box-3"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import TaskInfoBox from './components/TaskInfoBox.vue'
 
-const data = ref({})
 const currentDate = ref('')
 const currentTime = ref('')
 let timer = null
@@ -201,14 +217,110 @@ onBeforeUnmount(() => {
     }
   }
 
+  /* 主内容区三栏布局 */
   .main-content {
     height: calc(100% - 110px); /* 调整高度，考虑按钮导航的高度 */
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    display: flex;
     gap: 8px;
     padding: 6px;
-    position: relative;
+
+    /* 面板通用样式 */
+    .panel {
+      border: none; /* 移除红色边框 */
+      border-radius: 4px;
+      padding: 0;
+      background-color: rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 8px; /* y轴间隔8px */
+    }
+
+    /* 左侧面板 */
+    .left-panel {
+      width: 28%;
+
+      .left-box {
+        width: 100%;
+        border: 1px solid #00ff00; /* 绿色边框，便于区分 */
+        border-radius: 4px;
+
+        &.box-1 {
+          height: calc((100% - 16px) * 0.28);
+        }
+
+        &.box-2 {
+          height: calc((100% - 16px) * 0.36);
+        }
+
+        &.box-3 {
+          height: calc((100% - 16px) * 0.36);
+        }
+      }
+    }
+
+    /* 中间面板 */
+    .center-panel {
+      width: 44%;
+
+      .center-box {
+        width: 100%;
+        border: 1px solid #0000ff; /* 蓝色边框，便于区分 */
+        border-radius: 4px;
+
+        &.box-1 {
+          height: calc((100% - 8px) * 0.7); /* 总高度减去间隔后的70% */
+        }
+
+        &.box-2 {
+          height: calc((100% - 8px) * 0.3); /* 总高度减去间隔后的30% */
+        }
+      }
+    }
+
+    /* 右侧面板 */
+    .right-panel {
+      width: 28%;
+
+      .right-box {
+        width: 100%;
+        border: 1px solid #ffff00; /* 黄色边框，便于区分 */
+        border-radius: 4px;
+
+        &.box-1 {
+          height: calc((100% - 16px) * 0.4); /* 总高度减去间隔后的40% */
+        }
+
+        &.box-2 {
+          height: calc((100% - 16px) * 0.3); /* 总高度减去间隔后的30% */
+        }
+
+        &.box-3 {
+          height: calc((100% - 16px) * 0.3); /* 总高度减去间隔后的30% */
+        }
+      }
+    }
+  }
+}
+
+/* 添加动画 */
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotateY(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+  }
+}
+
+@keyframes logoRepeat {
+  0%,
+  100% {
+    transform: scale(1) rotateY(0deg);
+  }
+  50% {
+    transform: scale(1.05) rotateY(10deg);
   }
 }
 </style>
