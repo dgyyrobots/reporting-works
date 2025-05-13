@@ -1,0 +1,78 @@
+@import './var.css';
+@import 'element-plus/theme-chalk/dark/css-vars.css';
+
+
+.reset-margin [class*='el-icon'] + span {
+  margin-left: 2px !important;
+}
+
+// 解决抽屉弹出时，body宽度变化的问题
+.el-popup-parent--hidden {
+  width: 100% !important;
+}
+
+// 解决表格内容超过表格总宽度后，横向滚动条前端顶不到表格边缘的问题
+.el-scrollbar__bar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* nprogress 适配 element-plus 的主题色 */
+#nprogress {
+  & .bar {
+    background-color: var(--el-color-primary) !important;
+  }
+
+  & .peg {
+    box-shadow:
+      0 0 10px var(--el-color-primary),
+      0 0 5px var(--el-color-primary) !important;
+  }
+
+  & .spinner-icon {
+    border-top-color: var(--el-color-primary);
+    border-left-color: var(--el-color-primary);
+  }
+}
+
+// ... 现有代码 ...
+
+// 在文件末尾添加
+:root {
+  /* 默认字体大小设置 */
+  --el-font-size-extra-small: 12px;
+  --el-font-size-small: 14px;
+  --el-font-size-base: 16px;
+  --el-font-size-medium: 18px;
+  --el-font-size-large: 20px;
+  --el-font-size-extra-large: 22px;
+}
+
+// 确保Element组件使用这些变量
+// .el-button,
+// .el-input__inner,
+// .el-form-item__label,
+// .el-form-item__content,
+// .el-table,
+// .el-dropdown-menu__item,
+// .el-menu-item,
+// .el-submenu__title {
+//   font-size: var(--el-font-size-base);
+// }
+
+// 添加字体大小响应式类
+.font-size-large {
+  font-size: var(--el-font-size-large) !important;
+}
+
+.font-size-default {
+  font-size: var(--el-font-size-base) !important;
+}
+
+.font-size-small {
+  font-size: var(--el-font-size-small) !important;
+}
+
+.font-size-mini {
+  font-size: var(--el-font-size-extra-small) !important;
+}
