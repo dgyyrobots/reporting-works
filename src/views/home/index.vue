@@ -281,16 +281,16 @@ onBeforeUnmount(() => {
         width: 100%;
 
         &.box-1 {
-          height: calc((100% - 16px) * 0.4); /* 总高度减去间隔后的40% */
+          height: calc((100% - 16px) * 0.36); /* 总高度减去间隔后的40% */
         }
 
         &.box-2 {
-          height: calc((100% - 16px) * 0.3); /* 总高度减去间隔后的30% */
+          height: calc((100% - 16px) * 0.32); /* 总高度减去间隔后的30% */
           border: 1px solid #ffff00;
         }
 
         &.box-3 {
-          height: calc((100% - 16px) * 0.3); /* 总高度减去间隔后的30% */
+          height: calc((100% - 16px) * 0.32); /* 总高度减去间隔后的30% */
           border: 1px solid #ffff00;
         }
       }

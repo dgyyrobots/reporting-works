@@ -1,6 +1,5 @@
 <template>
-  <Card class="task-info-box">
-    <div class="header">任务单信息</div>
+  <Card class="task-info-box" title="任务单信息">
     <div class="info-list">
       <div class="row">
         <span class="label">生产工单：</span>
@@ -64,16 +63,8 @@ import Card from './Card.vue'
   color: #fff;
   display: flex;
   flex-direction: column;
-  padding: 10px 16px 8px 16px;
 }
-.header {
-  color: #ffe600;
-  font-weight: bold;
-  font-size: 16px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid #1ecfff;
-  padding-bottom: 2px;
-}
+
 .info-list {
   flex: 1;
   font-size: 14px;
