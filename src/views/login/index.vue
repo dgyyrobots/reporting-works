@@ -158,7 +158,7 @@ const getCookie = () => {
 }
 
 const handleRoute = () => {
-  return redirect.value === '/404' || redirect.value === '/403' ? '/' : redirect.value
+  return redirect.value === '/404' || redirect.value === '/403' ? '/bigscreen' : redirect.value
 }
 // 获取租户 ID
 const getTenantId = async () => {

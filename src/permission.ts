@@ -11,14 +11,14 @@ import getPageTitle from '/@/utils/pageTitle'
 const { start, done } = useNProgress()
 
 // 路由不重定向白名单
-const whiteList = ['/login', '/social-login', '/auth-redirect', '/bind', '/register', '/oauthLogin/gitee']
+const whiteList = ['/login', '/bigsceen', '/social-login', '/auth-redirect', '/bind', '/register', '/oauthLogin/gitee']
 
 // 路由加载前
 router.beforeEach(async (to, from, next) => {
   start()
   if (getAccessToken()) {
     if (to.path === '/login') {
-      next({ path: '/' })
+      next()
     } else {
       // 获取所有字典
       const dictStore = useDictStoreWithOut()
