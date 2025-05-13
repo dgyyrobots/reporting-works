@@ -1,5 +1,5 @@
 <template>
-  <div class="task-info-box">
+  <Card class="task-info-box">
     <div class="header">任务单信息</div>
     <div class="info-list">
       <div class="row">
@@ -47,10 +47,11 @@
         大张
       </span>
     </div>
-  </div>
+  </Card>
 </template>
 
 <script setup>
+import Card from './Card.vue'
 // 这里可以接收props或后续做数据对接
 </script>
 
@@ -58,8 +59,7 @@
 .task-info-box {
   width: 100%;
   height: 100%;
-  background: rgba(10, 30, 60, 0.85);
-  border-radius: 4px;
+  /* background: rgba(10, 30, 60, 0.85); */
   box-sizing: border-box;
   color: #fff;
   display: flex;
@@ -110,14 +110,12 @@
   flex: 1;
   height: 6px;
   background: #1ecfff33;
-  border-radius: 3px;
   margin-right: 8px;
   overflow: hidden;
 }
 .progress-bar {
   height: 100%;
   background: linear-gradient(90deg, #1ecfff 0%, #00eaff 100%);
-  border-radius: 3px;
 }
 .progress-percent {
   color: #1ecfff;
@@ -137,6 +135,7 @@
 .done-num {
   color: #3fd0ff;
   font-weight: bold;
+  font-size: 18px;
 }
 .remain {
   color: #ffe600;
@@ -144,5 +143,6 @@
 .remain-num {
   color: #ffe600;
   font-weight: bold;
+  font-size: 18px;
 }
 </style>

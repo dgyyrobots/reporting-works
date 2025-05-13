@@ -227,7 +227,6 @@ onBeforeUnmount(() => {
     /* 面板通用样式 */
     .panel {
       border: none; /* 移除红色边框 */
-      border-radius: 4px;
       padding: 0;
       background-color: rgba(0, 0, 0, 0.2);
       display: flex;
@@ -242,7 +241,6 @@ onBeforeUnmount(() => {
       .left-box {
         width: 100%;
         border: 1px solid #00ff00; /* 绿色边框，便于区分 */
-        border-radius: 4px;
 
         &.box-1 {
           height: calc((100% - 16px) * 0.28);
@@ -265,8 +263,6 @@ onBeforeUnmount(() => {
       .center-box {
         width: 100%;
         border: 1px solid #0000ff; /* 蓝色边框，便于区分 */
-        border-radius: 4px;
-
         &.box-1 {
           height: calc((100% - 8px) * 0.7); /* 总高度减去间隔后的70% */
         }
@@ -283,8 +279,6 @@ onBeforeUnmount(() => {
 
       .right-box {
         width: 100%;
-        border: 1px solid #ffff00; /* 黄色边框，便于区分 */
-        border-radius: 4px;
 
         &.box-1 {
           height: calc((100% - 16px) * 0.4); /* 总高度减去间隔后的40% */
@@ -292,10 +286,12 @@ onBeforeUnmount(() => {
 
         &.box-2 {
           height: calc((100% - 16px) * 0.3); /* 总高度减去间隔后的30% */
+          border: 1px solid #ffff00;
         }
 
         &.box-3 {
           height: calc((100% - 16px) * 0.3); /* 总高度减去间隔后的30% */
+          border: 1px solid #ffff00;
         }
       }
     }
