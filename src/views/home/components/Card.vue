@@ -8,14 +8,24 @@
     <div class="corner bottom-left"></div>
     <div class="corner bottom-right"></div>
     <div class="card-content">
-      <slot />
+      <div v-if="showEmpty" class="no-data">
+        <Icon icon="svg-icon:empty-box" />
+        暂无数据
+      </div>
+      <slot v-else />
     </div>
   </div>
 </template>
 
 <script setup>
+import { Icon } from '/@/components/Icon'
+
 defineProps({
   title: String,
+  showEmpty: {
+    type: Boolean,
+    default: false,
+  },
 })
 </script>
 
@@ -43,6 +53,8 @@ defineProps({
 }
 .card-content {
   padding: 10px 16px 8px 16px;
+  height: calc(100% - 32px); /* 减去标题栏高度 */
+  box-sizing: border-box;
 }
 .card-title {
   color: #eef1f2;
@@ -83,5 +95,17 @@ defineProps({
   right: -2px;
   border-bottom: 3px solid #00eaff;
   border-right: 3px solid #00eaff;
+}
+
+.no-data {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #999;
+  gap: 10px;
 }
 </style>

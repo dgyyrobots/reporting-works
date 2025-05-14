@@ -31,9 +31,15 @@
     <div class="main-content">
       <!-- 左侧面板 -->
       <div class="panel left-panel">
-        <div class="left-box box-1"></div>
-        <div class="left-box box-2"></div>
-        <div class="left-box box-3"></div>
+        <div class="left-box box-1">
+          <PayInfo />
+        </div>
+        <div class="left-box box-2">
+          <StaffInfo />
+        </div>
+        <div class="left-box box-3">
+          <EquipmentTime />
+        </div>
       </div>
 
       <!-- 中间面板 -->
@@ -46,9 +52,15 @@
 
       <!-- 右侧面板 -->
       <div class="panel right-panel">
-        <div class="right-box box-1"><TaskInfoBox /></div>
-        <div class="right-box box-2"></div>
-        <div class="right-box box-3"></div>
+        <div class="right-box box-1">
+          <TaskInfoBox />
+        </div>
+        <div class="right-box box-2">
+          <EquipmentHistory />
+        </div>
+        <div class="right-box box-3">
+          <LicenseHistory />
+        </div>
       </div>
     </div>
   </div>
@@ -58,6 +70,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import TaskInfoBox from './components/TaskInfoBox.vue'
 import DashboardGauge from './components/DashboardGauge.vue'
+import EquipmentHistory from './components/EquipmentHistory.vue'
+import LicenseHistory from './components/LicenseHistory.vue'
+import EquipmentTime from './components/EquipmentTime.vue'
+import PayInfo from './components/PayInfo.vue'
+import StaffInfo from './components/StaffInfo.vue'
 
 const currentDate = ref('')
 const currentTime = ref('')
@@ -243,7 +260,6 @@ onBeforeUnmount(() => {
 
       .left-box {
         width: 100%;
-        border: 1px solid #00ff00; /* 绿色边框，便于区分 */
 
         &.box-1 {
           height: calc((100% - 16px) * 0.28);
@@ -289,12 +305,10 @@ onBeforeUnmount(() => {
 
         &.box-2 {
           height: calc((100% - 16px) * 0.32); /* 总高度减去间隔后的30% */
-          border: 1px solid #ffff00;
         }
 
         &.box-3 {
           height: calc((100% - 16px) * 0.32); /* 总高度减去间隔后的30% */
-          border: 1px solid #ffff00;
         }
       }
     }
