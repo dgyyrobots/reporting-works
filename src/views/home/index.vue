@@ -47,7 +47,9 @@
         <div class="center-box box-1">
           <DashboardGauge />
         </div>
-        <div class="center-box box-2"></div>
+        <div class="center-box box-2">
+          <CenterBottom />
+        </div>
       </div>
 
       <!-- 右侧面板 -->
@@ -75,6 +77,7 @@ import LicenseHistory from './components/LicenseHistory.vue'
 import EquipmentTime from './components/EquipmentTime.vue'
 import PayInfo from './components/PayInfo.vue'
 import StaffInfo from './components/StaffInfo.vue'
+import CenterBottom from './components/CenterBottom.vue'
 
 const currentDate = ref('')
 const currentTime = ref('')

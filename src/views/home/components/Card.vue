@@ -7,7 +7,7 @@
     <div class="corner top-right"></div>
     <div class="corner bottom-left"></div>
     <div class="corner bottom-right"></div>
-    <div class="card-content">
+    <div class="card-content" :style="contentPaddingStyle">
       <div v-if="showEmpty" class="no-data">
         <Icon icon="svg-icon:empty-box" />
         暂无数据
@@ -19,13 +19,24 @@
 
 <script setup>
 import { Icon } from '/@/components/Icon'
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   title: String,
   showEmpty: {
     type: Boolean,
     default: false,
   },
+  contentPadding: {
+    type: String,
+    default: '10px 16px 8px 16px',
+  },
+})
+
+const contentPaddingStyle = computed(() => {
+  return {
+    padding: props.contentPadding,
+  }
 })
 </script>
 
@@ -52,7 +63,6 @@ defineProps({
   box-shadow: 0 0 8px 0 #1ecfff88;
 }
 .card-content {
-  padding: 10px 16px 8px 16px;
   height: calc(100% - 32px); /* 减去标题栏高度 */
   box-sizing: border-box;
 }
