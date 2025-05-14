@@ -38,7 +38,9 @@
 
       <!-- 中间面板 -->
       <div class="panel center-panel">
-        <div class="center-box box-1"></div>
+        <div class="center-box box-1">
+          <DashboardGauge />
+        </div>
         <div class="center-box box-2"></div>
       </div>
 
@@ -55,6 +57,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import TaskInfoBox from './components/TaskInfoBox.vue'
+import DashboardGauge from './components/DashboardGauge.vue'
 
 const currentDate = ref('')
 const currentTime = ref('')
