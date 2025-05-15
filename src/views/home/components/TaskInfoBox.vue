@@ -118,7 +118,8 @@ import Card from './Card.vue'
   display: flex;
   justify-content: space-between;
   font-size: 15px;
-  margin-top: 2px;
+  margin-top: auto;
+  padding-top: 8px;
 }
 .done {
   color: #1ecfff;
