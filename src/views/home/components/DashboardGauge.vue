@@ -3,9 +3,14 @@
     <div ref="gaugeRef" class="gauge-echart"></div>
     <!-- 文本和按钮叠加层 -->
     <div class="gauge-overlay">
-      <div class="detail-text">长春有限公司旗舰切割机</div>
-      <div class="detail-button">当前产量明细</div>
-      <div class="target-text">预期数量： 3000</div>
+      <div class="detail-text">长荣有恒平张模切机2#</div>
+      <div class="detail-button">当前产量清零</div>
+      <div class="target-text">
+        <el-icon class="no-inherit" color="#ff5555">
+          <Bell />
+        </el-icon>
+        <span>预警数量： 3000</span>
+      </div>
     </div>
     <!-- 左上 -->
     <div class="gauge-label gauge-label-topleft">
@@ -62,8 +67,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
-import { Icon } from '/@/components/Icon'
-
+import { Bell } from '@element-plus/icons-vue'
 const gaugeRef = ref(null)
 let chart = null
 const switchValue = ref(true)
@@ -386,11 +390,14 @@ onBeforeUnmount(() => {
 .target-text {
   color: #ff5555;
   font-size: 14px;
-  background-color: #7c8aea;
+  background-color: #4a4d90;
   padding: 5px 10px;
   border-radius: 2px;
   border: 1px solid #9eadfb;
   margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .gauge-label {
   position: absolute;

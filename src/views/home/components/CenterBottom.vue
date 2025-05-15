@@ -141,6 +141,9 @@ import { Icon } from '/@/components/Icon'
   .panel-container {
     display: flex;
     flex-direction: row;
+    flex: 1;
+    height: calc(100% - 48px); /* 稍微减少一点高度确保边框可见 */
+    margin-bottom: 2px; /* 添加底部margin */
   }
 
   .left-panel {
@@ -149,6 +152,8 @@ import { Icon } from '/@/components/Icon'
     border: 1px solid #1ecfff;
     box-shadow: 0 0 5px rgba(30, 207, 255, 0.3);
     margin-right: 10px;
+    display: flex;
+    flex-direction: column;
     .divider1 {
       position: absolute;
       top: -10px;
