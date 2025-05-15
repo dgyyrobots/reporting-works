@@ -1,7 +1,12 @@
 <template>
   <div class="neon-card">
-    <div v-if="title" class="card-title-bar">
-      <span class="card-title">{{ title }}</span>
+    <div v-if="title || $slots.titleRight" class="card-title-bar">
+      <div class="card-title-left">
+        <span v-if="title" class="card-title">{{ title }}</span>
+      </div>
+      <div class="card-title-right">
+        <slot name="titleRight"></slot>
+      </div>
     </div>
     <div class="corner top-left"></div>
     <div class="corner top-right"></div>
@@ -58,14 +63,28 @@ const contentPaddingStyle = computed(() => {
   background: linear-gradient(90deg, #1ecfff 40%, #1ecfff00 100%);
   display: flex;
   align-items: center;
-  padding-left: 16px;
+  justify-content: space-between;
+  padding: 0 16px;
   z-index: 3;
   box-shadow: 0 0 8px 0 #1ecfff88;
 }
+
+.card-title-left {
+  display: flex;
+  align-items: center;
+}
+
+.card-title-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .card-content {
   height: calc(100% - 32px); /* 减去标题栏高度 */
   box-sizing: border-box;
 }
+
 .card-title {
   color: #eef1f2;
   font-size: 16px;

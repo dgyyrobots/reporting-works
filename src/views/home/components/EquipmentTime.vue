@@ -1,5 +1,8 @@
 <template>
   <Card class="EquipmentTime" content-padding="6px 0" title="设备计时">
+    <template #titleRight>
+      <button class="query-btn">查看明细</button>
+    </template>
     <div class="scroll-board">
       <table>
         <thead>
@@ -82,6 +85,19 @@ onMounted(() => {})
           background: rgba(#00a1ff, 0.15);
         }
       }
+    }
+  }
+  .query-btn {
+    background-color: #00bcd4;
+    color: #fff;
+    border: none;
+    padding: 4px 15px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+      background-color: #19b8e6;
     }
   }
 }

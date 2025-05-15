@@ -284,7 +284,6 @@ onBeforeUnmount(() => {
 
       .center-box {
         width: 100%;
-        border: 1px solid #0000ff; /* 蓝色边框，便于区分 */
         &.box-1 {
           height: calc((100% - 8px) * 0.7); /* 总高度减去间隔后的70% */
         }
