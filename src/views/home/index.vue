@@ -2,15 +2,16 @@
   <div class="home">
     <!-- 顶部标题 -->
     <div class="header">
-      <div class="logo-container">
-        <img alt="Logo" class="logo" src="@/assets/bigscreen/logo.png" />
+      <div class="left-info">
+        <span class="date">{{ currentDate }}</span>
+        <span class="weekday">{{ currentWeekday }}</span>
+        <span class="time">{{ currentTime }}</span>
       </div>
-      <h1 class="title">生产实时监控平台</h1>
-      <div class="time-container">
-        <div class="time">
-          <span style="margin-right: 10px">{{ currentDate }}</span>
-          <span>{{ currentTime }}</span>
-        </div>
+      <h1 class="title">车间报工系统</h1>
+      <div class="right-info">
+        <span>{{ greeting }}</span>
+        <span>欢迎您,</span>
+        <span>{{ username }}</span>
       </div>
     </div>
 
@@ -78,10 +79,17 @@ import EquipmentTime from './components/EquipmentTime.vue'
 import PayInfo from './components/PayInfo.vue'
 import StaffInfo from './components/StaffInfo.vue'
 import CenterBottom from './components/CenterBottom.vue'
+import { useUserStore } from '/@/store/modules/user'
+import { storeToRefs } from 'pinia'
 
 const currentDate = ref('')
 const currentTime = ref('')
+const currentWeekday = ref('')
+const greeting = ref('')
 let timer = null
+
+const userStore = useUserStore()
+const { username } = storeToRefs(userStore)
 
 // 格式化日期为 YYYY-MM-DD 格式
 const formatDate = (date) => {
@@ -99,11 +107,27 @@ const formatTime = (date) => {
   return `${hours}:${minutes}:${seconds}`
 }
 
+const getWeekday = (date) => {
+  const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+  return weekArr[date.getDay()]
+}
+
+function getGreeting(hour) {
+  if (hour < 6) return '凌晨好!'
+  if (hour < 9) return '早上好!'
+  if (hour < 12) return '上午好!'
+  if (hour < 14) return '中午好!'
+  if (hour < 18) return '下午好!'
+  return '晚上好!'
+}
+
 // 更新日期和时间
 const updateDateTime = () => {
   const now = new Date()
   currentDate.value = formatDate(now)
   currentTime.value = formatTime(now)
+  currentWeekday.value = getWeekday(now)
+  greeting.value = getGreeting(now.getHours())
 }
 
 onMounted(() => {
@@ -135,76 +159,43 @@ onBeforeUnmount(() => {
   .header {
     height: 60px;
     display: grid;
-    grid-template-columns: 200px 1fr 200px;
+    grid-template-columns: 1.5fr 1fr 1.5fr;
     align-items: center;
-    padding: 0;
     background-image: url('@/assets/bigscreen/title3.png');
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
     border-bottom: 1px solid rgba(#40c4ff, 0.2);
-    .logo-container {
+
+    .left-info {
       display: flex;
       align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 0 20px 0 0px;
-      perspective: 1000px;
-
-      .logo {
-        height: 40px;
-        width: auto;
-        object-fit: contain;
-        animation:
-          logoFadeIn 1.5s ease-out,
-          logoRepeat 11s 1.5s infinite;
-        opacity: 0;
-        transform: scale(0.8) rotateY(90deg);
-        transform-style: preserve-3d;
-        backface-visibility: visible;
-        position: absolute;
-        left: 12px;
-        top: 6px;
-      }
+      gap: 8px;
+      font-size: 16px;
+      color: #40c4ff;
+      font-family: 'Digital-7', monospace;
+      text-shadow: 0 0 10px rgba(#40c4ff, 0.5);
+      padding-left: 12px;
     }
 
     .title {
       text-align: center;
       font-weight: bold;
       text-shadow: 0 0 20px rgba(#40c4ff, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-      margin: 0;
       color: #40c4ff;
-      // padding-left: 120px;
+      font-size: 28px;
+      margin: 0;
     }
 
-    .time-container {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      height: 100%;
-      width: 200px;
-
-      .time {
-        font-size: 18px;
-        color: #40c4ff;
-        font-family: 'Digital-7', monospace;
-        text-shadow: 0 0 10px rgba(#40c4ff, 0.5);
-        line-height: 1.2;
-        width: 100%;
-      }
-
-      .date {
-        font-size: 16px;
-        color: #8bb4f7;
-        margin-top: 2px;
-        line-height: 1.2;
-        width: 100%;
+    .right-info {
+      text-align: right;
+      font-size: 16px;
+      color: #00bcd4;
+      text-shadow: 0 0 8px #ffe60055;
+      padding-right: 24px;
+      letter-spacing: 1px;
+      span {
+        margin-right: 8px;
       }
     }
   }
