@@ -28,7 +28,7 @@ const initChart = () => {
         top: '15%',
         left: '5%',
         right: '5%',
-        bottom: '10%',
+        bottom: '5%',
         containLabel: true,
       },
       xAxis: {
@@ -57,7 +57,7 @@ const initChart = () => {
             fontSize: 12,
             formatter: '{c}',
           },
-          data: [390, 334, 301, 302, 320],
+          data: [390, 134, 201, 102, 220],
           itemStyle: {
             borderRadius: 5,
             color: '#00D8FF',

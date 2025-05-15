@@ -235,8 +235,8 @@ onBeforeUnmount(() => {
   .main-content {
     height: calc(100% - 110px); /* 调整高度，考虑按钮导航的高度 */
     display: flex;
-    gap: 8px;
-    padding: 6px;
+    gap: 10px;
+    padding: 6px 12px 12px 12px;
 
     /* 面板通用样式 */
     .panel {
@@ -245,7 +245,7 @@ onBeforeUnmount(() => {
       background-color: rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
-      gap: 8px; /* y轴间隔8px */
+      gap: 10px; /* y轴间隔8px */
     }
 
     /* 左侧面板 */

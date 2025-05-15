@@ -129,6 +129,7 @@ import { Icon } from '/@/components/Icon'
   flex-direction: column;
   width: 100%;
   height: 100%;
+  background-color: rgba(0, 20, 40, 0.7);
 
   .top-action-btns {
     width: 100%;
