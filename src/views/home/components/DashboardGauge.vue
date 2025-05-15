@@ -39,15 +39,34 @@
         <polyline points="80,18 40,18 10,2" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
       </svg>
     </div>
+    <!-- 顶部左侧：顺产换板 + el-switch -->
+    <div class="top-abs top-left">
+      <span class="switch-label">顺序换板：</span>
+      <el-switch
+        v-model="switchValue"
+        active-color="#22e222"
+        inactive-color="#444"
+        size="small"
+        style="--el-switch-on-color: #22e222; --el-switch-off-color: #444"
+      />
+    </div>
+    <!-- 顶部右侧：黄色圆点 + 空转 -->
+    <div class="top-abs top-right">
+      <span class="dot"></span>
+      <span class="dot-label">空转</span>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
+import { ElSwitch } from 'element-plus'
+import { Icon } from '/@/components/Icon'
 
 const gaugeRef = ref(null)
 let chart = null
+const switchValue = ref(true)
 
 const initChart = () => {
   const newData = {
@@ -419,5 +438,42 @@ onBeforeUnmount(() => {
   right: 68px;
   bottom: 60px;
   align-items: flex-end;
+}
+.top-abs {
+  position: absolute;
+  top: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+.top-left {
+  left: 18px;
+}
+.top-right {
+  right: 32px;
+}
+.switch-label {
+  color: #fff;
+  font-size: 15px;
+  margin-right: 6px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 4px #000;
+}
+.dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffe600;
+
+  box-shadow: 0 0 8px #ffe60088;
+}
+.dot-label {
+  color: #ffe600;
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 16px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 4px #000;
 }
 </style>
