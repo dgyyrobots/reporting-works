@@ -41,17 +41,14 @@
         <div class="panel-content">
           <div class="info-row">
             <div class="info-label">流程号：</div>
-            <div class="info-value">11</div>
+            <div class="info-value flow-no">11</div>
             <div class="action-buttons">
               <button class="query-btn">查询</button>
-              <button class="action-btn">
-                <Icon icon="svg-icon:close" />
-              </button>
             </div>
           </div>
           <div class="info-row">
             <div class="info-label">物理板号：</div>
-            <div class="info-value">物理板号</div>
+            <div class="info-value flow-no">物理板号</div>
             <div class="icon-placeholder"></div>
             <div class="info-label-right">被识别：</div>
             <div class="info-value">0</div>
@@ -60,7 +57,7 @@
 
           <div class="info-row">
             <div class="info-label">流程类型：</div>
-            <div class="info-value">
+            <div class="info-value flow-no">
               <div class="select-box">
                 <span>合格品</span>
                 <Icon icon="svg-icon:arrow-down" />
@@ -213,6 +210,14 @@ import { Icon } from '/@/components/Icon'
     color: #fff;
     font-size: 14px;
     margin-right: 20px;
+    border-bottom: 1px solid rgba(30, 207, 255, 0.4);
+    padding-bottom: 2px;
+    min-width: 80px;
+  }
+
+  .flow-no {
+    flex: 1;
+    margin-right: 10px;
   }
 
   .action-buttons {
