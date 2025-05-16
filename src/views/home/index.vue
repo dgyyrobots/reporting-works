@@ -20,7 +20,7 @@
       <button class="nav-btn">上机登记</button>
       <button class="nav-btn red">任务单操作</button>
       <button class="nav-btn red">生产操作</button>
-      <button class="nav-btn">计时登记</button>
+      <button class="nav-btn" @click="openTimeRegistration">计时登记</button>
       <button class="nav-btn">异常登记</button>
       <button class="nav-btn">质量管理</button>
       <button class="nav-btn">设备管理</button>
@@ -66,6 +66,9 @@
         </div>
       </div>
     </div>
+
+    <!-- 对话框组件 -->
+    <TimeRegistration ref="timeRegistrationRef" />
   </div>
 </template>
 
@@ -79,6 +82,7 @@ import EquipmentTime from './components/EquipmentTime.vue'
 import PayInfo from './components/PayInfo.vue'
 import StaffInfo from './components/StaffInfo.vue'
 import CenterBottom from './components/CenterBottom.vue'
+import TimeRegistration from './dialog/TimeRegistration.vue'
 import { useUserStore } from '/@/store/modules/user'
 import { storeToRefs } from 'pinia'
 
@@ -142,6 +146,13 @@ onBeforeUnmount(() => {
     timer = null
   }
 })
+
+// 控制计时登记弹窗
+const timeRegistrationRef = ref(null)
+
+const openTimeRegistration = () => {
+  timeRegistrationRef.value?.openDialog()
+}
 </script>
 
 <style lang="scss" scoped>
