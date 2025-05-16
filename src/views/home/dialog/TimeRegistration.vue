@@ -20,84 +20,124 @@
         <el-button class="cyber-btn secondary" @click="resetQuery">重 置</el-button>
       </div>
 
-      <div v-loading="listLoading" class="table-container">
-        <div class="scroll-board">
-          <table>
-            <thead>
-              <tr>
-                <th width="40">
-                  <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange" />
-                </th>
-                <th width="60">序号</th>
-                <th>工单号</th>
-                <th>作业员</th>
-                <th>开始时间</th>
-                <th>结束时间</th>
-                <th>时长</th>
-                <th width="80">状态</th>
-                <th width="120">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(row, index) in list" :key="row.id">
-                <td>
-                  <el-checkbox v-model="row.checked" @change="handleRowCheckChange" />
-                </td>
-                <td>{{ index + 1 + (queryForm.pageNo - 1) * queryForm.pageSize }}</td>
-                <td>{{ row.workNo }}</td>
-                <td>{{ row.operator }}</td>
-                <td>{{ row.startTime }}</td>
-                <td>{{ row.endTime }}</td>
-                <td>{{ row.duration }}</td>
-                <td>
-                  <div :class="['status-tag', row.status === '完成' ? 'complete' : 'in-progress']">
-                    {{ row.status }}
-                  </div>
-                </td>
-                <td>
-                  <span class="cyber-link" @click="handleEdit(row)">编辑</span>
-                  <span class="cyber-link danger" @click="handleDelete(row)">删除</span>
-                </td>
-              </tr>
-              <tr v-if="list.length === 0">
-                <td class="empty-data" colspan="9">暂无数据</td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- 新增的上方表格 -->
+      <div v-loading="topTableLoading" class="table-container upper-table">
+        <div class="table-border-wrapper">
+          <div class="scroll-board">
+            <table>
+              <thead>
+                <tr>
+                  <th>任务单号</th>
+                  <th>工序</th>
+                  <th>工序编码</th>
+                  <th>物料名称</th>
+                  <th>物料编号</th>
+                  <th>工艺描述</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in topList" :key="row.id" @click="handleSelectRow(row)">
+                  <td>{{ row.workNo }}</td>
+                  <td>{{ row.process }}</td>
+                  <td>{{ row.processCode }}</td>
+                  <td>{{ row.material }}</td>
+                  <td>{{ row.materialCode }}</td>
+                  <td>{{ row.description }}</td>
+                </tr>
+                <tr v-if="topList.length === 0">
+                  <td class="empty-data" colspan="6">暂无数据</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- 分页区域 -->
-      <div class="pagination-wrapper">
-        <div class="total-info">共 {{ total }} 条</div>
+      <!-- 上方表格的分页区域 -->
+      <div class="pagination-wrapper top-pagination">
+        <div class="total-info">共 {{ topTotal }} 条</div>
         <div class="page-size-selector">
-          <span>{{ queryForm.pageSize }}条/页</span>
+          <span>{{ topQueryForm.pageSize }}条/页</span>
           <Icon class="selector-icon" icon="svg-icon:arrow-down" />
           <div class="dropdown-menu">
-            <div v-for="size in [10, 20, 50, 100]" :key="size" class="dropdown-item" @click="handleSizeChange(size)">{{ size }}条/页</div>
+            <div v-for="size in [10, 20, 50, 100]" :key="size" class="dropdown-item" @click="handleTopSizeChange(size)">
+              {{ size }}条/页
+            </div>
           </div>
         </div>
         <div class="pagination-btns">
-          <div class="page-btn" :class="{ disabled: queryForm.pageNo <= 1 }" @click="handlePrevPage">
+          <div class="page-btn" :class="{ disabled: topQueryForm.pageNo <= 1 }" @click="handleTopPrevPage">
             <Icon icon="svg-icon:arrow-left" />
           </div>
           <div
-            v-for="page in pageDisplays"
+            v-for="page in topPageDisplays"
             :key="page"
             class="page-btn"
-            :class="{ active: page === queryForm.pageNo }"
-            @click="handleCurrentChange(page)"
+            :class="{ active: page === topQueryForm.pageNo }"
+            @click="handleTopCurrentChange(page)"
           >
             {{ page }}
           </div>
-          <div class="page-btn" :class="{ disabled: queryForm.pageNo >= totalPages }" @click="handleNextPage">
+          <div class="page-btn" :class="{ disabled: topQueryForm.pageNo >= topTotalPages }" @click="handleTopNextPage">
             <Icon icon="svg-icon:arrow-right" />
           </div>
         </div>
         <div class="page-jumper">
           前往
-          <input v-model.number="jumpPage" class="jumper-input" type="number" @keyup.enter="handleJumpPage" />
+          <input v-model.number="topJumpPage" class="jumper-input" type="number" @keyup.enter="handleTopJumpPage" />
           页
+        </div>
+      </div>
+
+      <div class="table-divider"></div>
+
+      <!-- 原有的下方表格，移除了分页功能 -->
+      <div v-loading="listLoading" class="table-container bottom-table">
+        <div class="table-border-wrapper">
+          <div class="scroll-board">
+            <table>
+              <thead>
+                <tr>
+                  <th>名称</th>
+                  <th>设备</th>
+                  <th>班次</th>
+                  <th>操作</th>
+                  <th>开始时间</th>
+                  <th>结束时间</th>
+                  <th>时长</th>
+                  <th>工单号</th>
+                  <th>工序</th>
+                  <th>工序编码</th>
+                  <th>物料</th>
+                  <th>物料编码</th>
+                  <th>工艺描述</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in list" :key="row.id">
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.device }}</td>
+                  <td>{{ row.shift }}</td>
+                  <td class="action-buttons">
+                    <div :class="['action-btn', row.status === '进行中' ? 'start-active' : '']" @click="handleStartAction(row)">开始</div>
+                    <div :class="['action-btn end-btn', row.status === '完成' ? 'end-active' : '']" @click="handleEndAction(row)">结束</div>
+                  </td>
+                  <td>{{ row.startTime || '-' }}</td>
+                  <td>{{ row.endTime || '-' }}</td>
+                  <td>{{ row.duration || '-' }}</td>
+                  <td>{{ row.workNo || '-' }}</td>
+                  <td>{{ row.process || '-' }}</td>
+                  <td>{{ row.processCode || '-' }}</td>
+                  <td>{{ row.material || '-' }}</td>
+                  <td>{{ row.materialCode || '-' }}</td>
+                  <td>{{ row.description || '-' }}</td>
+                </tr>
+                <tr v-if="list.length === 0">
+                  <td class="empty-data" colspan="13">暂无数据</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -112,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon } from '/@/components/Icon'
 
 // 控制对话框显示状态
@@ -120,24 +160,34 @@ const visible = ref(false)
 const listLoading = ref(false)
 const total = ref(0)
 const list = ref([])
-const selectedRows = ref([])
-const jumpPage = ref(1)
-const checkAll = ref(false)
-const isIndeterminate = ref(false)
 
-// 查询表单
+// 上方表格的数据和状态
+const topTableLoading = ref(false)
+const topTotal = ref(0)
+const topList = ref([])
+const topJumpPage = ref(1)
+
+// 上方表格查询表单
+const topQueryForm = reactive({
+  pageNo: 1,
+  pageSize: 10,
+  keyword: '',
+})
+
+// 下方表格查询表单
 const queryForm = reactive({
   pageNo: 1,
   pageSize: 10,
   keyword: '',
 })
 
-// 计算属性
-const totalPages = computed(() => Math.ceil(total.value / queryForm.pageSize))
+// 计算属性 - 上方表格
+const topTotalPages = computed(() => Math.ceil(topTotal.value / topQueryForm.pageSize))
 
-const pageDisplays = computed(() => {
-  const current = queryForm.pageNo
-  const maxPages = totalPages.value
+// 只保留上方表格的分页计算
+const topPageDisplays = computed(() => {
+  const current = topQueryForm.pageNo
+  const maxPages = topTotalPages.value
 
   if (maxPages <= 7) {
     return Array.from({ length: maxPages }, (_, i) => i + 1)
@@ -154,57 +204,183 @@ const pageDisplays = computed(() => {
   return [1, '...', current - 1, current, current + 1, '...', maxPages]
 })
 
-// 全选/反选处理
-const handleCheckAllChange = (val) => {
-  list.value.forEach((row) => {
-    row.checked = val
-  })
-  isIndeterminate.value = false
-  updateSelectedRows()
+// 操作按钮的处理
+const handleStartAction = (row) => {
+  if (row.status !== '进行中') {
+    row.status = '进行中'
+    row.startTime = formatDateTime(new Date())
+    row.endTime = ''
+    row.duration = ''
+  }
 }
 
-const handleRowCheckChange = () => {
-  const checkedCount = list.value.filter((row) => row.checked).length
-  checkAll.value = checkedCount === list.value.length
-  isIndeterminate.value = checkedCount > 0 && checkedCount < list.value.length
-  updateSelectedRows()
+const handleEndAction = (row) => {
+  if (row.status === '进行中') {
+    row.status = '完成'
+    row.endTime = formatDateTime(new Date())
+
+    // 计算时长（简单示例）
+    const start = new Date(row.startTime)
+    const end = new Date(row.endTime)
+    const durationMs = end - start
+    const hours = Math.floor(durationMs / (1000 * 60 * 60))
+    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((durationMs % (1000 * 60)) / 1000)
+
+    row.duration = `${hours}:${minutes}:${seconds}`
+  }
 }
 
-const updateSelectedRows = () => {
-  selectedRows.value = list.value.filter((row) => row.checked)
+// 选择上方表格行
+const handleSelectRow = (row) => {
+  console.log('选择了行:', row)
+  // 可以在这里添加选择行的逻辑
 }
 
-// 监听list变化，更新全选状态
-watch(
-  list,
-  () => {
-    handleRowCheckChange()
-  },
-  { deep: true }
-)
+// 格式化日期时间
+const formatDateTime = (date) => {
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
 
-// 模拟数据加载
+  return `${hours}:${minutes}:${seconds}`
+}
+
+// 上方表格数据加载
+const fetchTopData = async () => {
+  topTableLoading.value = true
+
+  // 这里应替换为实际的API调用
+  setTimeout(() => {
+    // 模拟上方表格数据
+    const mockData = [
+      {
+        id: 1,
+        workNo: 'ZYCS05-20231107',
+        process: '凹印喷码',
+        processCode: '027',
+        material: '双喜 (硬经典1906) 条盒纸',
+        materialCode: '101A002020T1002',
+        description: '专黄 白 黑 光黄 水性红 专棕 水光 冰醋酸',
+      },
+      {
+        id: 2,
+        workNo: 'ZYCS05-20231107',
+        process: '烫金',
+        processCode: '012',
+        material: '双喜 (硬经典1906) 条盒纸',
+        materialCode: '101A002020T1002',
+        description: '全息 凹凸',
+      },
+      {
+        id: 3,
+        workNo: 'ZYCS05-20231107',
+        process: '模切凹凸',
+        processCode: '017',
+        material: '双喜 (硬经典1906) 条盒纸',
+        materialCode: '101A002020T1002',
+        description: '模切 凹凸',
+      },
+      {
+        id: 4,
+        workNo: 'ZYCS05-20231107',
+        process: '烫金',
+        processCode: '013',
+        material: '双喜 (硬经典1906) 条盒纸',
+        materialCode: '101A002020T1002',
+        description: '全息 凹凸 金色',
+      },
+      {
+        id: 5,
+        workNo: 'ZYCS05-20231108',
+        process: '凹印喷码',
+        processCode: '027',
+        material: '云烟 (如意) 条盒纸',
+        materialCode: '101B002020T1003',
+        description: '专黄 白 黑 光黄 水性红',
+      },
+      {
+        id: 6,
+        workNo: 'ZYCS05-20231108',
+        process: '烫金',
+        processCode: '012',
+        material: '云烟 (如意) 条盒纸',
+        materialCode: '101B002020T1003',
+        description: '全息 凹凸',
+      },
+    ]
+
+    topList.value = mockData.slice((topQueryForm.pageNo - 1) * topQueryForm.pageSize, topQueryForm.pageNo * topQueryForm.pageSize)
+    topTotal.value = mockData.length
+    topTableLoading.value = false
+    topJumpPage.value = topQueryForm.pageNo
+  }, 500)
+}
+
+// 模拟下方表格数据加载
 const fetchData = async () => {
   listLoading.value = true
 
   // 这里应替换为实际的API调用
   setTimeout(() => {
     // 模拟数据
-    const mockData = Array.from({ length: 20 }).map((_, index) => ({
-      id: index + 1,
-      workNo: `WO-${2023}${String(index + 1).padStart(4, '0')}`,
-      operator: `操作员${(index % 5) + 1}`,
-      startTime: '2023-12-08 08:30:00',
-      endTime: '2023-12-08 17:30:00',
-      duration: 540,
-      status: index % 3 === 0 ? '进行中' : '完成',
-      checked: false,
-    }))
+    const mockData = [
+      {
+        id: 1,
+        name: '设备维修',
+        device: '有恒自动烫金机',
+        shift: '晚班',
+        status: '未开始',
+        startTime: '',
+        endTime: '',
+        duration: '',
+        workNo: '',
+        process: '',
+        processCode: '',
+        material: '',
+        materialCode: '',
+        description: '',
+        checked: false,
+      },
+      {
+        id: 2,
+        name: '换版',
+        device: '有恒自动烫金机',
+        shift: '晚班',
+        status: '进行中',
+        startTime: '23:45:22',
+        endTime: '',
+        duration: '',
+        workNo: 'ZYCS01-20240126',
+        process: '双烫',
+        processCode: '025',
+        material: '延安(细支圣地河谷)ZB45小盒',
+        materialCode: '',
+        description: '双烫机第一组烫红色猫眼，第二组烫镂金',
+        checked: false,
+      },
+      {
+        id: 3,
+        name: '保养',
+        device: '有恒自动烫金机',
+        shift: '晚班',
+        status: '未开始',
+        startTime: '',
+        endTime: '',
+        duration: '',
+        workNo: '',
+        process: '',
+        processCode: '',
+        material: '',
+        materialCode: '',
+        description: '',
+        checked: false,
+      },
+    ]
 
-    list.value = mockData.slice((queryForm.pageNo - 1) * queryForm.pageSize, queryForm.pageNo * queryForm.pageSize)
+    list.value = mockData
     total.value = mockData.length
     listLoading.value = false
-    jumpPage.value = queryForm.pageNo
   }, 500)
 }
 
@@ -212,67 +388,59 @@ const fetchData = async () => {
 const resetQuery = () => {
   queryForm.keyword = ''
   queryForm.pageNo = 1
+  topQueryForm.keyword = ''
+  topQueryForm.pageNo = 1
+  fetchTopData()
   fetchData()
 }
 
-// 分页处理
-const handleCurrentChange = (val) => {
+// 分页处理 - 上方表格
+const handleTopCurrentChange = (val) => {
   if (val === '...') return
-  queryForm.pageNo = val
-  fetchData()
+  topQueryForm.pageNo = val
+  fetchTopData()
 }
 
-const handleSizeChange = (val) => {
-  queryForm.pageSize = val
-  queryForm.pageNo = 1
-  fetchData()
+const handleTopSizeChange = (val) => {
+  topQueryForm.pageSize = val
+  topQueryForm.pageNo = 1
+  fetchTopData()
 }
 
-const handlePrevPage = () => {
-  if (queryForm.pageNo > 1) {
-    queryForm.pageNo--
-    fetchData()
+const handleTopPrevPage = () => {
+  if (topQueryForm.pageNo > 1) {
+    topQueryForm.pageNo--
+    fetchTopData()
   }
 }
 
-const handleNextPage = () => {
-  if (queryForm.pageNo < totalPages.value) {
-    queryForm.pageNo++
-    fetchData()
+const handleTopNextPage = () => {
+  if (topQueryForm.pageNo < topTotalPages.value) {
+    topQueryForm.pageNo++
+    fetchTopData()
   }
 }
 
-const handleJumpPage = () => {
-  const page = jumpPage.value
-  if (page >= 1 && page <= totalPages.value) {
-    queryForm.pageNo = page
-    fetchData()
+const handleTopJumpPage = () => {
+  const page = topJumpPage.value
+  if (page >= 1 && page <= topTotalPages.value) {
+    topQueryForm.pageNo = page
+    fetchTopData()
   } else {
-    jumpPage.value = queryForm.pageNo
+    topJumpPage.value = topQueryForm.pageNo
   }
-}
-
-// 编辑行
-const handleEdit = (row) => {
-  console.log('编辑', row)
-  // 实现编辑逻辑
-}
-
-// 删除行
-const handleDelete = (row) => {
-  console.log('删除', row)
-  // 实现删除逻辑
 }
 
 // 确认操作
 const handleConfirm = () => {
-  console.log('确认', selectedRows.value)
+  console.log('确认')
   visible.value = false
 }
 
 // 打开对话框的方法，将通过父组件调用
 const openDialog = () => {
   visible.value = true
+  fetchTopData()
   fetchData()
 }
 
@@ -282,6 +450,7 @@ defineExpose({
 })
 
 onMounted(() => {
+  fetchTopData()
   fetchData()
 })
 </script>
@@ -301,6 +470,10 @@ onMounted(() => {
     border-radius: 2px;
     box-shadow: 0 0 20px rgba(30, 207, 255, 0.4);
     margin-top: 8vh !important; /* 确保优先级足够高 */
+
+    .el-dialog__body {
+      padding: 0 !important;
+    }
 
     .el-dialog__header {
       height: 40px !important;
@@ -322,6 +495,10 @@ onMounted(() => {
       &:hover {
         color: #4fdcff !important;
       }
+    }
+
+    .el-dialog__body {
+      padding: 0 !important;
     }
   }
 }
@@ -347,9 +524,9 @@ onMounted(() => {
 <style lang="scss" scoped>
 .time-registration-dialog {
   :deep(.el-dialog__body) {
-    padding: 0;
     max-height: calc(100vh - 200px);
     overflow: hidden;
+    padding: 0 !important;
   }
 
   :deep(.el-dialog) {
@@ -405,7 +582,7 @@ onMounted(() => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0px;
+    padding: 16px;
     box-sizing: border-box;
     overflow: hidden;
   }
@@ -444,16 +621,47 @@ onMounted(() => {
     }
   }
 
+  .table-divider {
+    height: 1px;
+    background: rgba(30, 207, 255, 0.3);
+    margin: 10px 0 15px;
+    width: 100%;
+  }
+
   .table-container {
     position: relative;
-    flex: 1;
     overflow: hidden;
-    min-height: 200px;
+
+    &.upper-table {
+      height: 200px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
+    }
+
+    &.bottom-table {
+      flex: 1;
+      min-height: 200px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .table-border-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border: 1px solid rgba(30, 207, 255, 0.5);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
 
     .scroll-board {
       width: 100%;
       height: 100%;
       overflow: auto;
+      position: relative;
+      flex: 1;
 
       &::-webkit-scrollbar {
         width: 6px;
@@ -472,19 +680,57 @@ onMounted(() => {
       table {
         width: 100%;
         border-collapse: collapse;
-        border: 1px solid rgba(30, 207, 255, 0.3);
+        border: none;
+        background-color: transparent;
+
+        thead {
+          position: sticky;
+          top: 0;
+          z-index: 15;
+
+          &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 1px;
+            background-color: rgba(30, 207, 255, 0.5);
+            z-index: 16;
+          }
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background-color: rgba(30, 207, 255, 0.5);
+            z-index: 16;
+          }
+
+          tr {
+            background-color: rgba(0, 21, 41, 0.95);
+          }
+        }
 
         th {
           padding: 8px 6px;
           text-align: center;
           font-size: 14px;
           color: #1ecfff;
-          border-bottom: 1px solid rgba(30, 207, 255, 0.5);
-          background-color: rgba(30, 207, 255, 0.1);
+          border: none;
+          background-color: rgba(0, 21, 41, 0.95);
           font-weight: normal;
           position: sticky;
           top: 0;
-          z-index: 1;
+          z-index: 10;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+          &:not(:last-child) {
+            border-right: 1px solid rgba(30, 207, 255, 0.2);
+          }
         }
 
         td {
@@ -492,7 +738,12 @@ onMounted(() => {
           text-align: center;
           font-size: 13px;
           color: rgba(255, 255, 255, 0.7);
+          border: none;
           border-bottom: 1px solid rgba(0, 161, 255, 0.2);
+
+          &:not(:last-child) {
+            border-right: 1px solid rgba(30, 207, 255, 0.1);
+          }
         }
 
         tr {
@@ -530,11 +781,15 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 10px 0 0;
+    padding: 10px 0;
     color: #1ecfff;
     font-size: 14px;
     flex-shrink: 0;
     height: 40px;
+
+    &.top-pagination {
+      margin-bottom: 5px;
+    }
 
     .total-info {
       margin-right: 15px;
@@ -703,6 +958,42 @@ onMounted(() => {
       &:hover {
         text-shadow: 0 0 8px rgba(255, 82, 82, 0.8);
       }
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+
+    .action-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 14px;
+      background-color: #666;
+      transition: all 0.3s;
+
+      &:hover {
+        filter: brightness(1.2);
+      }
+
+      &.start-active {
+        background-color: #009900;
+      }
+
+      &.end-active {
+        background-color: #ff0000;
+      }
+    }
+
+    .end-btn {
+      background-color: #ff0000;
     }
   }
 }
