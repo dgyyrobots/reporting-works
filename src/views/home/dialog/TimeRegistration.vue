@@ -737,7 +737,7 @@ onMounted(() => {
           padding: 8px 6px;
           text-align: center;
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.8);
           border: none;
           border-bottom: 1px solid rgba(0, 161, 255, 0.2);
 
