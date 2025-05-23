@@ -11,7 +11,12 @@
       <div class="right-info">
         <span>{{ greeting }}</span>
         <span>欢迎您,</span>
-        <span>{{ username }}</span>
+        <span>{{ userName }}</span>
+        <!-- 添加切换现场工作台按钮 -->
+        <button class="switch-workcenter-btn" @click="openWorkcenterDialog">
+          <i class="switch-icon"></i>
+          {{ currentWorkcenter.name || '选择现场工作台' }}
+        </button>
         <button class="logout-btn" @click="handleLogout">
           <i class="logout-icon"></i>
           退出登录
@@ -73,6 +78,17 @@
 
     <!-- 对话框组件 -->
     <TimeRegistration ref="timeRegistrationRef" />
+        
+    <!-- 添加工作中心选择弹框 -->
+    <el-dialog
+      v-model="workcenterDialogVisible"
+      title="切换现场工作台"
+      width="80%"
+      :close-on-click-modal="false"
+      :show-close="true"
+    >
+      <workcenter-select @select="handleWorkcenterSelect" />
+    </el-dialog>
   </div>
 </template>
 
@@ -87,10 +103,12 @@ import PayInfo from './components/PayInfo.vue'
 import StaffInfo from './components/StaffInfo.vue'
 import CenterBottom from './components/CenterBottom.vue'
 import TimeRegistration from './dialog/TimeRegistration.vue'
+import WorkcenterSelect from '../login/components/WorkcenterSelect.vue'
 import { useUserStore } from '/@/store/modules/user'
 import { storeToRefs } from 'pinia'
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const currentDate = ref('')
@@ -98,6 +116,57 @@ const currentTime = ref('')
 const currentWeekday = ref('')
 const greeting = ref('')
 let timer = null
+
+// 修改用户名变量
+const userName = ref('用户')
+// 添加工作中心相关变量
+const currentWorkcenter = ref({})
+const workcenterDialogVisible = ref(false)
+
+// 在组件挂载时获取用户信息和工作中心信息
+onMounted(() => {
+  updateDateTime() // 初始化时间
+  timer = setInterval(updateDateTime, 1000) // 每秒更新一次
+  
+  // 获取用户信息
+  try {
+    const userInfoStr = localStorage.getItem('userInfo')
+    if (userInfoStr) {
+      const userInfo = JSON.parse(userInfoStr)
+      // 使用与WorkcenterSelect.vue相同的字段
+      userName.value = userInfo.fullname || '用户'
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+  
+  // 获取当前选中的工作中心
+  try {
+    const workcenterStr = localStorage.getItem('selectedWorkcenter')
+    if (workcenterStr) {
+      currentWorkcenter.value = JSON.parse(workcenterStr)
+    }
+  } catch (error) {
+    console.error('获取工作中心信息失败:', error)
+  }
+})
+
+// 打开工作中心选择弹框
+const openWorkcenterDialog = () => {
+  workcenterDialogVisible.value = true
+}
+
+// 处理工作中心选择
+const handleWorkcenterSelect = (workcenter) => {
+  currentWorkcenter.value = workcenter
+  workcenterDialogVisible.value = false
+  
+  // 存储选择的工作中心信息
+  localStorage.setItem('selectedWorkcenter', JSON.stringify(workcenter))
+  
+  // 提示用户已切换工作中心
+  ElMessage.success(`已切换到现场工作台: ${workcenter.name}`)
+}
 
 const userStore = useUserStore()
 const { username } = storeToRefs(userStore)
@@ -228,6 +297,38 @@ const handleLogout = () => {
         margin-right: 8px;
       }
 
+      // 添加切换工作中心按钮样式
+      .switch-workcenter-btn {
+        margin-left: 12px;
+        background-color: transparent;
+        border: 1px solid #40c4ff;
+        border-radius: 4px;
+        color: #40c4ff;
+        padding: 2px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+          background-color: rgba(255, 235, 59, 0.2);
+          box-shadow: 0 0 8px rgba(64, 196, 255, 0.5);
+        }
+
+        .switch-icon {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          margin-right: 5px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2340c4ff'%3E%3Cpath d='M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z'/%3E%3C/svg%3E");
+          background-size: cover;
+        }
+      }
       .logout-btn {
         margin-left: 12px;
         background-color: transparent;

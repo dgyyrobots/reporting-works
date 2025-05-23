@@ -20,18 +20,31 @@
         </el-button>
       </el-form>
     </div>
+    
+    <!-- 工作中心选择弹框 -->
+    <el-dialog
+      v-model="workcenterDialogVisible"
+      title="选择工作中心"
+      width="80%"
+      :close-on-click-modal="false"
+      :show-close="true"
+    >
+      <workcenter-select @select="handleWorkcenterSelect" />
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ElLoading, ElMessage } from 'element-plus'
+import { ElLoading, ElMessage, ElDialog } from 'element-plus'
 import leftImg from '/@/assets/login_images/left_img_5.png'
 import { translate } from '/@/i18n'
 import { useAppStore } from '/@/store/modules/app'
 import { getLoginForm, setToken, removeToken } from '/@/utils/auth.ts'
 import { useUserStore } from '/@/store/modules/user'
+import { getUserInfo } from '/@/api/login' // 导入getUserInfo接口
 import axios from 'axios'
 import type { TokenType } from '/@/api/login/types'
+import WorkcenterSelect from './components/WorkcenterSelect.vue'
 
 defineOptions({
   name: 'Login',
@@ -44,6 +57,8 @@ const appStore = useAppStore()
 const { systemLogo: logo, title } = storeToRefs(appStore)
 const loading = ref<boolean>(false)
 const formRef = ref<any>(null)
+const workcenterDialogVisible = ref<boolean>(false)
+const selectedWorkcenter = ref<any>(null)
 
 // 创建 loginAxios 实例
 const loginAxios = axios.create({
@@ -106,19 +121,45 @@ const handleLogin = async () => {
           setToken(tokenData)
 
           console.log(tokenData, 'tokenData')
-
-          await router.push({
-            path: '/',
-          })
-          elLoading?.close()
+          
+          // 获取用户信息
+          try {
+            const userInfoRes = await getUserInfo()
+            if (userInfoRes && userInfoRes.data) {
+              // 存储用户信息
+              localStorage.setItem('userInfo', JSON.stringify(userInfoRes.data))
+            }
+          } catch (userInfoError) {
+            console.error('获取用户信息失败:', userInfoError)
+          }
+          
+          // 登录成功后显示工作中心选择弹框
+          workcenterDialogVisible.value = true
+          
+          if (elLoading) {
+            elLoading.close()
+          }
         } catch (error) {
           console.error('登录出错:', error)
           ElMessage.error('登录失败，请检查网络或服务器状态')
         } finally {
           loading.value = false
-          elLoading?.close()
         }
     })
+}
+
+// 处理工作中心选择
+const handleWorkcenterSelect = (workcenter) => {
+  selectedWorkcenter.value = workcenter
+  workcenterDialogVisible.value = false
+  
+  // 存储选择的工作中心信息
+  localStorage.setItem('selectedWorkcenter', JSON.stringify(workcenter))
+  
+  // 选择工作中心后跳转到首页
+  router.push({
+    path: '/',
+  })
 }
 
 // 获取Cookie

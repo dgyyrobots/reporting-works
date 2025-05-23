@@ -79,3 +79,8 @@ export const getCode = (data) => {
 export const reqCheck = (data) => {
   return request.postOriginal({ url: 'system/captcha/check', data })
 }
+
+// 获取user
+export const getUserInfo = () => {
+  return request.postOriginal({ url: '/apps/personal/ajax/personal_api/action:get_user_info' })
+}
