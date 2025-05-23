@@ -68,6 +68,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
+import { getWorkcenterList } from '@/api/mes/wk/index.ts'
+
 const gaugeRef = ref(null)
 let chart = null
 const switchValue = ref(true)
@@ -324,7 +326,17 @@ const initChart = () => {
   chart.setOption(option)
 }
 
+const initData = () => {
+  const data = {
+    action: 'get_can_view_workercenter',
+  }
+  getWorkcenterList(data).then((res) => {
+    console.log(res, 'dddddddddd')
+  })
+}
+
 onMounted(() => {
+  initData()
   initChart()
 })
 

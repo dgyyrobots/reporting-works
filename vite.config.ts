@@ -46,6 +46,19 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         clientFiles: ['./index.html', './library/{components,layouts}/*', './src/{views,plugins}/*'],
       },
       https,
+      proxy: {
+        // '/mes': {
+        //   target: 'http://192.168.127.17',
+        //   changeOrigin: true,
+        //   bypass: function (req, res, proxyOptions) {
+        //     // 如果是mock环境，不进行代理
+        //     const useMock = mode === 'development' && env.VITE_USE_MOCK === 'true'
+        //     if (useMock) {
+        //       return req.url
+        //     }
+        //   },
+        // },
+      },
     },
     resolve: {
       alias: {

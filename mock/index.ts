@@ -1,14 +1,17 @@
 import { createProdMockServer } from 'vite-plugin-mock/es/createProdMockServer'
 
-const modules = import.meta.glob('./**/*.ts', { eager: true })
-const mockModules: any[] = []
-Object.keys(modules).forEach((key) => {
-  if (key.includes('/_')) return
-  if (key.includes('/index.ts')) return
+// 直接导入所有controller模块
+import * as workcenter from './controller/workcenter'
+import * as login from './controller/login'
 
-  const module: any = modules[key]
-  mockModules.push(...module.default)
-})
+// 可以根据需要继续添加其他controller
+
+// 创建模块数组
+const mockModules: any[] = [
+  ...((workcenter as any).default || []),
+  ...((login as any).default || []),
+  // 可以根据需要继续添加其他controller
+]
 
 export const setupProdMockServer = () => {
   createProdMockServer(mockModules)

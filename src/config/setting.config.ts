@@ -5,7 +5,7 @@ export const settingConfig: {
   [key: string]: string | boolean | number | Array<string>
 } = {
   // 标题，此项修改后需要重启项目！！！ (包括初次加载雪花屏的标题 页面的标题 浏览器的标题)
-  title: '虎鲸智造',
+  title: '生产报工',
   // 标题分隔符
   titleSeparator: ' - ',
   // 标题是否反转
@@ -13,7 +13,7 @@ export const settingConfig: {
   // 如果为true : "title - page"
   titleReverse: true,
   // 简写
-  abbreviation: '虎鲸智造',
+  abbreviation: '生产报工',
   // 付费版本copyright可随意修改
   copyright: 'huizhizao.vip',
   // 缓存路由的最大数量

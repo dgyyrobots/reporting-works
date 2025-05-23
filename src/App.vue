@@ -1,5 +1,5 @@
 <template>
-  <vab-app></vab-app>
+  <vab-app />
 </template>
 
 <script lang="ts" setup>
@@ -15,7 +15,7 @@ const settingsStore = useSettingsStore()
 const appStore = useAppStore()
 const { updateTheme, changeColor } = settingsStore
 
-appStore.getTenantByWebsite()
+// appStore.getTenantByWebsite()
 onBeforeMount(() => {
   changeColor()
   updateTheme()

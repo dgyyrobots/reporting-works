@@ -12,6 +12,10 @@
         <span>{{ greeting }}</span>
         <span>欢迎您,</span>
         <span>{{ username }}</span>
+        <button class="logout-btn" @click="handleLogout">
+          <i class="logout-icon"></i>
+          退出登录
+        </button>
       </div>
     </div>
 
@@ -85,7 +89,10 @@ import CenterBottom from './components/CenterBottom.vue'
 import TimeRegistration from './dialog/TimeRegistration.vue'
 import { useUserStore } from '/@/store/modules/user'
 import { storeToRefs } from 'pinia'
+import { removeToken } from '/@/utils/auth'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const currentDate = ref('')
 const currentTime = ref('')
 const currentWeekday = ref('')
@@ -153,6 +160,14 @@ const timeRegistrationRef = ref(null)
 const openTimeRegistration = () => {
   timeRegistrationRef.value?.openDialog()
 }
+
+// 退出登录
+const handleLogout = () => {
+  // 清除token
+  removeToken()
+  // 返回登录页
+  router.push('/login')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -205,8 +220,40 @@ const openTimeRegistration = () => {
       text-shadow: 0 0 8px #ffe60055;
       padding-right: 24px;
       letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
       span {
         margin-right: 8px;
+      }
+
+      .logout-btn {
+        margin-left: 12px;
+        background-color: transparent;
+        border: 1px solid #40c4ff;
+        border-radius: 4px;
+        color: #40c4ff;
+        padding: 2px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+
+        &:hover {
+          background-color: rgba(64, 196, 255, 0.2);
+          box-shadow: 0 0 8px rgba(64, 196, 255, 0.5);
+        }
+
+        .logout-icon {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          margin-right: 5px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2340c4ff'%3E%3Cpath d='M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z'/%3E%3C/svg%3E");
+          background-size: cover;
+        }
       }
     }
   }

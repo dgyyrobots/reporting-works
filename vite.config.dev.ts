@@ -48,6 +48,13 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         clientFiles: ['./index.html', './library/{components,layouts}/*', './src/{views,plugins}/*'],
       },
       https,
+      proxy: {
+        '/api-proxy': {
+          target: 'http://172.16.12.99',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/admin-api/, '')
+        }
+      }
     },
     resolve: {
       alias: {

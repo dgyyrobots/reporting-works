@@ -6,7 +6,7 @@ import { ElementPlusSize } from '/@/types/elementPlus'
 import { LayoutType } from '/@/types/layout'
 import { ThemeTypes } from '/@/types/theme'
 import { humpToUnderline, setCssVar } from '/@/utils'
-import { tenantPromise } from '/@/config/axios'
+// import { tenantPromise } from '/@/config/axios'
 import { useSettingsStore } from './settings.ts'
 import logoImg from '/@/assets/logo.png'
 import iconImg from '/@/assets/icon.png'
@@ -186,15 +186,15 @@ export const useAppStore = defineStore('app', {
     },
   },
   actions: {
-    async getTenantByWebsite() {
-      const tenant = await tenantPromise
-      this.setTitle(tenant.name)
-      this.systemLogo = tenant.systemLogo
-      this.systemIcon = tenant.icon
-      const settingsStore = useSettingsStore()
-      document.querySelector('link[rel=icon]').href = tenant.icon
-      settingsStore.setTitle(tenant.name)
-    },
+    // async getTenantByWebsite() {
+    //   const tenant = await tenantPromise
+    //   this.setTitle(tenant.name)
+    //   this.systemLogo = tenant.systemLogo
+    //   this.systemIcon = tenant.icon
+    //   const settingsStore = useSettingsStore()
+    //   document.querySelector('link[rel=icon]').href = tenant.icon
+    //   settingsStore.setTitle(tenant.name)
+    // },
     setBreadcrumb(breadcrumb: boolean) {
       this.breadcrumb = breadcrumb
     },

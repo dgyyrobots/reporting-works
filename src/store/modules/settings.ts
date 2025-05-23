@@ -75,7 +75,7 @@ const getLocalStorage = (key: string) => {
 }
 
 const setLocalStorage = (key: string, val: any) => {
-  localStorage.setItem(key, JSON.stringify((val)))
+  localStorage.setItem(key, JSON.stringify(val))
 }
 
 const { collapse = foldSidebar } = getLocalStorage('collapse')
@@ -94,7 +94,7 @@ export const useSettingsStore = defineStore('settings', {
     theme: { ...defaultTheme, ...getLocalStorage('shop-vite-theme') } || {
       ...defaultTheme,
     },
-    title: getLocalStorage('title').title || title,
+    title: '生产报工',
   }),
   getters: {
     getCollapse: (state) => state.collapse,
@@ -208,8 +208,8 @@ export const useSettingsStore = defineStore('settings', {
       this.updateState({ color: this.color })
     },
     setTitle(v: string) {
-      setLocalStorage('title', {title: v})
+      setLocalStorage('title', { title: v })
       this.title = v
-    }
+    },
   },
 })
