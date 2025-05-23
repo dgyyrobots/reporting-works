@@ -1264,6 +1264,66 @@ const responseData2 = {
   "total": 9
 }
 
+const currentWorder = {
+  "ret": 0,
+  "msg": null,
+  "data": [
+    {
+      "id": "38152",
+      "company_id": "102869",
+      "company_name": null,
+      "parentid": "37908",
+      "bill_date": "1729699200",
+      "start_date": "08:26",
+      "end_date": "",
+      "wc_id": "119",
+      "wc_name": "烫金机组",
+      "wc_number": "07",
+      "dept_id": "78486",
+      "dept_number": "001012",
+      "dept_name": "烫模车间",
+      "emp_id": "973",
+      "emp_number": "210001",
+      "emp_name": "黄沛雄",
+      "device_id": "168",
+      "device_number": "TJ11#",
+      "device_name": "BOBST自动烫金机",
+      "status_id": "0",
+      "status_name": "上工",
+      "up_date": null,
+      "act_worktime": "0.0000000000",
+      "note": null,
+      "is_delete": "0",
+      "json_values": null,
+      "employee_ratio": "1.0000000000",
+      "classtype_id": "5",
+      "classtype_name": "白班",
+      "start_operate_date": "1729729562",
+      "start_operator_id": "492690",
+      "start_operator_name": "黄沛雄",
+      "end_operate_date": "0",
+      "end_operator_id": "0",
+      "end_operator_name": null,
+      "workstation_id": "0",
+      "workstation_no": null,
+      "workstation_name": null
+    }
+  ],
+  "time": "Fri May 23 05:56:55 +0000 2025",
+  "class_data": [
+    {
+      "id": "6",
+      "name": "晚班",
+      "number": "002"
+    },
+    {
+      "id": "5",
+      "name": "白班",
+      "number": "001"
+    }
+  ]
+}
+
 export default [
   {
     url: '/mes/ajax/mes_bs_workcenter',
@@ -1278,6 +1338,13 @@ export default [
     method: 'post',
     response() {
       return responseData2
+    },
+  },
+  {
+    url: '/mes/ajax/mes_jobbill/action:get_worktime_wc_data',
+    method: 'post',
+    response() {
+      return currentWorder
     },
   },
 ] as MockMethod[]
