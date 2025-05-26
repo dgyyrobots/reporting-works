@@ -221,7 +221,7 @@ const topPageDisplays = computed(() => {
 
 // 操作按钮的处理
 const handleStartAction = (row) => {
-  if(row.startTime){
+  if(row.start_time){
     return
   }
   // 创建确认对话框
@@ -242,6 +242,9 @@ const handleStartAction = (row) => {
     // 用户点击确认后的操作
     const row_data = JSON.parse(JSON.stringify(row))
     const user = JSON.parse(localStorage.getItem('userInfo'))
+    delete row_data.startTime
+    delete row_data.endTime
+    delete row_data.duration
     const data = {
      'data[]': row_data ,
       user_id: user.userId,
@@ -251,9 +254,10 @@ const handleStartAction = (row) => {
     getDeviceStartData (data).then((res)=>{
       if(res.ret===0) {
         ElMessage.success(('操作成功!'))
-        row.startTime = formatDateTime(new Date())
-        row.endTime = ''
-        row.duration = '00:00:00'
+        // row.startTime = formatDateTime(new Date())
+        // row.endTime = ''
+        // row.duration = '00:00:00'
+        fetchData()
             // 确保计时器已启动
         if (!timerRef.value) {
           timerRef.value = setInterval(updateDurations, 1000)
@@ -268,12 +272,15 @@ const handleStartAction = (row) => {
 }
 
 const handleEndAction = (row) => {
-  if(!row.startTime) {
+  if(!row.start_time) {
     ElMessage.error('该类型还未开始计时，请按【开始】')
     return
   }
-  const row_data = JSON.parse(JSON.stringify(row))
+    const row_data = JSON.parse(JSON.stringify(row))
     const user = JSON.parse(localStorage.getItem('userInfo'))
+    delete row_data.startTime
+    delete row_data.endTime
+    delete row_data.duration
     const data = {
      'data[]': row_data ,
       user_id: user.userId,
@@ -283,9 +290,10 @@ const handleEndAction = (row) => {
     getDeviceStartData (data).then((res)=>{
       if(res.ret===0) {
         ElMessage.success(('操作成功!'))
-        row.startTime = ''
-        row.endTime = ''
-        row.duration = ''
+        // row.startTime = ''
+        // row.endTime = ''
+        // row.duration = ''
+        fetchData()
       }
     })
 }
@@ -408,7 +416,6 @@ const fetchData = async () => {
   _device_id:props.currentDevice.id
   }
   getRunningBanciDevice(data).then((res)=>{
-    console.log(res,'ddddd4444444444444')
     res.map((item)=>{
       item.startTime = item.start_time ? formatTimestamp(item.start_time) : ''
       item.endTime = item.end_time ? formatTimestamp(item.end_time) : ''
