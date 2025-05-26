@@ -107,6 +107,7 @@ const handleLogin = async () => {
 
           const res = response.data.data
 
+
           elLoading = ElLoading.service({
             lock: true,
             text: '正在加载系统中...',
@@ -126,6 +127,7 @@ const handleLogin = async () => {
           try {
             const userInfoRes = await getUserInfo()
             if (userInfoRes && userInfoRes.data) {
+              userInfoRes.data.userId  =res.userId
               // 存储用户信息
               localStorage.setItem('userInfo', JSON.stringify(userInfoRes.data))
             }

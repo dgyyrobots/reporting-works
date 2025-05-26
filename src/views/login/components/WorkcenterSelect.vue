@@ -79,7 +79,9 @@ const workcenterList = ref([])
 
 // 选择现场工作台
 const selectWorkcenter = (item) => {
-  emit('select', item)
+    // 清除缓存的选择的设备
+    localStorage.removeItem('selectedDevice')
+    emit('select', item)
 }
 </script>
 

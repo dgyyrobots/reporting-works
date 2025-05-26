@@ -3,7 +3,7 @@
     <div ref="gaugeRef" class="gauge-echart"></div>
     <!-- 文本和按钮叠加层 -->
     <div class="gauge-overlay">
-      <div class="detail-text">长荣有恒平张模切机2#</div>
+      <div class="detail-text">{{currentDevice.name}} {{ currentDevice.number }}</div>
       <div class="detail-button">当前产量清零</div>
       <div class="target-text">
         <el-icon class="no-inherit" color="#ff5555">
@@ -69,6 +69,19 @@ import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
 import { getWorkcenterList } from '@/api/mes/wk/index.ts'
+
+// 定义props
+const props = defineProps({
+
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
+  currentDevice: {
+    type: Object,
+    default: () => ({})
+  },
+})
 
 const gaugeRef = ref(null)
 let chart = null

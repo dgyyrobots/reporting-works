@@ -1,5 +1,5 @@
 <template>
-  <Card class="StaffInfo" content-padding="6px 0" title="员工信息">
+  <Card class="StaffInfo" content-padding="6px 0" :title="title">
     <div class="scroll-board">
       <table>
         <thead>
@@ -13,8 +13,8 @@
               v-for="(cell, cellIndex) in row"
               :key="cellIndex"
               :class="{
-                'status-online': cellIndex === 3 && cell === '在线',
-                'status-offline': cellIndex === 3 && cell === '离线',
+                'status-online': cellIndex === 3 && cell === '上工',
+                'status-offline': cellIndex === 3 && cell !== '上工',
               }"
             >
               {{ cell }}
@@ -29,14 +29,69 @@
 <script setup>
 import Card from './Card.vue'
 import { ref, onMounted } from 'vue'
+import { getCurrentWorker } from '@/api/mes/wk/index.ts'
 
-const tableHeaders = ['姓名', '工号', '职位', '状态']
+// 定义props
+const props = defineProps({
+
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
+  currentDevice: {
+    type: Object,
+    default: () => ({})
+  },
+})
+const tableHeaders = ['姓名', '工号', '班次', '状态']
 const tableData = ref([
-  ['张三', 'EMP001', '操作员', '在线'],
-  ['李四', 'EMP002', '技术员', '离线'],
+  // ['张三', 'EMP001', '操作员', '上工'],
+  // ['李四', 'EMP002', '技术员', '离线'],
 ])
+const title = ref('员工信息')
 
-onMounted(() => {})
+const initData = () => {
+  const device = props.currentDevice
+  const currentWorkcenter = props.currentWorkcenter
+  const timestamp = new Date().getTime()
+  const data = {
+    wc_id: currentWorkcenter.id,
+    bill_date: timestamp,
+    status_id:0,
+    device_id:device.id
+  }
+  getCurrentWorker(data).then((res) => {
+    console.log(res, '获取员工信息  ')
+    tableData.value = []
+    title.value = res.length > 0 ? `员工信息(${res[0]?.classtype_name})` : '员工信息'
+    res.map((item) => {
+      const name = item.emp_name || '--'
+      const number = item.emp_number || '--'
+      const status = item.status_name || '--'
+      const classtype_name = item.classtype_name || '--'
+      tableData.value.push([name, number, classtype_name, status])
+    })
+  })
+}
+watch(() => props.currentDevice, (newDevice, oldDevice) => {
+  if (newDevice && newDevice.id && newDevice.id !== oldDevice?.id) {
+    console.log('设备已变更，重新获取员工信息')
+    initData()
+  }
+}, { deep: true })
+
+// 同样监听 currentWorkcenter 变化
+watch(() => props.currentWorkcenter, (newWorkcenter, oldWorkcenter) => {
+  if (newWorkcenter && newWorkcenter.id && newWorkcenter.id !== oldWorkcenter?.id) {
+    console.log('工作中心已变更，重新获取员工信息')
+    initData()
+  }
+}, { deep: true })
+
+
+onMounted(() => {
+  initData()
+})
 </script>
 
 <style lang="scss" scoped>

@@ -8,15 +8,16 @@
     title="计时登记"
     :top="'8vh'"
     width="1200px"
+    @closed="handleClose"
   >
     <div class="dialog-content">
       <div class="search-bar">
-        <el-input v-model="queryForm.keyword" class="cyber-input" clearable placeholder="请输入关键词搜索">
+        <el-input v-model="queryForm.keyword" class="cyber-input"  placeholder="请输入任务单搜索">
           <template #prefix>
             <Icon class="search-icon" icon="svg-icon:search" />
           </template>
         </el-input>
-        <el-button class="cyber-btn" @click="fetchData">查 询</el-button>
+        <el-button class="cyber-btn" @click="handSearch">查 询</el-button>
         <el-button class="cyber-btn secondary" @click="resetQuery">重 置</el-button>
       </div>
 
@@ -27,6 +28,7 @@
             <table>
               <thead>
                 <tr>
+                  <th style="width: 50px;">选择</th>
                   <th>任务单号</th>
                   <th>工序</th>
                   <th>工序编码</th>
@@ -37,12 +39,15 @@
               </thead>
               <tbody>
                 <tr v-for="row in topList" :key="row.id" @click="handleSelectRow(row)">
-                  <td>{{ row.workNo }}</td>
-                  <td>{{ row.process }}</td>
-                  <td>{{ row.processCode }}</td>
-                  <td>{{ row.material }}</td>
-                  <td>{{ row.materialCode }}</td>
-                  <td>{{ row.description }}</td>
+                  <td>
+                    <el-checkbox v-model="row.selected" @change="(val) => handleCheckboxChange(val, row)" />
+                  </td>
+                  <td>{{ row.work_no }}</td>
+                  <td>{{ row.wp_name }}</td>
+                  <td>{{ row.wp_number }}</td>
+                  <td>{{ row.sku_name }}</td>
+                  <td>{{ row.sku_no }}</td>
+                  <td>{{ row.prodesc }}</td>
                 </tr>
                 <tr v-if="topList.length === 0">
                   <td class="empty-data" colspan="6">暂无数据</td>
@@ -115,22 +120,25 @@
               </thead>
               <tbody>
                 <tr v-for="row in list" :key="row.id">
-                  <td>{{ row.name }}</td>
-                  <td>{{ row.device }}</td>
-                  <td>{{ row.shift }}</td>
+                  <td>{{ row.type_name }}</td>
+                  <td>{{ row.device_name }}</td>
+                  <td>{{ row.banci_name  }}</td>
                   <td class="action-buttons">
-                    <div :class="['action-btn', row.status === '进行中' ? 'start-active' : '']" @click="handleStartAction(row)">开始</div>
-                    <div :class="['action-btn end-btn', row.status === '完成' ? 'end-active' : '']" @click="handleEndAction(row)">结束</div>
+                    <div :class="['action-btn', row.startTime ? '' : 'start-active']" @click="handleStartAction(row)">开始</div>
+                    <div :class="['action-btn end-btn', row.startTime ? 'end-active' : '']" @click="handleEndAction(row)">结束</div>
                   </td>
                   <td>{{ row.startTime || '-' }}</td>
                   <td>{{ row.endTime || '-' }}</td>
                   <td>{{ row.duration || '-' }}</td>
-                  <td>{{ row.workNo || '-' }}</td>
-                  <td>{{ row.process || '-' }}</td>
-                  <td>{{ row.processCode || '-' }}</td>
-                  <td>{{ row.material || '-' }}</td>
-                  <td>{{ row.materialCode || '-' }}</td>
-                  <td>{{ row.description || '-' }}</td>
+                  <td>{{ row.work_no || '-' }}</td>
+                  <td>{{ row.wp_name || '-' }}</td>
+                  <td>{{ row.wp_number || '-' }}</td>
+                  <!-- <td>{{ row.sku_name || '' }}</td>
+                  <td>{{ row.sku_number || '-' }}</td>
+                  <td>{{ row.prodesc || '-' }}</td> -->
+                  <td>{{ '' }}</td>
+                  <td>{{ '' }}</td>
+                  <td>{{ '' }}</td>
                 </tr>
                 <tr v-if="list.length === 0">
                   <td class="empty-data" colspan="13">暂无数据</td>
@@ -141,31 +149,36 @@
         </div>
       </div>
     </div>
-
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button class="cyber-btn secondary" @click="visible = false">取 消</el-button>
-        <el-button class="cyber-btn" @click="handleConfirm">确 认</el-button>
-      </div>
-    </template>
   </el-dialog>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon } from '/@/components/Icon'
+import {  getRunningBanciDevice, getRunningBanCiWorkOrder,getDeviceStartData } from '@/api/mes/wk/index.ts'
+import { ElMessageBox, ElMessage, } from 'element-plus'
+
+const props = defineProps({
+currentDevice: {
+  type: Object,
+  default: () => ({})
+},
+})
 
 // 控制对话框显示状态
 const visible = ref(false)
 const listLoading = ref(false)
 const total = ref(0)
 const list = ref([])
-
+// 添加计时器引用
+const timerRef = ref(null)
 // 上方表格的数据和状态
 const topTableLoading = ref(false)
 const topTotal = ref(0)
 const topList = ref([])
 const topJumpPage = ref(1)
+// 当前选中的行
+const selectedRow = ref(null)
 
 // 上方表格查询表单
 const topQueryForm = reactive({
@@ -204,31 +217,77 @@ const topPageDisplays = computed(() => {
   return [1, '...', current - 1, current, current + 1, '...', maxPages]
 })
 
+
+
 // 操作按钮的处理
 const handleStartAction = (row) => {
-  if (row.status !== '进行中') {
-    row.status = '进行中'
-    row.startTime = formatDateTime(new Date())
-    row.endTime = ''
-    row.duration = ''
+  if(row.startTime){
+    return
   }
+  // 创建确认对话框
+  ElMessageBox.confirm(
+    `【现在的时间是 (${row.banci_name}),确认要开始计时工作吗】`,
+    '请确认开始',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'info',
+      customClass: 'cyber-confirm-box',
+      confirmButtonClass: 'cyber-confirm-btn',
+      cancelButtonClass: 'cyber-cancel-btn',
+      closeOnClickModal: false
+    }
+  )
+  .then(() => {
+    // 用户点击确认后的操作
+    const row_data = JSON.parse(JSON.stringify(row))
+    const user = JSON.parse(localStorage.getItem('userInfo'))
+    const data = {
+     'data[]': row_data ,
+      user_id: user.userId,
+      user_name: user.fullname,
+      device_id: props.currentDevice.id,
+    }
+    getDeviceStartData (data).then((res)=>{
+      if(res.ret===0) {
+        ElMessage.success(('操作成功!'))
+        row.startTime = formatDateTime(new Date())
+        row.endTime = ''
+        row.duration = '00:00:00'
+            // 确保计时器已启动
+        if (!timerRef.value) {
+          timerRef.value = setInterval(updateDurations, 1000)
+        }
+      }
+    })
+  })
+  .catch(() => {
+    // 用户点击取消或关闭对话框
+    console.log('取消开始计时')
+  })
 }
 
 const handleEndAction = (row) => {
-  if (row.status === '进行中') {
-    row.status = '完成'
-    row.endTime = formatDateTime(new Date())
-
-    // 计算时长（简单示例）
-    const start = new Date(row.startTime)
-    const end = new Date(row.endTime)
-    const durationMs = end - start
-    const hours = Math.floor(durationMs / (1000 * 60 * 60))
-    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
-    const seconds = Math.floor((durationMs % (1000 * 60)) / 1000)
-
-    row.duration = `${hours}:${minutes}:${seconds}`
+  if(!row.startTime) {
+    ElMessage.error('该类型还未开始计时，请按【开始】')
+    return
   }
+  const row_data = JSON.parse(JSON.stringify(row))
+    const user = JSON.parse(localStorage.getItem('userInfo'))
+    const data = {
+     'data[]': row_data ,
+      user_id: user.userId,
+      user_name: user.fullname,
+      device_id: props.currentDevice.id,
+    }
+    getDeviceStartData (data).then((res)=>{
+      if(res.ret===0) {
+        ElMessage.success(('操作成功!'))
+        row.startTime = ''
+        row.endTime = ''
+        row.duration = ''
+      }
+    })
 }
 
 // 选择上方表格行
@@ -236,7 +295,41 @@ const handleSelectRow = (row) => {
   console.log('选择了行:', row)
   // 可以在这里添加选择行的逻辑
 }
-
+// 处理行点击事件
+const handleRowClick = (row) => {
+  // 如果点击的是当前已选中的行，则取消选择
+  if (row.selected) {
+    row.selected = false;
+    selectedRow.value = null;
+    return;
+  }
+  
+  // 取消所有行的选中状态
+  topList.value.forEach(item => {
+    item.selected = false;
+  });
+  
+  // 选中当前行
+  row.selected = true;
+  selectedRow.value = row;
+  
+  // 调用原有的选择行逻辑
+  handleSelectRow(row);
+}
+// 处理复选框变化事件
+const handleCheckboxChange = (val, row) => {
+  if (val) {
+    // 取消其他行的选中状态
+    topList.value.forEach(item => {
+      if (item.id !== row.id) {
+        item.selected = false;
+      }
+    });
+    selectedRow.value = row;
+  } else {
+    selectedRow.value = null;
+  }
+}
 // 格式化日期时间
 const formatDateTime = (date) => {
   const hours = String(date.getHours()).padStart(2, '0')
@@ -245,152 +338,108 @@ const formatDateTime = (date) => {
 
   return `${hours}:${minutes}:${seconds}`
 }
-
-// 上方表格数据加载
-const fetchTopData = async () => {
-  topTableLoading.value = true
-
-  // 这里应替换为实际的API调用
-  setTimeout(() => {
-    // 模拟上方表格数据
-    const mockData = [
-      {
-        id: 1,
-        workNo: 'ZYCS05-20231107',
-        process: '凹印喷码',
-        processCode: '027',
-        material: '双喜 (硬经典1906) 条盒纸',
-        materialCode: '101A002020T1002',
-        description: '专黄 白 黑 光黄 水性红 专棕 水光 冰醋酸',
-      },
-      {
-        id: 2,
-        workNo: 'ZYCS05-20231107',
-        process: '烫金',
-        processCode: '012',
-        material: '双喜 (硬经典1906) 条盒纸',
-        materialCode: '101A002020T1002',
-        description: '全息 凹凸',
-      },
-      {
-        id: 3,
-        workNo: 'ZYCS05-20231107',
-        process: '模切凹凸',
-        processCode: '017',
-        material: '双喜 (硬经典1906) 条盒纸',
-        materialCode: '101A002020T1002',
-        description: '模切 凹凸',
-      },
-      {
-        id: 4,
-        workNo: 'ZYCS05-20231107',
-        process: '烫金',
-        processCode: '013',
-        material: '双喜 (硬经典1906) 条盒纸',
-        materialCode: '101A002020T1002',
-        description: '全息 凹凸 金色',
-      },
-      {
-        id: 5,
-        workNo: 'ZYCS05-20231108',
-        process: '凹印喷码',
-        processCode: '027',
-        material: '云烟 (如意) 条盒纸',
-        materialCode: '101B002020T1003',
-        description: '专黄 白 黑 光黄 水性红',
-      },
-      {
-        id: 6,
-        workNo: 'ZYCS05-20231108',
-        process: '烫金',
-        processCode: '012',
-        material: '云烟 (如意) 条盒纸',
-        materialCode: '101B002020T1003',
-        description: '全息 凹凸',
-      },
-    ]
-
-    topList.value = mockData.slice((topQueryForm.pageNo - 1) * topQueryForm.pageSize, topQueryForm.pageNo * topQueryForm.pageSize)
-    topTotal.value = mockData.length
-    topTableLoading.value = false
-    topJumpPage.value = topQueryForm.pageNo
-  }, 500)
+// 将时间戳转换为时间格式 (HH:MM:SS)
+const formatTimestamp = (timestamp) => {
+  if (!timestamp) return '-'
+  
+  // 检查时间戳长度，如果是13位则直接使用，如果是10位则需要乘以1000
+  const time = timestamp.toString().length === 10 ? timestamp * 1000 : timestamp
+  
+  const date = new Date(time)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  
+  return `${hours}:${minutes}:${seconds}`
 }
 
+// 上方表格数据加载
+const fetchTopData = async (filter) => {
+  topTableLoading.value = true
+
+  try {
+    // 调用API获取工单数据
+    const data = {
+      filter: filter || [],
+      filter_detail:{},
+      keyword_is_detail:0,
+      show_total:1,
+      page:topQueryForm.pageNo,
+      rows:topQueryForm.pageSize,
+    }
+    const res = await getRunningBanCiWorkOrder(data)
+    
+    console.log('获取工单数据:', res)
+    if (res && res.rows) {
+      // 处理API返回的数据
+      const workOrders = res.rows.map(item => ({
+        id: item.id,
+        sku_name:item.sku_name,
+        sku_no:item.sku_no,
+        work_no: item.work_no || '--',
+        wp_name: item.wp_name,
+        wp_number:item.wp_number,
+        prodesc: item.prodesc || '--',
+        selected: false,
+        // 保存原始数据，以便后续使用
+        rawData: item
+      }))
+      
+      topList.value = workOrders
+      topTotal.value = res.total || 0
+    } else {
+      topList.value = []
+      topTotal.value = 0
+    }
+  } catch (error) {
+    console.error('获取工单数据失败:', error)
+    topList.value = []
+    topTotal.value = 0
+  } finally {
+    topTableLoading.value = false
+    topJumpPage.value = topQueryForm.pageNo
+  }
+}
 // 模拟下方表格数据加载
 const fetchData = async () => {
   listLoading.value = true
-
-  // 这里应替换为实际的API调用
-  setTimeout(() => {
-    // 模拟数据
-    const mockData = [
-      {
-        id: 1,
-        name: '设备维修',
-        device: '有恒自动烫金机',
-        shift: '晚班',
-        status: '未开始',
-        startTime: '',
-        endTime: '',
-        duration: '',
-        workNo: '',
-        process: '',
-        processCode: '',
-        material: '',
-        materialCode: '',
-        description: '',
-        checked: false,
-      },
-      {
-        id: 2,
-        name: '换版',
-        device: '有恒自动烫金机',
-        shift: '晚班',
-        status: '进行中',
-        startTime: '23:45:22',
-        endTime: '',
-        duration: '',
-        workNo: 'ZYCS01-20240126',
-        process: '双烫',
-        processCode: '025',
-        material: '延安(细支圣地河谷)ZB45小盒',
-        materialCode: '',
-        description: '双烫机第一组烫红色猫眼，第二组烫镂金',
-        checked: false,
-      },
-      {
-        id: 3,
-        name: '保养',
-        device: '有恒自动烫金机',
-        shift: '晚班',
-        status: '未开始',
-        startTime: '',
-        endTime: '',
-        duration: '',
-        workNo: '',
-        process: '',
-        processCode: '',
-        material: '',
-        materialCode: '',
-        description: '',
-        checked: false,
-      },
-    ]
-
-    list.value = mockData
-    total.value = mockData.length
+  const data = {
+  rows:3,
+  _device_id:props.currentDevice.id
+  }
+  getRunningBanciDevice(data).then((res)=>{
+    console.log(res,'ddddd4444444444444')
+    res.map((item)=>{
+      item.startTime = item.start_time ? formatTimestamp(item.start_time) : ''
+      item.endTime = item.end_time ? formatTimestamp(item.end_time) : ''
+    })
+    list.value = res
     listLoading.value = false
-  }, 500)
+
+    // 检查是否有进行中的任务，如果有则启动计时器
+    const hasRunningTasks =  list.value.some(item => item.startTime)
+    if (hasRunningTasks && !timerRef.value) {
+      timerRef.value = setInterval(updateDurations, 1000)
+    }
+
+  }).catch((err)=>{
+    console.log(err,'err')
+    listLoading.value = false
+  })
 }
 
+const handSearch = () => {
+  const work_no = queryForm.keyword
+  const filter = [{"val":[{"name":"work_no","val":work_no,"action":"LIKE"}],"relation":"OR"}]
+  fetchTopData(filter)
+}
 // 重置查询
 const resetQuery = () => {
   queryForm.keyword = ''
   queryForm.pageNo = 1
   topQueryForm.keyword = ''
   topQueryForm.pageNo = 1
-  fetchTopData()
+  fetchTopData([])
   fetchData()
 }
 
@@ -431,11 +480,6 @@ const handleTopJumpPage = () => {
   }
 }
 
-// 确认操作
-const handleConfirm = () => {
-  console.log('确认')
-  visible.value = false
-}
 
 // 打开对话框的方法，将通过父组件调用
 const openDialog = () => {
@@ -444,11 +488,47 @@ const openDialog = () => {
   fetchData()
 }
 
+// 计算时长
+const calculateDuration = (startTime) => {
+  if (!startTime || startTime === '-') return '-'
+  // 解析开始时间
+  const [hours, minutes, seconds] = startTime.split(':').map(Number)
+  const startDate = new Date()
+  startDate.setHours(hours, minutes, seconds, 0)
+  // 计算时间差
+  const now = new Date()
+  const durationMs = now - startDate
+  // 格式化时长
+  const durationHours = Math.floor(durationMs / (1000 * 60 * 60))
+  const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+  const durationSeconds = Math.floor((durationMs % (1000 * 60)) / 1000)
+  return `${String(durationHours).padStart(2, '0')}:${String(durationMinutes).padStart(2, '0')}:${String(durationSeconds).padStart(2, '0')}`
+}
+
+// 更新所有进行中任务的时长
+const updateDurations = () => {
+  list.value.forEach(row => {
+    if (row.startTime) {
+      row.duration = calculateDuration(row.startTime)
+    }
+  })
+}
+const handleClose = () => {
+  if (timerRef.value) {
+    clearInterval(timerRef.value)
+    timerRef.value = null
+  }
+}
 // 暴露方法给父组件
 defineExpose({
   openDialog,
 })
-
+onBeforeUnmount(() => {
+  if (timerRef.value) {
+    clearInterval(timerRef.value)
+    timerRef.value = null
+  }
+})
 onMounted(() => {
   fetchTopData()
   fetchData()
@@ -711,7 +791,16 @@ onMounted(() => {
           }
 
           tr {
-            background-color: rgba(0, 21, 41, 0.95);
+              background-color: rgba(0, 21, 41, 0.95);
+              &.selected-row {
+              background: rgba(30, 207, 255, 0.2) !important;
+              td {
+                color: #fff !important;
+              }
+            }
+            &:hover {
+            background: rgba(30, 207, 255, 0.1);
+             }
           }
         }
 
@@ -993,7 +1082,7 @@ onMounted(() => {
     }
 
     .end-btn {
-      background-color: #ff0000;
+      background-color: #666;
     }
   }
 }

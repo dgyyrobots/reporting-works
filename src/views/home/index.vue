@@ -15,7 +15,8 @@
         <!-- 添加切换设备按钮 -->
         <button class="switch-device-btn" @click="openDeviceDialog">
           <i class="switch-icon"></i>
-          {{ currentDevice.name || '选择设备' }}
+          <span v-if="currentDevice.name"> {{ currentDevice.name  }}  {{ currentDevice.number  }}</span>
+          <span v-else>选择设备</span>
         </button>
         <button class="logout-btn" @click="handleLogout">
           <i class="logout-icon"></i>
@@ -45,7 +46,7 @@
           <PayInfo />
         </div>
         <div class="left-box box-2">
-          <StaffInfo />
+          <StaffInfo :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="left-box box-3">
           <EquipmentTime />
@@ -55,7 +56,7 @@
       <!-- 中间面板 -->
       <div class="panel center-panel">
         <div class="center-box box-1">
-          <DashboardGauge />
+          <DashboardGauge  :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="center-box box-2">
           <CenterBottom />
@@ -77,7 +78,7 @@
     </div>
 
     <!-- 对话框组件 -->
-    <TimeRegistration ref="timeRegistrationRef" />
+    <TimeRegistration :currentDevice="currentDevice" ref="timeRegistrationRef" />
         
     <!-- 添加工作中心选择弹框 -->
     <el-dialog
@@ -154,6 +155,25 @@ onMounted(() => {
     }
   } catch (error) {
     console.error('获取工作中心信息失败:', error)
+  }
+  
+  // 获取当前选中的设备
+  try {
+    const deviceStr = localStorage.getItem('selectedDevice')
+    if (deviceStr) {
+      currentDevice.value = JSON.parse(deviceStr)
+    } else {
+      // 如果没有选择设备，自动打开设备选择弹框
+      setTimeout(() => {
+        openDeviceDialog()
+      }, 500) // 延迟500ms打开，确保组件完全加载
+    }
+  } catch (error) {
+    console.error('获取设备信息失败:', error)
+    // 出错时也打开设备选择弹框
+    setTimeout(() => {
+      openDeviceDialog()
+    }, 500)
   }
 })
 

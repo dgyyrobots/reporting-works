@@ -34,3 +34,26 @@ export const getCurrentWorker = async (data: any) => {
         data,
     })
 }
+
+// 获取设备计时的原因
+export const getRunningBanciDevice = async (data: any) => {
+    return await request.post({
+        url: '/mes/ajax/mes_data_html_json/action:get_running_banci_device',
+        data,
+    })
+}
+
+// 设备计时的工单
+export const getRunningBanCiWorkOrder = async (data: any) => {
+    return await request.postOriginal({
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:yxpciuyh/object_key:bill_mes_rc_wpentry/root_view_key:yxpciuyh',
+        data,
+    })
+}
+// 设备记时开始 结束
+export const getDeviceStartData = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_data_html_json/action:save_device_start_data',
+        data,
+    })
+}

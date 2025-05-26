@@ -15,6 +15,7 @@
           <img :src="deviceIcon" alt="设备图标" />
         </div>
         <div class="device-name">{{ item.name }}</div>
+        <div class="device-name">{{ item.number }}</div>
       </div>
     </div>
   </div>
@@ -39,7 +40,7 @@ const props = defineProps({
   currentWorkcenter: {
     type: Object,
     default: () => ({})
-  }
+  },
 })
 
 // 定义事件
