@@ -339,17 +339,9 @@ const initChart = () => {
   chart.setOption(option)
 }
 
-const initData = () => {
-  const data = {
-    action: 'get_can_view_workercenter',
-  }
-  getWorkcenterList(data).then((res) => {
-    console.log(res, 'dddddddddd')
-  })
-}
+
 
 onMounted(() => {
-  initData()
   initChart()
 })
 

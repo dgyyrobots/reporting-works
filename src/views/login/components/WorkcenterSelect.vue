@@ -65,7 +65,6 @@ const initData = () => {
     action: 'get_can_view_workercenter',
   }
   getWorkcenterList(data).then((res) => {
-    console.log(res, 'dddddddddd')
     workcenterList.value = res
   }).catch((error) => {
     console.error('获取现场工作台列表失败:', error) 

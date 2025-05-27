@@ -57,3 +57,25 @@ export const getDeviceStartData = async (data: any) => {
         data,
     })
 }
+// 获取工单内容
+export const getJobBillContent = async (data: any) => {
+    return await request.postOriginal({
+        url: '/erp/ajax/get_obj_view_list/view_type:32/view_key:hxzojdqt/object_key:bill_mes_rc_jobbill',
+        data,
+    })
+}
+// 2.获取工单实际开工时间和生产数量
+export const getJobBillTimeAndNumber = async (data: any) => {
+    return await request.postOriginal({
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:zlwumhtk/object_key:bill_mes_rc_wpentry/root_view_key:zlwumhtk',
+        data,
+    })
+}
+
+// 3.获取工单类型和计划开工时间
+export const getJobBillTypeAndStartTime = async (data: any) => {
+    return await request.postOriginal({
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:jbkbxpwi/object_key:bill_mes_work/root_view_key:jbkbxpwi',
+        data,
+    })
+}

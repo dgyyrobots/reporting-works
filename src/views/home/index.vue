@@ -66,7 +66,7 @@
       <!-- 右侧面板 -->
       <div class="panel right-panel">
         <div class="right-box box-1">
-          <TaskInfoBox />
+          <TaskInfoBox v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="right-box box-2">
           <EquipmentHistory />
@@ -77,7 +77,6 @@
       </div>
     </div>
 
-    <!-- 对话框组件 -->
     <TimeRegistration :currentDevice="currentDevice" ref="timeRegistrationRef" />
         
     <!-- 添加工作中心选择弹框 -->
@@ -336,7 +335,7 @@ const handleLogout = () => {
         display: flex;
         align-items: center;
         transition: all 0.3s;
-        max-width: 180px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -676,7 +675,7 @@ const handleLogout = () => {
         display: flex;
         align-items: center;
         transition: all 0.3s;
-        max-width: 180px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

@@ -1616,6 +1616,7 @@ const DeviceStartData = {
   "time": "Mon May 26 00:42:19 +0000 2025"
 }
 
+
 export default [
   {
     url: '/mes/ajax/mes_bs_workcenter',
@@ -1663,4 +1664,6 @@ export default [
       return DeviceStartData
     },
   },
+
+
 ] as MockMethod[]

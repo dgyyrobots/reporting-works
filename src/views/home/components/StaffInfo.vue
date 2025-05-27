@@ -61,7 +61,6 @@ const initData = () => {
     device_id:device.id
   }
   getCurrentWorker(data).then((res) => {
-    console.log(res, '获取员工信息  ')
     tableData.value = []
     title.value = res.length > 0 ? `员工信息(${res[0]?.classtype_name})` : '员工信息'
     res.map((item) => {
@@ -75,7 +74,6 @@ const initData = () => {
 }
 watch(() => props.currentDevice, (newDevice, oldDevice) => {
   if (newDevice && newDevice.id && newDevice.id !== oldDevice?.id) {
-    console.log('设备已变更，重新获取员工信息')
     initData()
   }
 }, { deep: true })
@@ -83,7 +81,6 @@ watch(() => props.currentDevice, (newDevice, oldDevice) => {
 // 同样监听 currentWorkcenter 变化
 watch(() => props.currentWorkcenter, (newWorkcenter, oldWorkcenter) => {
   if (newWorkcenter && newWorkcenter.id && newWorkcenter.id !== oldWorkcenter?.id) {
-    console.log('工作中心已变更，重新获取员工信息')
     initData()
   }
 }, { deep: true })

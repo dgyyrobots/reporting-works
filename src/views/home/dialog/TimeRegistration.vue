@@ -300,7 +300,6 @@ const handleEndAction = (row) => {
 
 // 选择上方表格行
 const handleSelectRow = (row) => {
-  console.log('选择了行:', row)
   // 可以在这里添加选择行的逻辑
 }
 // 处理行点击事件
@@ -377,7 +376,6 @@ const fetchTopData = async (filter) => {
     }
     const res = await getRunningBanCiWorkOrder(data)
     
-    console.log('获取工单数据:', res)
     if (res && res.rows) {
       // 处理API返回的数据
       const workOrders = res.rows.map(item => ({
@@ -430,7 +428,6 @@ const fetchData = async () => {
     }
 
   }).catch((err)=>{
-    console.log(err,'err')
     listLoading.value = false
   })
 }
