@@ -88,3 +88,10 @@ export const getCollectionQty = async (data: any) => {
         data,
     })
 }
+// 获取当日设备计时列表-左下角设备计时
+export const getDeviceRuntimeADay = async (data: any) => {
+    return await request.postOriginal({
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:xfdxxdaa/object_key:bill_mes_device_collect_record_by_Manual/root_view_key:xfdxxdaa',
+        data,
+    })
+}

@@ -49,7 +49,7 @@
           <StaffInfo :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="left-box box-3">
-          <EquipmentTime />
+          <EquipmentTime :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
       </div>
 

@@ -31,7 +31,7 @@
     <!-- 右上 -->
     <div class="gauge-label gauge-label-topright">
       <div class="gauge-value yellow">0</div>
-      <div class="gauge-desc">测试纸产量(</div>
+      <div class="gauge-desc">测试纸产量</div>
       <svg class="gauge-fold-line" height="24" width="80">
         <polyline points="80,6 40,6 10,22" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
       </svg>

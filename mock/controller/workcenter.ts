@@ -1616,6 +1616,99 @@ const DeviceStartData = {
   "time": "Mon May 26 00:42:19 +0000 2025"
 }
 
+const DeviceRuntimeADay = {
+  "ret_msg": null,
+  "rows": [
+    {
+      "bill_date": "1748229983",
+      "device_name": "有恒自动烫金机3",
+      "wp_name": " 烫金",
+      "wc_name": "烫金机组",
+      "banci_name": "白班",
+      "type_name": "保养",
+      "start_date": "1748229983",
+      "end_date": "1748230009",
+      "totle_time": "00:00:26",
+      "operator_name": "何膑",
+      "device_id": "57",
+      "device_number": "TJ03#",
+      "work_no": null,
+      "sku_no": null,
+      "sku_name": null,
+      "id": "14938",
+      "bill_no": null,
+      "data_id": "14938",
+      "view_key": "xfdxxdaa"
+    },
+    {
+      "bill_date": "1748223789",
+      "device_name": "有恒自动烫金机3",
+      "wp_name": " 烫金",
+      "wc_name": "烫金机组",
+      "banci_name": "白班",
+      "type_name": "设备维修",
+      "start_date": "1748223789",
+      "end_date": "1748229958",
+      "totle_time": "01:42:49",
+      "operator_name": "何膑",
+      "device_id": "57",
+      "device_number": "TJ03#",
+      "work_no": null,
+      "sku_no": null,
+      "sku_name": null,
+      "id": "14929",
+      "bill_no": null,
+      "data_id": "14929",
+      "view_key": "xfdxxdaa"
+    },
+    {
+      "bill_date": "1748220181",
+      "device_name": "有恒自动烫金机3",
+      "wp_name": " 烫金",
+      "wc_name": "烫金机组",
+      "banci_name": "白班",
+      "type_name": "换版",
+      "start_date": "1748220181",
+      "end_date": "1748223395",
+      "totle_time": "00:53:34",
+      "operator_name": "胡应文",
+      "device_id": "57",
+      "device_number": "TJ03#",
+      "work_no": null,
+      "sku_no": null,
+      "sku_name": null,
+      "id": "14927",
+      "bill_no": null,
+      "data_id": "14927",
+      "view_key": "xfdxxdaa"
+    },
+    {
+      "bill_date": "1748175936",
+      "device_name": "有恒自动烫金机3",
+      "wp_name": " 烫金",
+      "wc_name": "烫金机组",
+      "banci_name": "白班",
+      "type_name": "换版",
+      "start_date": "1748175936",
+      "end_date": "1748206186",
+      "totle_time": "08:24:10",
+      "operator_name": "罗恒",
+      "device_id": "57",
+      "device_number": "TJ03#",
+      "work_no": null,
+      "sku_no": null,
+      "sku_name": null,
+      "id": "14912",
+      "bill_no": null,
+      "data_id": "14912",
+      "view_key": "xfdxxdaa"
+    }
+  ],
+  "page": "1",
+  "sum_row": null,
+  "other_res": null,
+  "total": 4
+}
 
 export default [
   {
@@ -1664,6 +1757,13 @@ export default [
       return DeviceStartData
     },
   },
-
+  // 获取当日设备计时列表-左下角设备计时
+  {
+    url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:xfdxxdaa/object_key:bill_mes_device_collect_record_by_Manual/root_view_key:xfdxxdaa',
+    method: 'post',
+    response() {
+      return DeviceRuntimeADay
+    },
+  },
 
 ] as MockMethod[]

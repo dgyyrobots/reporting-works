@@ -73,11 +73,9 @@ const initData = () => {
     filter: [{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]
   }
   getWorkcenterDeviceList(data).then((res) => {
-    console.log(res, 'device list')
     deviceList.value = res.rows
     loading.value = false 
   }).catch((error) => {
-    console.error('获取设备列表失败:', error) 
     loading.value = false 
   }).finally(() => {
     loading.value = false // 结束加载

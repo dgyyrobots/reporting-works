@@ -1,38 +1,283 @@
 <template>
   <Card class="EquipmentTime" content-padding="6px 0" title="设备计时">
     <template #titleRight>
-      <button class="query-btn">查看明细</button>
+      <button class="query-btn" @click="showDetailDialog">查看明细</button>
     </template>
     <div class="scroll-board">
-      <table>
+      <div v-if="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <span>加载中...</span>
+      </div>
+      <table v-else>
         <thead>
           <tr>
             <th v-for="(header, index) in tableHeaders" :key="index">{{ header }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in tableData" :key="index" :class="{ warning: row[3] === '警告' }">
-            <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+          <tr v-for="(row, index) in tableData" :key="index" :class="{ warning: row.type_name === '设备维修' }">
+            <td>{{ row.wp_name }}</td>
+            <td>{{ row.work_no || '--' }}</td>
+            <td>{{ row.type_name }}</td>
+            <td>{{ row.totle_time }}</td>
           </tr>
         </tbody>
       </table>
     </div>
+    
+    <!-- 详情弹框 -->
+    <el-dialog
+      v-model="dialogVisible"
+      class="time-detail-dialog"
+      :close-on-click-modal="false"
+      :destroy-on-close="true"
+      :modal-class="'cyber-modal'"
+      title="设备计时详情"
+      :top="'8vh'"
+      width="1200px"
+    >
+      <div class="dialog-content">
+        <div v-loading="detailLoading" class="table-container">
+          <div class="table-border-wrapper">
+            <div class="scroll-board">
+              <table>
+                <thead>
+                  <tr>
+                    <th v-for="(header, index) in detailTableHeaders" :key="index">{{ header }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in detailTableData" :key="index" :class="{ warning: row.type_name === '设备维修' }">
+                    <td>{{ row.device_name }}</td>
+                    <td>{{ row.wp_name }}</td>
+                    <td>{{ row.wc_name }}</td>
+                    <td>{{ row.banci_name }}</td>
+                    <td>{{ row.type_name }}</td>
+                    <td>{{ formatTimestamp(row.start_date) }}</td>
+                    <td>{{ formatTimestamp(row.end_date) }}</td>
+                    <td>{{ row.totle_time }}</td>
+                  </tr>
+                  <tr v-if="detailTableData.length === 0">
+                    <td class="empty-data" colspan="8">暂无数据</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </Card>
 </template>
 
 <script setup>
 import Card from './Card.vue'
-// 这里可以接收props或后续做数据对接
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { getDeviceRuntimeADay } from '@/api/mes/wk/index.ts'
 
-const tableHeaders = ['时间', '产线', '产量', '状态']
-const tableData = ref([
-  ['10:22:33', 'MQ05', '2345', '正常'],
-  ['10:22:34', 'MQ06', '2346', '正常'],
-])
+// 定义props接收设备和工作中心信息
+const props = defineProps({
+  currentDevice: {
+    type: Object,
+    default: () => ({})
+  },
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
+})
 
-onMounted(() => {})
+const tableHeaders = ['工序', '工单', '类型', '时长']
+const tableData = ref([])
+const loading = ref(false)
+
+// 详情弹框相关
+const dialogVisible = ref(false)
+const detailLoading = ref(false)
+const detailTableHeaders = ['设备名称', '工序名称', '工作中心名称', '班次名称', '类型名称', '开始时间', '结束时间', '时长']
+const detailTableData = ref([])
+
+// 显示详情弹框
+const showDetailDialog = async () => {
+  dialogVisible.value = true
+  await fetchDetailData()
+}
+
+// 获取详情数据
+const fetchDetailData = async () => {
+  detailLoading.value = true
+  try {
+    const device = props.currentDevice
+    const currentWorkcenter = props.currentWorkcenter
+    
+    if (!device.id) {
+      detailLoading.value = false
+      return
+    }
+    
+    // 获取当前日期时间戳
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const timestamp = Math.floor(today.getTime() / 1000)
+    
+    const params = {
+      device_id: device.id,
+      wc_id: currentWorkcenter.id,
+      bill_date: timestamp
+    }
+    
+    const res = await getDeviceRuntimeADay(params)
+    
+    if (res && res.rows && Array.isArray(res.rows)) {
+      detailTableData.value = res.rows
+    } else {
+      detailTableData.value = []
+    }
+  } catch (error) {
+    console.error('获取设备运行时间详情失败:', error)
+    detailTableData.value = []
+  } finally {
+    detailLoading.value = false
+  }
+}
+
+// 格式化时间戳为可读时间
+const formatTimestamp = (timestamp) => {
+  if (!timestamp || timestamp === '') return '--'
+  
+  const date = new Date(parseInt(timestamp) * 1000)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}`
+}
+
+// 获取设备运行时间数据
+const fetchDeviceRuntime = async () => {
+  loading.value = true
+  try {
+    const device = props.currentDevice
+    const currentWorkcenter = props.currentWorkcenter
+    
+    if (!device.id || !currentWorkcenter.id) {
+      loading.value = false
+      return
+    }
+    
+    // 获取当前日期时间戳
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const timestamp = Math.floor(today.getTime() / 1000)
+    
+    const params = {
+      device_id: device.id,
+      wc_id: currentWorkcenter.id,
+      bill_date: timestamp
+    }
+    
+    const res = await getDeviceRuntimeADay(params)
+    
+    if (res && res.rows && Array.isArray(res.rows)) {
+      // 直接使用返回的数据结构
+      tableData.value = res.rows
+    } else {
+      tableData.value = []
+    }
+  } catch (error) {
+    console.error('获取设备运行时间失败:', error)
+    tableData.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+// 监听设备变化
+watch(() => props.currentDevice, (newDevice, oldDevice) => {
+  if (newDevice && newDevice.id && newDevice.id !== oldDevice?.id) {
+    fetchDeviceRuntime()
+  }
+}, { deep: true })
+
+// 监听工作中心变化
+watch(() => props.currentWorkcenter, (newWorkcenter, oldWorkcenter) => {
+  if (newWorkcenter && newWorkcenter.id && newWorkcenter.id !== oldWorkcenter?.id) {
+    fetchDeviceRuntime()
+  }
+}, { deep: true })
+
+onMounted(() => {
+  fetchDeviceRuntime()
+})
 </script>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(5px);
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.time-detail-dialog {
+    background-color: rgba(0, 21, 41, 0.85);
+    border: 1px solid #1ecfff;
+    border-radius: 2px;
+    box-shadow: 0 0 20px rgba(30, 207, 255, 0.4);
+    margin-top: 8vh !important; /* 确保优先级足够高 */
+
+    .el-dialog__body {
+      padding: 0 !important;
+    }
+
+    .el-dialog__header {
+      height: 40px !important;
+      color: #1ecfff !important;
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+    }
+
+    .el-dialog__title {
+      color: #1ecfff !important;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(30, 207, 255, 0.5);
+      font-size: 16px;
+    }
+
+    .el-dialog__headerbtn .el-dialog__close {
+      color: #1ecfff !important;
+
+      &:hover {
+        color: #4fdcff !important;
+      }
+    }
+
+    .el-dialog__body {
+      padding: 0 !important;
+    }
+  }
+}
+
+/* 修改loading样式 */
+.el-loading-mask {
+  background-color: rgba(0, 21, 41, 0.7) !important;
+
+  .el-loading-spinner {
+    .circular {
+      .path {
+        stroke: #1ecfff !important;
+      }
+    }
+
+    .el-loading-text {
+      color: #1ecfff !important;
+    }
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .EquipmentTime {
@@ -42,9 +287,33 @@ onMounted(() => {})
   color: #fff;
   display: flex;
   flex-direction: column;
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    color: #1ecfff;
+  }
+
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(30, 207, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #1ecfff;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
   .scroll-board {
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
 
     table {
       width: 100%;
@@ -87,6 +356,7 @@ onMounted(() => {})
       }
     }
   }
+  
   .query-btn {
     background-color: #00bcd4;
     color: #fff;
@@ -98,6 +368,53 @@ onMounted(() => {})
 
     &:hover {
       background-color: #19b8e6;
+    }
+  }
+}
+
+// 弹框样式
+.time-detail-dialog {
+  :deep(.el-dialog__header) {
+    background: linear-gradient(90deg, rgba(0, 161, 255, 0.1), rgba(0, 161, 255, 0.3));
+    padding: 15px 20px;
+    margin-right: 0;
+    
+    .el-dialog__title {
+      color: #00bcd4;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .el-dialog__headerbtn {
+      top: 15px;
+      right: 20px;
+      
+      .el-dialog__close {
+        color: #00bcd4;
+      }
+    }
+  }
+  
+  :deep(.el-dialog__body) {
+    background-color: rgba(10, 20, 40, 0.95);
+    padding: 20px;
+  }
+  
+  .dialog-content {
+    .table-container {
+      margin-top: 15px;
+      
+      .table-border-wrapper {
+        border: 1px solid rgba(0, 161, 255, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      
+      .empty-data {
+        padding: 30px 0;
+        text-align: center;
+        color: #86c9f2;
+      }
     }
   }
 }
