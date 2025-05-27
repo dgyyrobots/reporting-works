@@ -146,7 +146,7 @@ const fetchTaskInfo = async () => {
 const fetchTimeAndNumber = async () => {
   loading.value = true
   try {
-    const rc_id = taskInfo. rc_id
+    const rc_id = taskInfo.rc_id
     const params = {
       filter: [{"val":[{"name":"parentid","val":rc_id,"action":"="}],"relation":"OR"}],
       filter_detail:{},
@@ -241,13 +241,34 @@ const  fetchTypeAndStartTime = async () => {
       //       "plan_end_time": "1748102400",
       //       "json_values": "{\"ud_102869_source_bill_no\":\"CS2505009\",\"ud_102869_gdlx\":\"研发工单\",\"ud_102869_jhsl\":1200,\"ud_102869_xsddbhxc\":\"1\"}",
       //   }
-      const jsonValue = data.json_values
-      const jsonObject = JSON.parse(jsonValue)
-      const ud_102869_gdlx = jsonObject.ud_102869_gdlx
-      taskInfo.ud_102869_gdlx = ud_102869_gdlx
-      taskInfo.plan_start_time = formatDateTime(data.plan_start_time)
-      taskInfo.plan_end_time = formatDateTime(data.plan_end_time)
-      taskInfo.overTime   =  calculateOvertime(taskInfo.plan_start_time, taskInfo.plan_end_time, taskInfo.act_start_time, taskInfo.act_end_time)
+      // 安全地解析JSON
+     try {
+        if (data.json_values) {
+          const jsonValue = data.json_values
+          const jsonObject = JSON.parse(jsonValue)
+          if (jsonObject && jsonObject.ud_102869_gdlx) {
+            taskInfo.ud_102869_gdlx = jsonObject.ud_102869_gdlx
+          }
+        }
+        
+        // 这些操作不依赖于JSON解析，可以单独执行
+        if (data.plan_start_time) {
+          taskInfo.plan_start_time = formatDateTime(data.plan_start_time)
+        }
+        if (data.plan_end_time) {
+          taskInfo.plan_end_time = formatDateTime(data.plan_end_time)
+        }
+        
+        // 计算超时时间
+        taskInfo.overTime = calculateOvertime(
+          taskInfo.plan_start_time, 
+          taskInfo.plan_end_time, 
+          taskInfo.act_start_time, 
+          taskInfo.act_end_time
+        )
+      } catch (error) {
+        console.error('解析JSON数据出错:', error)
+      }
     }
   
       loading.value = false
@@ -255,10 +276,6 @@ const  fetchTypeAndStartTime = async () => {
 
 
 
-    // 将字符串或数字转换为整数
-const toInteger = (value) => {
-  // ... 现有代码 ...
-}
 
 /**
  * 计算超时时间（实际时间 - 计划时间）

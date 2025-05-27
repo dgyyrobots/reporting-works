@@ -79,3 +79,12 @@ export const getJobBillTypeAndStartTime = async (data: any) => {
         data,
     })
 }
+
+
+// 获取实时生产产量
+export const getCollectionQty = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_version_number_manage/action:get_collection_qty',
+        data,
+    })
+}

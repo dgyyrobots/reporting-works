@@ -14,7 +14,7 @@
     </div>
     <!-- 左上 -->
     <div class="gauge-label gauge-label-topleft">
-      <div class="gauge-value yellow">0</div>
+      <div class="gauge-value yellow">{{ noOkQty }}</div>
       <div class="gauge-desc">剔废数量</div>
       <svg class="gauge-fold-line" height="24" width="80">
         <polyline points="0,6 40,6 70,22" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
@@ -38,7 +38,7 @@
     </div>
     <!-- 右下 -->
     <div class="gauge-label gauge-label-bottomright">
-      <div class="gauge-value yellow">0</div>
+      <div class="gauge-value yellow">{{ passUqty }}</div>
       <div class="gauge-desc">过版数量</div>
       <svg class="gauge-fold-line" height="24" width="80">
         <polyline points="80,18 40,18 10,2" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
@@ -68,8 +68,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
-import { getWorkcenterList } from '@/api/mes/wk/index.ts'
-
+import { getCollectionQty } from '@/api/mes/wk/index.ts'
+import { getJobBillContent} from '@/api/mes/wk/index.ts'
 // 定义props
 const props = defineProps({
 
@@ -84,13 +84,21 @@ const props = defineProps({
 })
 
 const gaugeRef = ref(null)
+const jobbill_id = ref('')
 let chart = null
 const switchValue = ref(true)
+// 添加当版产量的响应式数据
+const collectionQty = ref(0)
+// 剔废数量
+const noOkQty = ref(0)
+// 过版数量
+const passUqty = ref(0)
 
 const initChart = () => {
+  console.log(collectionQty.value, 'collectionQty.value')
   const newData = {
-    value: 23864,
-    name: '当前产量',
+    value: collectionQty.value || 0, // 使用响应式数据
+    name: '当版产量',
     max: 100,
   }
   chart = echarts.init(gaugeRef.value)
@@ -339,10 +347,69 @@ const initChart = () => {
   chart.setOption(option)
 }
 
+const  get_jobbill_id = async () => {
+  const activeJob = props.currentDevice.jobbill_no
+    const wc_id = props.currentWorkcenter.id
+    if (!activeJob) return
+    const params= {
+      filter: [{"val":[{"name":"wc_id","val":wc_id,"action":"="},{"name":"bill_no","val":activeJob,"action":"="}],"relation":"AND"}]
+    }
+    const res = await getJobBillContent(params)
+    jobbill_id.value = res.rows[0].id
+}
+const initCollectionQty = async () => {
+  try {
+    const res = await getCollectionQty({
+      jobbill_id: jobbill_id.value,
+      device_id: props.currentDevice.id,
+    })
+    console.log(res, 'rrrrrrrrrrrrrrr')
+    
+    // 从接口获取当版产量数据并赋值
+    if (res && res.data && res.data[0]) {
+      // 获取当版产量
+      if (res.data[0].collection_qty) {
+        collectionQty.value = toInteger(res.data[0].collection_qty) || 0
+        initChart()
+      }
+      
+      // 获取剔废数量
+      if (res.data[0].no_okqty !== undefined) {
+        noOkQty.value = toInteger(res.data[0].no_okqty) || 0
+      }
+      // 过版数量
+      if (res.data[0].pass_uqty !== undefined) {
+        passUqty.value = toInteger(res.data[0].pass_uqty) || 0
+      }
+    }
+  } catch (error) {
+    console.error('获取当版产量数据失败:', error)
+  }
+}
 
+// 将字符串或数字转换为整数
+const toInteger = (value) => {
+  if (value === null || value === undefined) return 0
+  
+  // 如果是字符串，先尝试转换为数字
+  if (typeof value === 'string') {
+    // 移除非数字字符（保留负号）
+    const numStr = value.replace(/[^\d.-]/g, '')
+    value = parseFloat(numStr)
+  }
+  
+  // 如果转换后不是有效数字，返回0
+  if (isNaN(value)) return 0
+  
+  // 返回整数部分
+  return Math.floor(value)
+}
+onMounted( () => {
 
-onMounted(() => {
-  initChart()
+  nextTick( async() => {
+    await  get_jobbill_id()
+    initCollectionQty()
+  })
 })
 
 onBeforeUnmount(() => {
