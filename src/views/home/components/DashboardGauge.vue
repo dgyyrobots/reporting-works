@@ -4,7 +4,7 @@
     <!-- 文本和按钮叠加层 -->
     <div class="gauge-overlay">
       <div class="detail-text">{{currentDevice.name}} {{ currentDevice.number }}</div>
-      <div class="detail-button">当前产量清零</div>
+      <!-- <div class="detail-button">当前产量清零</div> -->
       <div class="target-text">
         <el-icon class="no-inherit" color="#ff5555">
           <Bell />
@@ -15,7 +15,7 @@
     <!-- 左上 -->
     <div class="gauge-label gauge-label-topleft">
       <div class="gauge-value yellow">{{ noOkQty }}</div>
-      <div class="gauge-desc">剔废数量</div>
+      <div class="gauge-desc">不合格品数量</div>
       <svg class="gauge-fold-line" height="24" width="80">
         <polyline points="0,6 40,6 70,22" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
       </svg>
@@ -30,8 +30,8 @@
     </div>
     <!-- 右上 -->
     <div class="gauge-label gauge-label-topright">
-      <div class="gauge-value yellow">3011</div>
-      <div class="gauge-desc">正常产量</div>
+      <div class="gauge-value yellow">0</div>
+      <div class="gauge-desc">测试纸产量(</div>
       <svg class="gauge-fold-line" height="24" width="80">
         <polyline points="80,6 40,6 10,22" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
       </svg>
@@ -89,7 +89,7 @@ let chart = null
 const switchValue = ref(true)
 // 添加当版产量的响应式数据
 const collectionQty = ref(0)
-// 剔废数量
+// 不合格品数量
 const noOkQty = ref(0)
 // 过版数量
 const passUqty = ref(0)
@@ -107,7 +107,7 @@ const initChart = () => {
       {
         text: newData.name,
         x: '50%',
-        y: '30%',
+        y: '32%',
         textAlign: 'center',
         textStyle: {
           fontWeight: 'normal',
@@ -119,7 +119,7 @@ const initChart = () => {
       {
         text: newData.value.toString(),
         x: '50%',
-        y: '39%',
+        y: '42%',
         textAlign: 'center',
         textStyle: {
           fontWeight: 'normal',
@@ -373,7 +373,7 @@ const initCollectionQty = async () => {
         initChart()
       }
       
-      // 获取剔废数量
+      // 获取不合格品数量
       if (res.data[0].no_okqty !== undefined) {
         noOkQty.value = toInteger(res.data[0].no_okqty) || 0
       }
