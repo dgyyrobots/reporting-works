@@ -59,7 +59,6 @@ const initData = () => {
   }
   getCurrentWorker(data).then((res) => {
     tableData.value = []
-    title.value = res.length > 0 ? `员工信息(${res[0]?.classtype_name})` : '员工信息'
     res.map((item) => {
       const name = item.emp_name || '--'
       const number = item.emp_number || '--'
