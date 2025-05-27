@@ -7,8 +7,8 @@ export function createMock(localEnabled = true, prodEnabled = false) {
     localEnabled, // 开发环境启用
     prodEnabled, // 生产环境是否启用
     supportTs: true,
-    // 仅在生产环境下注入代码
-    ...(prodEnabled
+    // 仅在开发环境下注入代码
+    ...(localEnabled
       ? {
         injectCode: `
         import { setupProdMockServer } from '../mock';
