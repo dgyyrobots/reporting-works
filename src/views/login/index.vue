@@ -117,7 +117,7 @@ const handleLogin = async () => {
 
           // 设置token，满足TokenType接口要求
           const tokenData: TokenType = {
-            accessToken: res.access_token,
+            accessToken: res.stored_iworker,
           }
 
           setToken(tokenData)
