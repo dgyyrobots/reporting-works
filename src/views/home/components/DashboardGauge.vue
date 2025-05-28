@@ -408,6 +408,9 @@ const toInteger = (value) => {
 }
 // 获取设备运行速度
 const getDeviceSpeed = async () => {
+
+  const loginInfo= JSON.parse(localStorage.getItem('loginInfo'))
+
   try {
     if (!props.currentDevice.id) {
       console.warn('缺少设备ID，无法获取设备速度')
@@ -420,7 +423,7 @@ const getDeviceSpeed = async () => {
       working_date_day: getCurrentDate(),
       sel_device_time:0,
       sel_device_time_text:'1M',
-      my_company_id:102869,
+      my_company_id:loginInfo.stored_company,
       page:1,
       rows:100,
     }

@@ -101,12 +101,18 @@ const handleLogin = async () => {
 
           const response = await loginAxios.post('/mes/login/login', loginData)
 
+  
           if (!response.data || response.status !== 200) {
             ElMessage.error(response.data?.message || '登录失败')
             return
           }
 
+    
           const res = response.data.data
+
+
+          // 存储登录信息到本地存储
+          localStorage.setItem('loginInfo', JSON.stringify(res))
 
 
           elLoading = ElLoading.service({
@@ -117,7 +123,7 @@ const handleLogin = async () => {
 
           // 设置token，满足TokenType接口要求
           const tokenData: TokenType = {
-            accessToken: res.stored_iworker,
+            accessToken: res.access_token,
           }
 
           setToken(tokenData)
