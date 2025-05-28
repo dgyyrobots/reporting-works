@@ -58,10 +58,7 @@
           <div class="info-row">
             <div class="info-label">过版纸数：</div>
             <div class="info-value flow-no">
-              <div class="select-box">
-                <span>合格品</span>
-                <Icon icon="svg-icon:arrow-down" />
-              </div>
+              <span>合格品</span>
             </div>
             <div class="icon-placeholder"></div>
             <div class="info-label-right">合格品数：</div>
