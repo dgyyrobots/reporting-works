@@ -37,7 +37,7 @@
             </defs>
           </svg>
         </div>
-        <div class="panel-title">当板信息</div>
+        <div class="panel-title">当版信息</div>
         <div class="panel-content">
           <div class="info-row">
             <div class="info-label">版号：</div>
