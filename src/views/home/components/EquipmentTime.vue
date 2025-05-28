@@ -1,5 +1,5 @@
 <template>
-  <Card class="EquipmentTime" content-padding="6px 0" title="设备计时">
+  <Card class="EquipmentTime" content-padding="6px 0" title="设备计时" :showEmpty="!loading && tableData.length === 0">
     <template #titleRight>
       <button class="query-btn" @click="showDetailDialog">查看明细</button>
     </template>
@@ -8,7 +8,7 @@
         <div class="loading-spinner"></div>
         <span>加载中...</span>
       </div>
-      <table v-else>
+      <table v-else-if="tableData.length > 0">
         <thead>
           <tr>
             <th v-for="(header, index) in tableHeaders" :key="index">{{ header }}</th>
@@ -39,7 +39,11 @@
       <div class="dialog-content">
         <div v-loading="detailLoading" class="table-container">
           <div class="table-border-wrapper">
-            <div class="scroll-board">
+            <div v-if="!detailLoading && detailTableData.length === 0" class="no-data">
+              <Icon icon="svg-icon:empty-box" />
+              暂无数据
+            </div>
+            <div v-else class="scroll-board">
               <table>
                 <thead>
                   <tr>
@@ -57,9 +61,6 @@
                     <td>{{ formatTimestamp(row.end_date) }}</td>
                     <td>{{ row.totle_time }}</td>
                   </tr>
-                  <tr v-if="detailTableData.length === 0">
-                    <td class="empty-data" colspan="8">暂无数据</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -74,6 +75,7 @@
 import Card from './Card.vue'
 import { ref, onMounted, watch } from 'vue'
 import { getDeviceRuntimeADay } from '@/api/mes/wk/index.ts'
+import { Icon } from '/@/components/Icon'
 
 // 定义props接收设备和工作中心信息
 const props = defineProps({
@@ -100,46 +102,17 @@ const detailTableData = ref([])
 // 显示详情弹框
 const showDetailDialog = async () => {
   dialogVisible.value = true
-  await fetchDetailData()
+  detailLoading.value = true
+  
+  // 直接使用已有的数据，不重新请求接口
+  detailTableData.value = tableData.value
+  
+  // 短暂延迟以显示加载效果
+  setTimeout(() => {
+    detailLoading.value = false
+  }, 300)
 }
 
-// 获取详情数据
-const fetchDetailData = async () => {
-  detailLoading.value = true
-  try {
-    const device = props.currentDevice
-    const currentWorkcenter = props.currentWorkcenter
-    
-    if (!device.id) {
-      detailLoading.value = false
-      return
-    }
-    
-    // 获取当前日期时间戳
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const timestamp = Math.floor(today.getTime() / 1000)
-    
-    const params = {
-      device_id: device.id,
-      wc_id: currentWorkcenter.id,
-      bill_date: timestamp
-    }
-    
-    const res = await getDeviceRuntimeADay(params)
-    
-    if (res && res.rows && Array.isArray(res.rows)) {
-      detailTableData.value = res.rows
-    } else {
-      detailTableData.value = []
-    }
-  } catch (error) {
-    console.error('获取设备运行时间详情失败:', error)
-    detailTableData.value = []
-  } finally {
-    detailLoading.value = false
-  }
-}
 
 // 格式化时间戳为可读时间
 const formatTimestamp = (timestamp) => {
@@ -158,28 +131,22 @@ const formatTimestamp = (timestamp) => {
 // 获取设备运行时间数据
 const fetchDeviceRuntime = async () => {
   loading.value = true
+  const getShiftDateRangeResult = getShiftDateRange()
   try {
-    const device = props.currentDevice
-    const currentWorkcenter = props.currentWorkcenter
-    
-    if (!device.id || !currentWorkcenter.id) {
-      loading.value = false
-      return
-    }
-    
-    // 获取当前日期时间戳
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const timestamp = Math.floor(today.getTime() / 1000)
-    
+    const device_number =props.currentDevice.number
     const params = {
-      device_id: device.id,
-      wc_id: currentWorkcenter.id,
-      bill_date: timestamp
+      // device_id: device.id,
+      filter:[{"val":[{"name":"device_number","val":device_number,"action":"="}],"relation":"OR"},{"val":[{"name":"bill_date","val":{"range":"custom","start":getShiftDateRangeResult.start,"end":getShiftDateRangeResult.end},"action":"date_range"}],"relation":"OR"}],
+      filter_detail:{},
+      keyword_is_detail:0,
+      show_total:1,
+      page:1,
+      rows:50
     }
     
     const res = await getDeviceRuntimeADay(params)
     
+    console.log('res:', res)
     if (res && res.rows && Array.isArray(res.rows)) {
       // 直接使用返回的数据结构
       tableData.value = res.rows
@@ -193,7 +160,40 @@ const fetchDeviceRuntime = async () => {
     loading.value = false
   }
 }
-
+// 判断班次并返回日期范围
+const getShiftDateRange = () => {
+  const now = new Date()
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+  
+  // 判断是否是白班（8:30 - 20:30）
+  const isDayShift = (currentHour > 8 || (currentHour === 8 && currentMinute >= 30)) && 
+                     (currentHour < 20 || (currentHour === 20 && currentMinute < 30))
+  
+  // 获取当前日期的年月日字符串
+  const formatDate = (date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  
+  const today = formatDate(now)
+  
+  // 获取明天的日期
+  const tomorrow = new Date(now)
+  tomorrow.setDate(now.getDate() + 1)
+  const tomorrowStr = formatDate(tomorrow)
+  
+  // 如果是白班，返回今天的开始和结束日期
+  // 如果是晚班，返回今天的开始日期和明天的结束日期
+  return {
+    isDay: isDayShift,
+    shiftName: isDayShift ? '白班' : '晚班',
+    start: today,
+    end: isDayShift ? today : tomorrowStr
+  }
+}
 // 监听设备变化
 watch(() => props.currentDevice, (newDevice, oldDevice) => {
   if (newDevice && newDevice.id && newDevice.id !== oldDevice?.id) {
@@ -201,12 +201,6 @@ watch(() => props.currentDevice, (newDevice, oldDevice) => {
   }
 }, { deep: true })
 
-// 监听工作中心变化
-watch(() => props.currentWorkcenter, (newWorkcenter, oldWorkcenter) => {
-  if (newWorkcenter && newWorkcenter.id && newWorkcenter.id !== oldWorkcenter?.id) {
-    fetchDeviceRuntime()
-  }
-}, { deep: true })
 
 onMounted(() => {
   fetchDeviceRuntime()
@@ -369,6 +363,18 @@ onMounted(() => {
     &:hover {
       background-color: #19b8e6;
     }
+  }
+  .no-data {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #86c9f2;
+    gap: 10px;
+    padding: 30px 0;
   }
 }
 

@@ -72,7 +72,7 @@
           <EquipmentHistory />
         </div>
         <div class="right-box box-3">
-          <LicenseHistory />
+          <LicenseHistory :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
       </div>
     </div>

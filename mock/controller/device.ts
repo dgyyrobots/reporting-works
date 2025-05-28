@@ -263,7 +263,56 @@ const CollectionQtyData = {
     },
     "last_report_data": "1748311348|381185662.0000000000|1748310524"
 }
-
+const PlateListData = {
+    "ret_msg": null,
+    "rows": [],
+    "page": "1",
+    "sum_row": {
+        "operator_name": null,
+        "version_no": null,
+        "collection_uqty": null,
+        "collection_qty": null,
+        "collection_uncheck_uqty": null,
+        "collection_uncheck_qty": null,
+        "device_name": null,
+        "device_number": null,
+        "status_id": null,
+        "pass_uqty": null,
+        "pass_qty": null,
+        "ok_uqty": null,
+        "ok_qty": null,
+        "no_ok_uqty": null,
+        "no_okqty": null,
+        "scrap_uqty": null,
+        "scrap_qty": null,
+        "loss_uqty": null,
+        "loss_qty": null,
+        "parentid": null,
+        "device_id": null,
+        "is_wp_double_unit": null,
+        "wp_unit_name": null,
+        "wp_unit_id": null,
+        "wp_unit_accuracy": null,
+        "wp_unit_exchange_rate": null,
+        "report_uqty": null,
+        "report_qty": null,
+        "report_pass_uqty": null,
+        "report_pass_qty": null,
+        "unqntype_data": null,
+        "operate_date": null,
+        "is_only_cal_uncheck": null,
+        "start_collection_uqty": null,
+        "start_collection_qty": null,
+        "end_collection_uqty": null,
+        "end_collection_qty": null,
+        "collect_date": null,
+        "id": null,
+        "exchange_son_uqty": null,
+        "exchange_sum_qty": null
+    },
+    "other_res": null,
+    "total": 0
+}
 
 export default [
 
@@ -276,5 +325,14 @@ export default [
         },
     },
 
+
+    // 获取正在生产的版号列表
+    {
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq',
+        method: 'post',
+        response() {
+            return PlateListData
+        },
+    },
 
 ] as MockMethod[]

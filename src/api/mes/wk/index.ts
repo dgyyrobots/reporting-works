@@ -95,3 +95,10 @@ export const getDeviceRuntimeADay = async (data: any) => {
         data,
     })
 }
+// 获取正在生产的版号列表
+export const getPlateListData = async (data: any) => {
+    return await request.postOriginal({
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq',
+        data,
+    })
+}
