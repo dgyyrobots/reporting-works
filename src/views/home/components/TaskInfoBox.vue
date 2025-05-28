@@ -15,7 +15,8 @@
       </div>
       <div class="row">
         <span class="label">工&nbsp;&nbsp;&nbsp;&nbsp;序：</span>
-        <span class="value">{{ taskInfo.wpName || '--' }}</span>
+        <span class="value">{{ taskInfo.wpName || '--' }} / {{ taskInfo.prodesc ||'--' }}</span>
+        
       </div>
       <div class="row">
         <span class="label">产&nbsp;&nbsp;&nbsp;&nbsp;品：</span>
@@ -96,7 +97,8 @@ const taskInfo = reactive({
   unit: '',
   overTime: '',
   remainQty: 0,
-  ud_102869_gdlx:""
+  ud_102869_gdlx:"",
+  prodesc:''
 })
 
 // 计算完成百分比
@@ -133,6 +135,7 @@ const fetchTaskInfo = async () => {
         skuNo: data.sku_no || '',
         uqty: data.plan_qty || 0,
         unit: data.unit,
+        prodesc:data.prodesc,
         overTime: data.over_time || '0.00',
       })
     }
