@@ -99,19 +99,19 @@
             </defs>
           </svg>
         </div>
-        <div class="panel-title">上板\转产量</div>
+        <div class="panel-title">上版生产情况</div>
         <div class="panel-content">
           <div class="right-row">
-            <div class="right-label">正常产量：</div>
-            <div class="right-value">3118/分钟</div>
+            <div class="right-label">采集数：</div>
+            <div class="right-value">3118</div>
           </div>
           <div class="right-row">
-            <div class="right-label">剔废数量：</div>
+            <div class="right-label">合格品数：</div>
             <div class="right-value">0/分钟</div>
           </div>
           <div class="right-row">
-            <div class="right-label">过版数量：</div>
-            <div class="right-value">0/分钟</div>
+            <div class="right-label">生产用时：</div>
+            <div class="right-value">0.5H</div>
           </div>
         </div>
       </div>
