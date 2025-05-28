@@ -314,6 +314,1409 @@ const PlateListData = {
     "total": 0
 }
 
+const DeviceRunSpeedData = {
+    "ret": 0,
+    "msg": null,
+    "data": {
+        "total": 188,
+        "count": 1000,
+        "page": 0,
+        "pages": 188,
+        "rows": [
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:51"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:48"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:32"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:28"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:09"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:31:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:51"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:32"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:28"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:09"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:30:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:50"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:31"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:28"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:10"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:29:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:51"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:32"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:29"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:10"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:07"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:28:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:51"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:32"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:29"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:10"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:07"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:27:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:51"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:48"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:45"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:32"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:29"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:26"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:23"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:10"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:07"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:04"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:26:01"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:51"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:37"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:33"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:30"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:27"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:23"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:10"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:25:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:53"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:50"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:34"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:31"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:28"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:09"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:24:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:50"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:35"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:32"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:28"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:16"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:13"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:09"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:03"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:23:00"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:57"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:54"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:50"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:47"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:44"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:41"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:38"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:34"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:31"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:28"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:25"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:22"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:19"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:15"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:12"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:09"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:06"
+            },
+            {
+                "device_number": "TJ13#",
+                "item": "速度",
+                "value": "0",
+                "create_time": "2025-05-28 09:22:02"
+            }
+        ],
+        "rows_echart": [
+            [
+                "2025-05-28 09:31:57",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:54",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:51",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:48",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:44",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:41",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:38",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:35",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:32",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:28",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:25",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:22",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:19",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:16",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:13",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:09",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:06",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:03",
+                "0"
+            ],
+            [
+                "2025-05-28 09:31:00",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:57",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:54",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:51",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:47",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:44",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:41",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:38",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:35",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:32",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:28",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:25",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:22",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:19",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:16",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:13",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:09",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:06",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:03",
+                "0"
+            ],
+            [
+                "2025-05-28 09:30:00",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:57",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:54",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:50",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:47",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:44",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:41",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:38",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:35",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:31",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:28",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:25",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:22",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:19",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:16",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:13",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:10",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:06",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:03",
+                "0"
+            ],
+            [
+                "2025-05-28 09:29:00",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:57",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:54",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:51",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:47",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:44",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:41",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:38",
+                "0"
+            ],
+            [
+                "2025-05-28 09:28:35",
+                "0"
+            ],
+        ]
+    },
+    "time": "Wed May 28 01:32:00 +0000 2025"
+}
 export default [
 
     // 获取实时生产产量
@@ -332,6 +1735,14 @@ export default [
         method: 'post',
         response() {
             return PlateListData
+        },
+    },
+    // 3.获取设备运转速度
+    {
+        url: '/mes/ajax/mes_equipment_collect/action:device_collect_html',
+        method: 'post',
+        response() {
+            return DeviceRunSpeedData
         },
     },
 

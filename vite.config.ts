@@ -33,7 +33,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   console.log(info.lastBuildTime)
 
   return {
-    base,
+    base: './',
     root,
     server: {
       open,

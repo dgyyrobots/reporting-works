@@ -141,6 +141,7 @@ const fetchTaskInfo = async () => {
     }
   } catch (error) {
     console.error('获取任务单信息失败:', error)
+    loading.value = false
   } finally {
     loading.value = false
   }

@@ -3,12 +3,12 @@
     <!-- 左侧当板信息 -->
     <div class="top-action-btns">
       <button class="cyber-btn">
-        <Icon class="btn-icon" icon="svg-icon:testdetail" :style="{ color: '#1ecfff' }" />
-        任务明细
+        <Icon class="btn-icon" icon="svg-icon:add" :style="{ color: '#1ecfff' }" />
+        添加版
       </button>
       <button class="cyber-btn">
-        <Icon class="btn-icon" icon="svg-icon:tablesearch" />
-        报表查询
+        <Icon class="btn-icon" icon="svg-icon:end" />
+        结束采集
       </button>
     </div>
     <div class="panel-container">
@@ -40,23 +40,23 @@
         <div class="panel-title">当板信息</div>
         <div class="panel-content">
           <div class="info-row">
-            <div class="info-label">流程号：</div>
+            <div class="info-label">版号：</div>
             <div class="info-value flow-no">11</div>
             <div class="action-buttons">
               <button class="query-btn">查询</button>
             </div>
           </div>
           <div class="info-row">
-            <div class="info-label">物理板号：</div>
-            <div class="info-value flow-no">物理板号</div>
+            <div class="info-label">采集数：</div>
+            <div class="info-value flow-no">采集数</div>
             <div class="icon-placeholder"></div>
-            <div class="info-label-right">被识别：</div>
+            <div class="info-label-right">废品数：</div>
             <div class="info-value">0</div>
             <div class="icon-placeholder"></div>
           </div>
 
           <div class="info-row">
-            <div class="info-label">流程类型：</div>
+            <div class="info-label">过版纸数：</div>
             <div class="info-value flow-no">
               <div class="select-box">
                 <span>合格品</span>
@@ -64,7 +64,7 @@
               </div>
             </div>
             <div class="icon-placeholder"></div>
-            <div class="info-label-right">制程数：</div>
+            <div class="info-label-right">合格品数：</div>
             <div class="info-value">0</div>
             <div class="icon-placeholder"></div>
           </div>

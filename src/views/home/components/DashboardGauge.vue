@@ -22,7 +22,7 @@
     </div>
     <!-- 左下 -->
     <div class="gauge-label gauge-label-bottomleft">
-      <div class="gauge-value yellow">93</div>
+      <div class="gauge-value yellow">{{ currentSpeed }}</div>
       <div class="gauge-desc">当前速度</div>
       <svg class="gauge-fold-line" height="24" width="80">
         <polyline points="0,18 40,18 70,2" style="fill: none; stroke: #1ecfff; stroke-width: 2" />
@@ -69,7 +69,7 @@ import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
 import { getCollectionQty } from '@/api/mes/wk/index.ts'
-import { getJobBillContent} from '@/api/mes/wk/index.ts'
+import { getJobBillContent,getDeviceRunSpeedData} from '@/api/mes/wk/index.ts'
 // 定义props
 const props = defineProps({
 
@@ -91,6 +91,8 @@ const switchValue = ref(true)
 const collectionQty = ref(0)
 // 不合格品数量
 const noOkQty = ref(0)
+// 当前速度
+const currentSpeed = ref(0)
 // 过版数量
 const passUqty = ref(0)
 
@@ -404,11 +406,55 @@ const toInteger = (value) => {
   // 返回整数部分
   return Math.floor(value)
 }
+// 获取设备运行速度
+const getDeviceSpeed = async () => {
+  try {
+    if (!props.currentDevice.id) {
+      console.warn('缺少设备ID，无法获取设备速度')
+      return
+    }
+    
+    const params = {
+      sel_device_no:props.currentDevice.number,
+      sel_device_item:'速度',
+      working_date_day: getCurrentDate(),
+      sel_device_time:0,
+      sel_device_time_text:'1M',
+      my_company_id:102869,
+      page:1,
+      rows:100,
+    }
+    
+    const res = await getDeviceRunSpeedData(params)
+    
+    if (res && res.rows && Array.isArray(res.rows) && res.rows.length > 0) {
+      // 获取列表第一行的速度数据
+      const speedData = res.rows[0]
+      currentSpeed.value = toInteger(speedData.speed) || 0
+    } else {
+      // 如果列表为空，速度为0
+      currentSpeed.value = 0
+    }
+  } catch (error) {
+    console.error('获取设备速度数据失败:', error)
+    currentSpeed.value = 0
+  }
+}
+// 获取当前日期的函数，格式为 YYYY-MM-DD
+const getCurrentDate = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 onMounted( () => {
 
   nextTick( async() => {
     await  get_jobbill_id()
     initCollectionQty()
+    getDeviceSpeed()
   })
 })
 

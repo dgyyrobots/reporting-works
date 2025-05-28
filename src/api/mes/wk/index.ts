@@ -102,3 +102,10 @@ export const getPlateListData = async (data: any) => {
         data,
     })
 }
+//  获取设备运行速度
+export const getDeviceRunSpeedData = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_equipment_collect/action:device_collect_html',
+        data,
+    })
+}
