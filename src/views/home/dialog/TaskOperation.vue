@@ -14,7 +14,7 @@
       <div class="custom-dialog-header">
         <span class="el-dialog__title">{{ title }}</span>
         <span class="device-name" v-if="props.currentDevice && props.currentDevice.name">
-         {{ props.currentDevice.name }} {{ props.currentDevice.number }}
+         {{ props.currentDevice.name }} {{ props.currentDevice.number }} - {{ props.selectedProcess.name }}
         </span>
       </div>
     </template>
@@ -241,6 +241,10 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
+  selectedProcess: {
+    type: Object,
+    default: null
+  }
 })
 
 // 控制对话框显示状态
@@ -493,7 +497,6 @@ defineExpose({
 
 onMounted(() => {
   // 初始化数据
-
 })
 </script>
 

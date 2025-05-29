@@ -27,7 +27,7 @@
     <!-- 按钮导航栏 -->
     <div class="button-nav">
       <button class="nav-btn">上机登记</button>
-      <button class="nav-btn red" @click="openTaskOperation">任务单操作</button>
+      <button class="nav-btn red" @click="openProcessSelectDialog">任务单操作</button>
       <button class="nav-btn red">生产操作</button>
       <button class="nav-btn" @click="openTimeRegistration">计时登记</button>
       <button class="nav-btn">异常登记</button>
@@ -76,7 +76,11 @@
       </div>
     </div>
 
-    <TaskOperation ref="taskOperationRef" :currentDevice="currentDevice" />
+    <!-- 添加ProcessSelect组件 -->
+    <ProcessSelect ref="processSelectRef" :currentDevice="currentDevice" />
+    
+    <!-- 移除原来的TaskOperation组件引用 -->
+    <!-- <TaskOperation ref="taskOperationRef" :currentDevice="currentDevice" /> -->
     
     <TimeRegistration :currentDevice="currentDevice" ref="timeRegistrationRef" />
         
@@ -107,16 +111,23 @@ import StaffInfo from './components/StaffInfo.vue'
 import CenterBottom from './components/CenterBottom.vue'
 import TimeRegistration from './dialog/TimeRegistration.vue'
 import DeviceSelect from './components/DeviceSelect.vue'
-// 引入任务单操作组件
-import TaskOperation from './dialog/TaskOperation.vue'
+// 引入工序选择组件替代任务单操作组件
+import ProcessSelect from './dialog/ProcessSelect.vue'
+// import TaskOperation from './dialog/TaskOperation.vue'
 import { useUserStore } from '/@/store/modules/user'
 import { storeToRefs } from 'pinia'
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getWorkcenterList } from '@/api/mes/wk/index.ts'
-// 引入任务单操作组件
 
+// 控制工序选择弹窗
+const processSelectRef = ref(null)
+
+// 打开工序选择弹窗
+const openProcessSelectDialog = () => {
+  processSelectRef.value?.openDialog()
+}
 
 const router = useRouter()
 const currentDate = ref('')
@@ -273,10 +284,7 @@ const openTimeRegistration = () => {
   timeRegistrationRef.value?.openDialog()
 }
 
-// 打开任务单操作弹窗
-const openTaskOperation = () => {
-  taskOperationRef.value?.openDialog()
-}
+
 </script>
 
 <style lang="scss" scoped>
