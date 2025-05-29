@@ -111,7 +111,7 @@ import { storeToRefs } from 'pinia'
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-
+import { getWorkcenterList } from '@/api/mes/wk/index.ts'
 const router = useRouter()
 const currentDate = ref('')
 const currentTime = ref('')
@@ -234,10 +234,19 @@ const updateDateTime = () => {
   currentWeekday.value = getWeekday(now)
   greeting.value = getGreeting(now.getHours())
 }
-
+const initTestData = () => {
+  const data = {
+    action: 'get_can_view_workercenter',
+  }
+  getWorkcenterList(data).then((res) => {
+    console.log('res111', res)
+  })
+}
 onMounted(() => {
   updateDateTime() // 初始化时间
   timer = setInterval(updateDateTime, 1000) // 每秒更新一次
+
+  initTestData()
 })
 
 onBeforeUnmount(() => {

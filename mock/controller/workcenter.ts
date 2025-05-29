@@ -1089,7 +1089,7 @@ const responseData2 = {
     {
       "id": "169",
       "number": "TJ12#",
-      "name": "有恒自动烫金机",
+      "name": "有恒自动烫金金机",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1861718400",
@@ -1127,7 +1127,7 @@ const responseData2 = {
     {
       "id": "62",
       "number": "TJ10#",
-      "name": "有恒自动烫金机10",
+      "name": "有恒自动烫金金机10",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1767169860",
@@ -1146,7 +1146,7 @@ const responseData2 = {
     {
       "id": "61",
       "number": "TJ09#",
-      "name": "有恒自动烫金机9",
+      "name": "有恒自动烫金金机9",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1767169800",
@@ -1165,7 +1165,7 @@ const responseData2 = {
     {
       "id": "60",
       "number": "TJ05#",
-      "name": "有恒自动烫金机5",
+      "name": "有恒自动烫金金机5",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1767169800",
@@ -1184,7 +1184,7 @@ const responseData2 = {
     {
       "id": "54",
       "number": "TJ04#",
-      "name": "有恒自动烫金机4",
+      "name": "有恒自动烫金金机4",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1767178920",
@@ -1203,7 +1203,7 @@ const responseData2 = {
     {
       "id": "57",
       "number": "TJ03#",
-      "name": "有恒自动烫金机3",
+      "name": "有恒自动烫金金机3",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1767168600",
@@ -1222,7 +1222,7 @@ const responseData2 = {
     {
       "id": "58",
       "number": "TJ02#",
-      "name": "有恒自动烫金机2",
+      "name": "有恒自动烫金金机2",
       "wc_name": "烫金机组",
       "wc_number": "07",
       "expire_maintain_date": "1767168600",
@@ -1621,7 +1621,7 @@ const DeviceRuntimeADay = {
   "rows": [
     {
       "bill_date": "1748229983",
-      "device_name": "有恒自动烫金机3",
+      "device_name": "有恒自动烫金金机3",
       "wp_name": " 烫金",
       "wc_name": "烫金机组",
       "banci_name": "白班",
@@ -1642,7 +1642,7 @@ const DeviceRuntimeADay = {
     },
     {
       "bill_date": "1748223789",
-      "device_name": "有恒自动烫金机3",
+      "device_name": "有恒自动烫金金机3",
       "wp_name": " 烫金",
       "wc_name": "烫金机组",
       "banci_name": "白班",
@@ -1663,7 +1663,7 @@ const DeviceRuntimeADay = {
     },
     {
       "bill_date": "1748220181",
-      "device_name": "有恒自动烫金机3",
+      "device_name": "有恒自动烫金金机3",
       "wp_name": " 烫金",
       "wc_name": "烫金机组",
       "banci_name": "白班",
@@ -1684,7 +1684,7 @@ const DeviceRuntimeADay = {
     },
     {
       "bill_date": "1748175936",
-      "device_name": "有恒自动烫金机3",
+      "device_name": "有恒自动烫金金机3",
       "wp_name": " 烫金",
       "wc_name": "烫金机组",
       "banci_name": "白班",

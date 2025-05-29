@@ -45,6 +45,7 @@ import { getUserInfo } from '/@/api/login' // 导入getUserInfo接口
 import axios from 'axios'
 import type { TokenType } from '/@/api/login/types'
 import WorkcenterSelect from './components/WorkcenterSelect.vue'
+import Cookies from 'js-cookie'  // 需要安装 js-cookie 依赖
 
 defineOptions({
   name: 'Login',
@@ -62,7 +63,8 @@ const selectedWorkcenter = ref<any>(null)
 
 // 创建 loginAxios 实例
 const loginAxios = axios.create({
-  baseURL: 'http://172.16.12.99', // 添加
+  // baseURL: 'http://172.16.12.99', // 添加
+  baseURL: '', // 添加
   timeout: 10000,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -114,6 +116,15 @@ const handleLogin = async () => {
           // 存储登录信息到本地存储
           localStorage.setItem('loginInfo', JSON.stringify(res))
 
+        // 存储登录信息到cookies
+        if( res.iworkerid ) {
+          Cookies.set('IWORKERID', res.iworkerid)
+          Cookies.set('stored_company', res.stored_company)
+          Cookies.set('stored_iworker', res.stored_iworker)
+          // 设置其他可能需要的 Cookie
+          Cookies.set('login_from_6_1_1', '1')
+        }
+
 
           elLoading = ElLoading.service({
             lock: true,
@@ -143,7 +154,9 @@ const handleLogin = async () => {
           }
           
           // 登录成功后显示工作中心选择弹框
-          workcenterDialogVisible.value = true
+          setTimeout(() => {
+            workcenterDialogVisible.value = true
+          }, 200);
           
           if (elLoading) {
             elLoading.close()

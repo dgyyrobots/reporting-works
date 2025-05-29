@@ -33,7 +33,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   console.log(info.lastBuildTime)
 
   return {
-    base: './',
+    base,
     root,
     server: {
       open,
@@ -47,17 +47,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       },
       https,
       proxy: {
-        // '/mes': {
-        //   target: 'http://192.168.127.17',
-        //   changeOrigin: true,
-        //   bypass: function (req, res, proxyOptions) {
-        //     // 如果是mock环境，不进行代理
-        //     const useMock = mode === 'development' && env.VITE_USE_MOCK === 'true'
-        //     if (useMock) {
-        //       return req.url
-        //     }
-        //   },
-        // },
+        '/mes': {
+          target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/mes/, '')
+        }
       },
     },
     resolve: {

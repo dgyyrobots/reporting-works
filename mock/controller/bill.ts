@@ -35,7 +35,7 @@ const JobbillContentData = {
             "company_name": [
                 {
                     "id": "61",
-                    "name": "有恒自动烫金机9",
+                    "name": "有恒自动烫金金机9",
                     "number": "TJ09#",
                     "wc_id": "119",
                     "wc_name": "烫金机组",

@@ -6,6 +6,7 @@ import { config } from './config'
 
 import logo from '/@/assets/logo.png'
 import icon from '/@/assets/icon.png'
+import Cookies from 'js-cookie'  // 需要安装 js-cookie 依赖
 
 const { default_headers } = config
 
@@ -22,8 +23,29 @@ const { default_headers } = config
 // })()
 
 const request = async (option: any) => {
-  const { url, method, params, data, headersType, responseType, ...config } = option
+  const { url, method, params, data, headersType, responseType, cookies, ...config } = option
   // await tenantPromise
+
+  // 处理 Cookie
+  const headers: Record<string, string> = {
+    'Content-Type': headersType || default_headers,
+  }
+
+  // // 如果提供了 cookies 参数，将其添加到请求头
+  // if (cookies && typeof cookies === 'object') {
+  //   for (const [key, value] of Object.entries(cookies)) {
+  //     Cookies.set(key, value as string)
+  //   }
+  // }
+
+  // // 获取所有 Cookie 并添加到请求头
+  // const allCookies = Cookies.get()
+  // if (Object.keys(allCookies).length > 0) {
+  //   headers['Cookie'] = Object.entries(allCookies)
+  //     .map(([key, value]) => `${key}=${value}`)
+  //     .join('; ')
+  // }
+
   return service({
     url: url,
     method,
@@ -31,9 +53,7 @@ const request = async (option: any) => {
     data,
     ...config,
     responseType: responseType,
-    headers: {
-      'Content-Type': headersType || default_headers,
-    },
+    headers,
   })
 }
 export default {
@@ -69,4 +89,17 @@ export default {
     const res = await request({ method: 'POST', ...option })
     return res as unknown as Promise<T>
   },
+}
+
+// 添加设置 Cookie 的方法
+export const setCookie = (name: string, value: string, options?: Cookies.CookieAttributes) => {
+  Cookies.set(name, value, options)
+}
+
+export const getCookie = (name: string) => {
+  return Cookies.get(name)
+}
+
+export const removeCookie = (name: string, options?: Cookies.CookieAttributes) => {
+  Cookies.remove(name, options)
 }
