@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <!-- 顶部标题 -->
     <div class="header">
       <div class="left-info">
         <span class="date">{{ currentDate }}</span>
@@ -28,7 +27,7 @@
     <!-- 按钮导航栏 -->
     <div class="button-nav">
       <button class="nav-btn">上机登记</button>
-      <button class="nav-btn red">任务单操作</button>
+      <button class="nav-btn red" @click="openTaskOperation">任务单操作</button>
       <button class="nav-btn red">生产操作</button>
       <button class="nav-btn" @click="openTimeRegistration">计时登记</button>
       <button class="nav-btn">异常登记</button>
@@ -77,6 +76,8 @@
       </div>
     </div>
 
+    <TaskOperation ref="taskOperationRef" :currentDevice="currentDevice" />
+    
     <TimeRegistration :currentDevice="currentDevice" ref="timeRegistrationRef" />
         
     <!-- 添加工作中心选择弹框 -->
@@ -106,17 +107,27 @@ import StaffInfo from './components/StaffInfo.vue'
 import CenterBottom from './components/CenterBottom.vue'
 import TimeRegistration from './dialog/TimeRegistration.vue'
 import DeviceSelect from './components/DeviceSelect.vue'
+// 引入任务单操作组件
+import TaskOperation from './dialog/TaskOperation.vue'
 import { useUserStore } from '/@/store/modules/user'
 import { storeToRefs } from 'pinia'
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getWorkcenterList } from '@/api/mes/wk/index.ts'
+// 引入任务单操作组件
+
+
 const router = useRouter()
 const currentDate = ref('')
 const currentTime = ref('')
 const currentWeekday = ref('')
 const greeting = ref('')
+// 控制计时登记弹窗
+const timeRegistrationRef = ref(null)
+// 控制任务单操作弹窗
+const taskOperationRef = ref(null)
+
 let timer = null
 
 // 修改用户名变量
@@ -257,19 +268,14 @@ onBeforeUnmount(() => {
   }
 })
 
-// 控制计时登记弹窗
-const timeRegistrationRef = ref(null)
 
 const openTimeRegistration = () => {
   timeRegistrationRef.value?.openDialog()
 }
 
-// 退出登录
-const handleLogout = () => {
-  // 清除token
-  removeToken()
-  // 返回登录页
-  router.push('/login')
+// 打开任务单操作弹窗
+const openTaskOperation = () => {
+  taskOperationRef.value?.openDialog()
 }
 </script>
 
@@ -899,6 +905,80 @@ const handleLogout = () => {
       color: #fff;
       background-color: rgba(0, 21, 41, 0.7);
     }
+  }
+}
+/* 添加动画 */
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotateY(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+  }
+}
+
+@keyframes logoRepeat {
+  0%,
+  100% {
+    transform: scale(1) rotateY(0deg);
+  }
+  50% {
+    transform: scale(1.05) rotateY(10deg);
+  }
+}
+
+/* 添加设备选择弹窗样式 */
+:deep(.device-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.2);
+      padding: 15px 20px;
+      margin-right: 0;
+      
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.3);
+      }
+      
+      .el-dialog__headerbtn {
+        .el-dialog__close {
+          color: #40c4ff;
+          
+          &:hover {
+            color: #fff;
+          }
+        }
+      }
+    }
+    
+    .el-dialog__body {
+      padding: 20px;
+      color: #fff;
+      background-color: rgba(0, 21, 41, 0.7);
+    }
+  }
+}
+
+.task-operation-btn {
+  background-color: rgba(255, 193, 7, 0.2);
+  border: 1px solid #ffc107;
+  
+  &:hover {
+    background-color: rgba(255, 193, 7, 0.3);
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+  }
+  
+  .action-icon {
+    color: #ffc107;
   }
 }
 </style>
