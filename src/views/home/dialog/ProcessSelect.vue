@@ -23,12 +23,12 @@
       <div class="process-grid">
         <div 
           v-for="process in processList" 
-          :key="process.key" 
+          :key="process.id" 
           class="process-item"
           @click="selectProcess(process)"
         >
           <div class="process-icon">
-            <Icon icon="svg-icon:process-flow" />
+            <Icon icon="svg-icon:gongyi" :size="50" />
             <span v-if="process.count > 0" class="badge">{{ process.count }}</span>
           </div>
           <div class="process-name">{{ process.name }}</div>
@@ -46,10 +46,11 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive,onMounted } from 'vue'
 import { Icon } from '/@/components/Icon'
 import TaskOperation from './TaskOperation.vue'
 
+import { getWpCountData } from '@/api/mes/wk/index.ts'
 const props = defineProps({
   currentDevice: {
     type: Object,
@@ -64,10 +65,7 @@ const taskOperationRef = ref(null)
 
 // 工序列表数据
 const processList = ref([
-  { key: 'mqat', name: '模切凹凸', count: 9 },
-  { key: 'mq', name: '模切', count: 8 },
-  { key: 'yw', name: '压纹', count: 2 },
-  { key: 'at', name: '凹凸', count: 1 }
+
 ])
 
 // 打开对话框
@@ -85,8 +83,23 @@ const handleClose = () => {
 const selectProcess = (process) => {
   selectedProcess.value = process
   // 打开任务单操作组件
-  taskOperationRef.value?.openDialog(process)
+  setTimeout(() => {
+    taskOperationRef.value?.openDialog(process)
+  }, 200);
 }
+const initData = () => {
+  const data = {
+    wc_id: props.currentDevice.id,
+  }
+  getWpCountData(data).then((res) => {
+    if (res.length>0) {
+      processList.value = res
+    }
+  }) 
+}
+onMounted(() => {
+  initData()
+})
 
 // 暴露方法给父组件
 defineExpose({

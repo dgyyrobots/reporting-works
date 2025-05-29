@@ -432,6 +432,44 @@ const JobBillTypeAndStartTime = {
     "total": 1
 }
 
+const WpCountData = {
+    "ret": 0,
+    "msg": null,
+    "data": [
+        {
+            "id": "168",
+            "name": "烫金",
+            "number": "012",
+            "count": "71"
+        },
+        {
+            "id": "172",
+            "name": "压纹",
+            "number": "014",
+            "count": "9"
+        },
+        {
+            "id": "176",
+            "name": "凹凸",
+            "number": "015",
+            "count": "60"
+        },
+        {
+            "id": "179",
+            "name": "烫金凹凸",
+            "number": "013",
+            "count": "46"
+        },
+        {
+            "id": "239",
+            "name": "双烫",
+            "number": "025",
+            "count": null
+        }
+    ],
+    "time": "Thu May 29 06:15:30 +0000 2025"
+}
+
 export default [
 
     // 获取工单内容
@@ -458,5 +496,14 @@ export default [
             return JobBillTypeAndStartTime
         },
     },
+    // 获取工序的内容
+    {
+        url: '/mes/ajax/mes_jobbill/action:get_workcenter_wp_count',
+        method: 'post',
+        response() {
+            return WpCountData
+        },
+    },
+
 
 ] as MockMethod[]

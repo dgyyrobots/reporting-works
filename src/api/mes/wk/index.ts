@@ -20,8 +20,8 @@ export const getWorkcenterDeviceList = async (data: any) => {
     })
 }
 
-// 获取工作站下的加工内容
-export const getWorkcenterProcessList = async (data: any) => {
+// 获取工作站下的加工内容 /工序
+export const getWpCountData = async (data: any) => {
     return await request.post({
         url: '/mes/ajax/mes_jobbill/action:get_workcenter_wp_count',
         data,

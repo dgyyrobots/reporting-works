@@ -6,7 +6,7 @@
     :destroy-on-close="true"
     :modal-class="'cyber-modal'"
     :top="'8vh'"
-    width="1200px"
+    width="1260px"
     @closed="handleClose"
   >
       <!-- 添加自定义标题插槽 -->
@@ -34,48 +34,48 @@
         <div class="table-border-wrapper">
           <div class="scroll-board">
             <table>
-              <thead>
-                <tr>
-                  <th style="width: 50px;">选择</th>
-                  <th>任务单号</th>
-                  <th>工序</th>
-                  <th>工序编码</th>
-                  <th>物料名称</th>
-                  <th>物料编号</th>
-                  <th>规格型号</th>
-                  <th>工艺描述</th>
-                  <th>总派工数</th>
-                  <th>已生产数</th>
-                  <th>可生产数量</th>
-                  <th>状态</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in taskList" :key="row.id" @click="handleSelectRow(row)">
-                  <td @click.stop>
-                    <el-checkbox v-model="row.selected" @change="(val) => handleCheckboxChange(val, row)" />
-                  </td>
-                  <td>{{ row.work_no }}</td>
-                  <td>{{ row.wp_name }}</td>
-                  <td>{{ row.wp_number }}</td>
-                  <td>{{ row.sku_name }}</td>
-                  <td>{{ row.sku_no }}</td>
-                  <td>{{ row.specs }}</td>
-                  <td>{{ row.prodesc }}</td>
-                  <td>{{ row.total_count }}</td>
-                  <td>{{ row.produced_count }}</td>
-                  <td>{{ row.available_count }}</td>
-                  <td>
-                    <span :class="['status-tag', row.status === '已开工' ? 'in-progress' : 'complete']">
-                      {{ row.status }}
-                    </span>
-                  </td>
-                </tr>
-                <tr v-if="taskList.length === 0">
-                  <td class="empty-data" colspan="12">暂无数据</td>
-                </tr>
-              </tbody>
-            </table>
+        <thead>
+          <tr>
+            <th style="width: 50px;">选择</th>
+            <th>任务单号</th>
+            <th>工序</th>
+            <th>工序编码</th>
+            <th>物料名称</th>
+            <th>物料编号</th>
+            <th>规格型号</th>
+            <th>工艺描述</th>
+            <th>总派工数</th>
+            <th>已生产数</th>
+            <th>可生产数量</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in taskList" :key="row.id" @click="handleSelectRow(row)" :class="{ 'selected-row': row.selected }">
+            <td @click.stop>
+              <el-checkbox v-model="row.selected" @change="(val) => handleCheckboxChange(val, row)" />
+            </td>
+            <td>{{ row.work_no }}</td>
+            <td>{{ row.wp_name }}</td>
+            <td>{{ row.wp_number }}</td>
+            <td>{{ row.sku_name }}</td>
+            <td>{{ row.sku_no }}</td>
+            <td>{{ row.specs }}</td>
+            <td>{{ row.prodesc }}</td>
+            <td>{{ formatNumber(row.total_count) }}</td>
+            <td>{{ formatNumber(row.produced_count) }}</td>
+            <td>{{ formatNumber(row.available_count) }}</td>
+            <td>
+              <span :class="['status-tag', row.status === '已开工' || row.status === '部分完工' ? 'in-progress' : 'complete']">
+                {{ row.status }}
+              </span>
+            </td>
+          </tr>
+          <tr v-if="taskList.length === 0">
+            <td class="empty-data" colspan="12">暂无数据</td>
+          </tr>
+        </tbody>
+      </table>
           </div>
         </div>
       </div>
@@ -129,11 +129,11 @@
             </div>
             <div class="detail-item">
               <span class="label">派工单编号：</span>
-              <span class="value">{{ selectedRow?.dispatch_no || 'ZYCS01-20231018_j07' }}</span>
+              <span class="value">{{ selectedRow?.dispatch_no || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">原单编码：</span>
-              <span class="value">{{ selectedRow?.original_no || '2312018' }}</span>
+              <span class="value">{{ selectedRow?.original_no || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
@@ -143,17 +143,17 @@
             </div>
             <div class="detail-item">
               <span class="label">物料编号：</span>
-              <span class="value">{{ selectedRow?.sku_no || '101A0020208T1003' }}</span>
+              <span class="value">{{ selectedRow?.sku_no || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">规格型号：</span>
-              <span class="value">{{ selectedRow?.specs || '330*273mm' }}</span>
+              <span class="value">{{ selectedRow?.specs || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">工作中心名称：</span>
-              <span class="value">{{ selectedRow?.workcenter_name || '模切机组' }}</span>
+              <span class="value">{{ selectedRow?.workcenter_name || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">工序名称：</span>
@@ -161,31 +161,31 @@
             </div>
             <div class="detail-item">
               <span class="label">总派工数：</span>
-              <span class="value">{{ selectedRow?.total_count || '327,443' }}</span>
+              <span class="value">{{ selectedRow?.total_count || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">已生产数：</span>
-              <span class="value">{{ selectedRow?.produced_count || '1,309,740' }}</span>
+              <span class="value">{{ selectedRow?.produced_count || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">数量(大张)：</span>
-              <span class="value">{{ selectedRow?.large_count || '81,861' }}</span>
+              <span class="value">{{ selectedRow?.large_count || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">可生产数量(大张)：</span>
-              <span class="value">{{ selectedRow?.available_large_count || '-245,574' }}</span>
+              <span class="value">{{ selectedRow?.available_large_count || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">合格数：</span>
-              <span class="value">{{ selectedRow?.qualified_count || '1,309,740' }}</span>
+              <span class="value">{{ selectedRow?.qualified_count || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">不合格数量：</span>
-              <span class="value">{{ selectedRow?.unqualified_count || '0' }}</span>
+              <span class="value">{{ selectedRow?.unqualified_count || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">备注：</span>
@@ -195,7 +195,7 @@
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">样稿：</span>
-              <span class="value">{{ selectedRow?.sample || '生产样' }}</span>
+              <span class="value">{{ selectedRow?.sample || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">状态：</span>
@@ -203,27 +203,27 @@
             </div>
             <div class="detail-item">
               <span class="label">是否巡检：</span>
-              <span class="value">{{ selectedRow?.is_inspect || '2' }}</span>
+              <span class="value">{{ selectedRow?.is_inspect || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">是否已经巡检：</span>
-              <span class="value">{{ selectedRow?.is_inspected || '1' }}</span>
+              <span class="value">{{ selectedRow?.is_inspected || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">加工内容：</span>
-              <span class="value">{{ selectedRow?.process_content || '模切 凹凸' }}</span>
+              <span class="value">{{ selectedRow?.process_content || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">批次码编号：</span>
-              <span class="value">{{ selectedRow?.batch_no || '202312018' }}</span>
+              <span class="value">{{ selectedRow?.batch_no || '' }}</span>
             </div>
           </div>
         </div>
         <div class="detail-footer">
-          <el-button class="cyber-btn" @click="handleStartTask">开始任务</el-button>
-          <el-button class="cyber-btn secondary" @click="handleEndTask">结束任务</el-button>
+          <el-button class="cyber-btn" @click="handleStartTask">开工</el-button>
+          <el-button class="cyber-btn secondary" @click="handleChangeTask">解绑工单</el-button>
         </div>
       </div>
     </div>
@@ -323,11 +323,13 @@ const handleCheckboxChange = (val, row) => {
 // 数据加载
 const fetchData = async (filter) => {
   tableLoading.value = true
-
+  const wp_id = props.selectedProcess.id
+  const wc_id = props.currentDevice.id
+  const filterData = filter? filter : [{"val":[{"name":"wp_id","val": wp_id ,"action":"="},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]
   try {
     // 调用API获取工单数据
     const data = {
-      filter: filter || [],
+      filter:filterData  || [],
       filter_detail:{},
       keyword_is_detail:0,
       show_total:1,
@@ -337,7 +339,7 @@ const fetchData = async (filter) => {
     const res = await getJobBillContent(data)
     
     if (res && res.rows) {
-      // 处理API返回的数据
+      // 处理API返回的数据，根据JobbillContentData的真实字段进行映射
       const workOrders = res.rows.map(item => ({
         id: item.id,
         sku_name: item.sku_name,
@@ -345,12 +347,26 @@ const fetchData = async (filter) => {
         work_no: item.work_no || '--',
         wp_name: item.wp_name,
         wp_number: item.wp_number,
-        prodesc: item.prodesc || '--',
-        specs: item.specs || '--',
-        total_count: item.total_count || 0,
-        produced_count: item.produced_count || 0,
-        available_count: item.available_count || 0,
-        status: item.status || '已开工',
+        prodesc: item.prodesc || '',
+        specs: item.product_detail || '', // 使用product_detail作为规格型号
+        total_count: item.qty || 0, // 使用qty作为总派工数
+        produced_count: item.exe_qty || 0, // 使用exe_qty作为已生产数
+        available_count: item.subplusqty || 0, // 使用subplusqty作为可生产数量
+        status: item.status_name || '',
+        // 添加更多字段映射
+        dispatch_no: item.bill_no, // 派工单编号
+        original_no: item.ud_102869_source_bill_no, // 原单编码
+        workcenter_name: item.wc_name, // 工作中心名称
+        large_count: item.qty, // 数量(大张)
+        available_large_count: item.subplusqty, // 可生产数量(大张)
+        qualified_count: item.ok_qty || 0, // 合格数
+        unqualified_count: item.no_okqty || 0, // 不合格数量
+        remark: '', // 备注字段可能不存在
+        sample: item.ud_102869_yg || '', // 样稿
+        is_inspect: item.is_firstquality || '', // 是否巡检
+        is_inspected: item.is_firstquality_finished || '', // 是否已经巡检
+        process_content: item.prodesc || '', // 加工内容
+        batch_no: item.ud_102869_pcm || '', // 批次码编号
         selected: false,
         // 保存原始数据，以便后续使用
         rawData: item
@@ -374,7 +390,9 @@ const fetchData = async (filter) => {
 
 const handSearch = () => {
   const work_no = queryForm.keyword
-  const filter = [{"val":[{"name":"work_no","val":work_no,"action":"LIKE"}],"relation":"OR"}]
+  const wp_id = props.selectedProcess.id
+  const wc_id = props.currentDevice.id
+  const filter = [{"val":[{"name":"wp_id","val":wp_id,"action":"="},{"name":"wc_id","val":wc_id,"action":"="},{"name":"work_no","val":work_no,"action":"LIKE"}],"relation":"OR"}]
   fetchData(filter)
 }
 
@@ -430,8 +448,8 @@ const handleStartTask = () => {
   }
   
   ElMessageBox.confirm(
-    `确认要开始任务 ${selectedRow.value.work_no} 吗？`,
-    '开始任务',
+    `确认要开工 ${selectedRow.value.work_no} 吗？`,
+    '开工',
     {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
@@ -444,22 +462,23 @@ const handleStartTask = () => {
   )
   .then(() => {
     ElMessage.success('任务已开始')
-    // 这里添加开始任务的API调用
+    // 这里添加开工的API调用
   })
   .catch(() => {
     // 用户取消操作
   })
 }
 
-const handleEndTask = () => {
+const handleChangeTask = () => {
   if (!selectedRow.value) {
     ElMessage.warning('请先选择一个任务单')
     return
   }
   
+  const device = props.currentDevice.name + props.currentDevice.nunber
   ElMessageBox.confirm(
-    `确认要结束任务 ${selectedRow.value.work_no} 吗？`,
-    '结束任务',
+    `确认设备【 ${device }】切单(派工单号：无)？`,
+    '请确认',
     {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
@@ -471,14 +490,27 @@ const handleEndTask = () => {
     }
   )
   .then(() => {
-    ElMessage.success('任务已结束')
+    ElMessage.success('操作成功!')
     // 这里添加结束任务的API调用
   })
   .catch(() => {
     // 用户取消操作
   })
 }
-
+// 添加数字格式化函数
+const formatNumber = (num) => {
+  if (num === undefined || num === null) return '0'
+  
+  // 将字符串转为数字
+  const number = parseFloat(num)
+  if (isNaN(number)) return '0'
+  
+  // 格式化数字，添加千位分隔符
+  return number.toLocaleString('zh-CN', { 
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+}
 // 打开对话框的方法，将通过父组件调用
 const openDialog = () => {
   visible.value = true
@@ -514,7 +546,7 @@ onMounted(() => {
     border: 1px solid #1ecfff;
     border-radius: 2px;
     box-shadow: 0 0 20px rgba(30, 207, 255, 0.4);
-    margin-top: 8vh !important; /* 确保优先级足够高 */
+    margin-top: 6vh !important; /* 确保优先级足够高 */
 
     .el-dialog__body {
       padding: 0 !important;
@@ -604,7 +636,7 @@ onMounted(() => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 16px;
+    padding: 6px;
     box-sizing: border-box;
     overflow: hidden;
   }
@@ -926,7 +958,7 @@ onMounted(() => {
     }
 
     .detail-content {
-      padding: 16px;
+      padding:12px 16px;
       overflow-y: auto;
       flex: 1;
 
@@ -970,9 +1002,10 @@ onMounted(() => {
         }
       }
 
-      .detail-footer {
+
+    }
+    .detail-footer {
         width: 100%;
-        background: pink;
         padding: 16px;
         display: flex;
         flex-direction: row;
@@ -981,7 +1014,6 @@ onMounted(() => {
         gap: 12px;
         border-top: 1px solid rgba(30, 207, 255, 0.3);
       }
-    }
   }
 }
 
