@@ -10,6 +10,14 @@
         <Icon class="btn-icon" icon="svg-icon:end" />
         结束采集
       </button>
+      <button class="cyber-btn">
+        <Icon class="btn-icon" icon="svg-icon:change" />
+        切版
+      </button>
+      <button class="cyber-btn">
+        <Icon class="btn-icon" icon="svg-icon:tagprint" />
+        标签打印
+      </button>
     </div>
     <div class="panel-container">
       <div class="left-panel">
@@ -41,7 +49,9 @@
         <div class="panel-content">
           <div class="info-row">
             <div class="info-label">版号：</div>
-            <div class="info-value flow-no">11</div>
+            <div class="info-value flow-no">11
+              <input ref="scannerInput" v-model="scanData" placeholder="请输入"  style="position: absolute; opacity: 0; width: 0; height: 0; z-index: -1; -webkit-user-select: none;" inputmode="none" autofocus />
+            </div>
             <div class="action-buttons">
               <button class="query-btn">查询</button>
             </div>
@@ -117,7 +127,21 @@
 </template>
 
 <script setup>
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
+
+const scanData = ref(null)
+const scannerInput= ref(null)
+const isFocused = ref(false)
+
+const refocusScanner = () => {
+  if (scannerInput.value) {
+    nextTick(() => {
+      scannerInput.value.focus()
+    })
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>

@@ -504,7 +504,6 @@
   if (wareOpen.value && scannerInput.value) {
     nextTick(() => {
       scannerInput.value.focus()
-      isFocused.value = true
     })
   }
 }

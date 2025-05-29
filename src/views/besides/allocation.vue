@@ -9,7 +9,7 @@
         <el-input v-model="queryParams.allocatedName" clearable placeholder="请输入调拨单名称" @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="工单编码" prop="workorderCode">
-        <el-input v-model="queryParams.workorderCode" clearable placeholder="请输入生产工单编码" @keyup.enter="handleQuery" />
+        <el-input v-model="queryParams.workorderCode" clearable placeholder="请输入生产工单编码" @keyup.="handleQuery" />
       </el-form-item>
 
       <el-form-item label="仓库名称" prop="warehouseName">
