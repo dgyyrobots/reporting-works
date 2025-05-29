@@ -5,6 +5,7 @@ import * as workcenter from './controller/workcenter'
 import * as login from './controller/login'
 import * as bill from './controller/bill'
 import * as device from './controller/device'
+import * as version from './controller/version'
 
 // 可以根据需要继续添加其他controller
 
@@ -14,6 +15,7 @@ const mockModules: any[] = [
   ...((login as any).default || []),
   ...((bill as any).default || []),
   ...((device as any).default || []),
+  ...((version as any).default || []),
 
   // 可以根据需要继续添加其他controller
 ]
