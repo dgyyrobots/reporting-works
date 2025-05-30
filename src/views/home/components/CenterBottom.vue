@@ -6,7 +6,7 @@
         <Icon class="btn-icon" icon="svg-icon:add" :style="{ color: '#1ecfff' }" />
         添加版
       </button>
-      <button class="cyber-btn">
+      <button class="cyber-btn" @click="handCollectionFinish">
         <Icon class="btn-icon" icon="svg-icon:end" />
         结束采集
       </button>
@@ -150,7 +150,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
-import { updateIsStart, changeActiveRow} from '@/api/mes/wk/index.ts'
+import { updateIsStart, changeActiveRow,collectionFinish} from '@/api/mes/wk/index.ts'
 import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
 import { ElMessageBox ,ElMessage} from 'element-plus'
 
@@ -215,6 +215,26 @@ const handleChangeVersion = () => {
     })
   }).catch(() => {
     // 用户取消操作，不做任何处理
+  })
+}
+
+const handCollectionFinish = () => {
+  const arr = []
+  const row =  workStore.selectedLicenseCheck
+
+  if(!row.length) return ElMessage.error('请选择一行数据')
+  row.map(item=>{
+    arr.push(item.id)
+  })
+  collectionFinish({ids:arr}).then(res => {
+    console.log(res, '结束采集')
+    if (res.ret === 0 ) {
+      ElMessage.success('操作成功!')
+      // 刷新版号列表
+      workStore.updateLicenseFleshIndex()
+    } else {
+      ElMessage.error(res.msg)
+    }
   })
 }
 // 组件挂载时添加全局点击事件监听

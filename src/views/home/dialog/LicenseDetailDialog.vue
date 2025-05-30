@@ -293,10 +293,13 @@ const selectAll = computed({
       item.selected = val
     })
     
-    // 如果store方法存在，同步更新store
+    // 同步更新store中的licenseCheck
     if (typeof workStore.updateAllLicenseCheck === 'function') {
       workStore.updateAllLicenseCheck(val)
     }
+    
+    // 同步更新store中的selectedLicenseCheck
+    updateSelectedLicenseCheck()
   }
 })
 
@@ -308,16 +311,30 @@ const handleSelectAllChange = (val) => {
 
 // 单个checkbox变化
 const handleItemSelectChange = (item) => {
-  // 如果store方法存在，同步更新store
+  // 同步更新store中的licenseCheck
   if (typeof workStore.updateLicenseCheckItem === 'function') {
     workStore.updateLicenseCheckItem(item.id, item.selected)
   }
+  
+  // 同步更新store中的selectedLicenseCheck
+  updateSelectedLicenseCheck()
   
   // 手动检查是否需要更新全选状态
   const allSelected = tableData.value.length > 0 && tableData.value.every(i => i.selected)
   if (allSelected !== selectAll.value) {
     // 这里不会触发无限循环，因为只有在值不同时才会更新
     selectAll.value = allSelected
+  }
+}
+
+// 新增：更新store中的selectedLicenseCheck
+const updateSelectedLicenseCheck = () => {
+  // 筛选出选中的项
+  const selectedItems = tableData.value.filter(item => item.selected)
+  
+  // 更新store中的selectedLicenseCheck
+  if (typeof workStore.setSelectedLicenseCheck === 'function') {
+    workStore.setSelectedLicenseCheck(selectedItems)
   }
 }
 
@@ -389,6 +406,9 @@ const fetchData = async () => {
           workStore.setLicenseCheck([...storeItems, ...newItems])
         }
       }
+      
+      // 同步更新selectedLicenseCheck
+      updateSelectedLicenseCheck()
       
       total.value = res.total || 0
       jumpPage.value = currentPage.value

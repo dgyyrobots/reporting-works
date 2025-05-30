@@ -144,7 +144,7 @@ export const changeActiveRow = async (data: any) => {
 
 // 员工结束采集
 export const collectionFinish = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/mes/ajax/mes_version_number_manage/action:collection_finish',
         data,
     })
@@ -152,7 +152,7 @@ export const collectionFinish = async (data: any) => {
 
 // 员工查询已经汇报的版号信息接口
 export const getReportedVersionInfo = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/erp/ajax/erp_view_api/view_key:skjsiwuz/data_id:294098',
         data,
     })
@@ -160,7 +160,7 @@ export const getReportedVersionInfo = async (data: any) => {
 
 // 员工汇报接口
 export const reportVersion = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/mes/ajax/mes_version_number_manage/action:report',
         data,
     })
@@ -168,7 +168,7 @@ export const reportVersion = async (data: any) => {
 
 // 员工删除汇报接口
 export const deleteJobbillReport = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/mes/ajax/mes_scheduling/action:delete_jobbill_report',
         data,
     })

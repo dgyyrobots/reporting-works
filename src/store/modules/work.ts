@@ -46,7 +46,8 @@ export const useWorkStore = defineStore('work', {
         taskInfo: TaskInfoType,
         fleshTaskIndex: number,
         fleshLicenseIndex: number, // 新增fleshLicenseIndex状态
-        licenseCheck: LicenseCheckItem[] // 新增licenseCheck状态
+        licenseCheck: LicenseCheckItem[], // 所有版号数据
+        selectedLicenseCheck: LicenseCheckItem[] // 新增：存储选中的版号数据
     } => ({
         taskInfo: wsCache.get(TASK_INFO_KEY) || {
             rc_no: '',
@@ -72,12 +73,14 @@ export const useWorkStore = defineStore('work', {
         fleshTaskIndex: 0, // 默认值为0，不从缓存读取 // 刷新任务单
         fleshLicenseIndex: 0, // 默认值为0，不从缓存读取 // 刷新版本
         licenseCheck: [], // 不需要缓存，初始为空数组
+        selectedLicenseCheck: [] // 新增：存储选中的版号数据，初始为空数组
     }),
     getters: {
         getTaskInfo: (state) => state.taskInfo,
         getFleshTaskIndex: (state) => state.fleshTaskIndex,
         getFleshLicenseIndex: (state) => state.fleshLicenseIndex, // 新增getter
         getLicenseCheck: (state) => state.licenseCheck, // 新增getter
+        getSelectedLicenseCheck: (state) => state.selectedLicenseCheck // 新增：获取选中的版号数据
     },
     actions: {
         setTaskInfo(info: Partial<TaskInfoType>) {
@@ -130,6 +133,8 @@ export const useWorkStore = defineStore('work', {
         // 设置版号选择项
         setLicenseCheck(items: LicenseCheckItem[]) {
             this.licenseCheck = items
+            // 更新选中的版号数据
+            this.updateSelectedLicenseCheck()
         },
 
         // 更新单个版号选择状态
@@ -137,6 +142,8 @@ export const useWorkStore = defineStore('work', {
             const item = this.licenseCheck.find(item => item.id === id)
             if (item) {
                 item.selected = selected
+                // 更新选中的版号数据
+                this.updateSelectedLicenseCheck()
             }
         },
 
@@ -145,11 +152,33 @@ export const useWorkStore = defineStore('work', {
             this.licenseCheck.forEach(item => {
                 item.selected = selected
             })
+            // 更新选中的版号数据
+            this.updateSelectedLicenseCheck()
         },
 
         // 清空版号选择项
         clearLicenseCheck() {
             this.licenseCheck = []
+            this.selectedLicenseCheck = [] // 同时清空选中数据
+        },
+
+        // 新增：更新选中的版号数据
+        updateSelectedLicenseCheck() {
+            this.selectedLicenseCheck = this.licenseCheck.filter(item => item.selected)
+        },
+
+        // 新增：直接设置选中的版号数据
+        setSelectedLicenseCheck(items: LicenseCheckItem[]) {
+            this.selectedLicenseCheck = items
+        },
+
+        // 新增：清空选中的版号数据
+        clearSelectedLicenseCheck() {
+            this.selectedLicenseCheck = []
+            // 同时更新licenseCheck中的选中状态
+            this.licenseCheck.forEach(item => {
+                item.selected = false
+            })
         }
     },
 })

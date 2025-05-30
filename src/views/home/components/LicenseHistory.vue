@@ -67,6 +67,7 @@ const selectAll = computed({
   },
   set: (val) => {
     workStore.updateAllLicenseCheck(val)
+    // 这里不需要额外更新selectedLicenseCheck，因为updateAllLicenseCheck已经包含了这个逻辑
   }
 })
 
@@ -93,11 +94,13 @@ const showDetailDialog = () => {
 // 处理全选变化
 const handleSelectAllChange = (val) => {
   workStore.updateAllLicenseCheck(val)
+  // 这里不需要额外更新selectedLicenseCheck，因为updateAllLicenseCheck已经包含了这个逻辑
 }
 
 // 处理单个选择变化
 const handleItemSelectChange = (item) => {
   workStore.updateLicenseCheckItem(item.id, item.selected)
+  // 这里不需要额外更新selectedLicenseCheck，因为updateLicenseCheckItem已经包含了这个逻辑
 }
 
 // 获取工单ID
@@ -247,6 +250,7 @@ const fetchData = async () => {
       // 更新store中的licenseCheck - 添加防御性检查
       if (typeof workStore.setLicenseCheck === 'function') {
         workStore.setLicenseCheck(processedData)
+        // 这里不需要额外更新selectedLicenseCheck，因为setLicenseCheck已经包含了这个逻辑
       } else {
         console.error('workStore.setLicenseCheck 不是一个函数')
         // 如果方法不存在，直接设置本地数据
@@ -262,6 +266,7 @@ const fetchData = async () => {
       tableData.value = []
       if (typeof workStore.clearLicenseCheck === 'function') {
         workStore.clearLicenseCheck()
+        // clearLicenseCheck 已经包含了清空 selectedLicenseCheck 的逻辑
       }
     }
   } catch (error) {
