@@ -395,17 +395,6 @@ const handleStartTask = () => {
     ElMessage.success('任务已开始')
     // 这里添加开工的API调用
     
-    // 更新工作状态
-    workStore.setTaskInfo({
-      bill_no: selectedRow.value.dispatch_no,
-      wp_name: selectedRow.value.wp_name,
-      sku_name: selectedRow.value.sku_name,
-      sku_no: selectedRow.value.sku_no,
-      uqty: selectedRow.value.total_count,
-      exe_uqty: selectedRow.value.produced_count,
-      remainQty: selectedRow.value.available_count,
-      prodesc: selectedRow.value.process_content
-    })
   })
   .catch(() => {
     // 用户取消操作
@@ -437,7 +426,7 @@ const handleChangeTask = () => {
     // 这里添加结束任务的API调用
     
     // 重置工作状态
-    workStore.resetTaskInfo()
+    workStore.updateFleshIndex()
   })
   .catch(() => {
     // 用户取消操作

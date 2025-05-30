@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { getJobBillContent, getJobBillTimeAndNumber, getJobBillTypeAndStartTime } from '@/api/mes/wk/index.ts'
 import Card from './Card.vue'
 import { useWorkStore } from '@/store/modules/work'
@@ -112,6 +112,30 @@ const initFromStore = () => {
   }
 }
 
+// 监听当前设备的工单号变化
+watch(
+  () => props.currentDevice.jobbill_no,
+  (newBillNo, oldBillNo) => {
+    if (newBillNo && newBillNo !== oldBillNo) {
+      // 当前设备的工单号发生变化，重新获取数据
+      refreshAllData()
+    }
+  },
+  { immediate: true }
+)
+
+// 监听store中的taskInfo变化
+watch(
+  () => workStore.fleshIndex,
+  (index) => {
+    // 如果store中的bill_no与当前设备的jobbill_no不一致，需要重新获取数据
+    if (index) {
+      refreshAllData()
+    }
+  },
+  { deep: true }
+)
+
 // 监听taskInfo变化，自动存入store
 watch(
   taskInfo,
@@ -128,13 +152,24 @@ const progressPercent = computed(() => {
   return percent.toFixed(2)
 })
 
+// 刷新所有数据
+const refreshAllData = async () => {
+  await fetchTaskInfo()
+  await fetchTimeAndNumber()
+  fetchTypeAndStartTime()
+}
+
 // 获取任务单信息
 const fetchTaskInfo = async () => {
   loading.value = true
   try {
     const activeJob = props.currentDevice.jobbill_no
     const wc_id = props.currentWorkcenter.id
-    if (!activeJob) return
+    if (!activeJob) {
+      loading.value = false
+      return
+    }
+    
     const params = {
       filter: [
         {
@@ -148,14 +183,14 @@ const fetchTaskInfo = async () => {
     }
     const res = await getJobBillContent(params)
 
-    if (res && res.rows) {
+    if (res && res.rows && res.rows.length > 0) {
       const data = res.rows[0]
 
       // 更新任务信息
       Object.assign(taskInfo, {
         rc_no: data.rc_no,
         rc_id: data.rc_id,
-        bill_no:data.bill_no,
+        bill_no: data.bill_no,
         wc_id: data.wc_id,
         order_no: data.order_no,
         wp_name: data.wp_name || '',
@@ -168,13 +203,40 @@ const fetchTaskInfo = async () => {
       })
 
       console.log('taskInfo', taskInfo)
+    } else {
+      // 如果没有找到数据，清空当前任务信息
+      resetTaskInfo()
     }
   } catch (error) {
     console.error('获取任务单信息失败:', error)
-    loading.value = false
   } finally {
     loading.value = false
   }
+}
+
+// 重置任务信息
+const resetTaskInfo = () => {
+  Object.assign(taskInfo, {
+    rc_no: '',
+    rc_id: '',
+    bill_no: '',
+    wc_id: '',
+    order_no: '',
+    wp_name: '',
+    sku_name: '',
+    sku_no: '',
+    plan_start_time: '',
+    plan_end_time: '',
+    act_start_time: '',
+    act_end_time: '',
+    uqty: 0,
+    exe_uqty: 0,
+    unit: '',
+    overTime: '0.00',
+    remainQty: 0,
+    ud_102869_gdlx: '',
+    prodesc: '',
+  })
 }
 
 const fetchTimeAndNumber = async () => {
@@ -360,16 +422,22 @@ const fetchTypeAndStartTime = async () => {
 // 组件挂载时获取数据
 onMounted(() => {
   initFromStore()
-  nextTick(async () => {
-    await fetchTaskInfo()
-    await fetchTimeAndNumber()
-    fetchTypeAndStartTime()
-  })
+  
+  // 检查store中的bill_no与当前设备的jobbill_no是否一致
+  const storeTaskInfo = workStore.getTaskInfo
+  if (
+    !storeTaskInfo.bill_no || 
+    !props.currentDevice.jobbill_no || 
+    storeTaskInfo.bill_no !== props.currentDevice.jobbill_no
+  ) {
+    // 不一致，需要重新获取数据
+    nextTick(refreshAllData)
+  }
 })
 
 // 暴露刷新方法给父组件
 defineExpose({
-  refresh: fetchTaskInfo,
+  refresh: refreshAllData,
 })
 </script>
 

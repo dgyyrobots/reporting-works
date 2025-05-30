@@ -34,7 +34,7 @@ const TASK_INFO_KEY = 'TASK_INFO'
 const { wsCache } = useCache('localStorage')
 
 export const useWorkStore = defineStore('work', {
-    state: (): { taskInfo: TaskInfoType } => ({
+    state: (): { taskInfo: TaskInfoType, fleshIndex: number } => ({
         taskInfo: wsCache.get(TASK_INFO_KEY) || {
             rc_no: '',
             rc_id: '',
@@ -56,9 +56,11 @@ export const useWorkStore = defineStore('work', {
             ud_102869_gdlx: '',
             prodesc: '',
         },
+        fleshIndex: 0, // 默认值为0，不从缓存读取
     }),
     getters: {
         getTaskInfo: (state) => state.taskInfo,
+        getFleshIndex: (state) => state.fleshIndex,
     },
     actions: {
         setTaskInfo(info: Partial<TaskInfoType>) {
@@ -89,6 +91,14 @@ export const useWorkStore = defineStore('work', {
                 prodesc: '',
             }
             wsCache.delete(TASK_INFO_KEY)
+        },
+        // 更新 fleshIndex
+        updateFleshIndex() {
+            this.fleshIndex += 1
+        },
+        // 重置 fleshIndex
+        resetFleshIndex() {
+            this.fleshIndex = 0
         },
     },
 })
