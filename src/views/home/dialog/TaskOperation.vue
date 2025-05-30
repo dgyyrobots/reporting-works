@@ -406,7 +406,7 @@ const handleStartTask = () => {
       if(res.ret===0){   
         ElMessage.success('操作成功!')
           // 重置工作状态
-        workStore.updateFleshIndex()
+        workStore.updateTaskFleshIndex()
         // 重新加载数据
         fetchData()
       }else {
@@ -454,7 +454,7 @@ const handleFinishTask = () => {
       if(res.ret===0){   
         ElMessage.success('操作成功!')
           // 重置工作状态
-        workStore.updateFleshIndex()
+        workStore.updateTaskFleshIndex()
         // 重新加载数据
         fetchData()
       }else {

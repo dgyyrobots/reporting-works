@@ -42,9 +42,10 @@ const TASK_INFO_KEY = 'TASK_INFO'
 const { wsCache } = useCache('localStorage')
 
 export const useWorkStore = defineStore('work', {
-    state: (): { 
-        taskInfo: TaskInfoType, 
-        fleshIndex: number,
+    state: (): {
+        taskInfo: TaskInfoType,
+        fleshTaskIndex: number,
+        fleshLicenseIndex: number, // 新增fleshLicenseIndex状态
         licenseCheck: LicenseCheckItem[] // 新增licenseCheck状态
     } => ({
         taskInfo: wsCache.get(TASK_INFO_KEY) || {
@@ -68,12 +69,14 @@ export const useWorkStore = defineStore('work', {
             ud_102869_gdlx: '',
             prodesc: '',
         },
-        fleshIndex: 0, // 默认值为0，不从缓存读取
+        fleshTaskIndex: 0, // 默认值为0，不从缓存读取 // 刷新任务单
+        fleshLicenseIndex: 0, // 默认值为0，不从缓存读取 // 刷新版本
         licenseCheck: [], // 不需要缓存，初始为空数组
     }),
     getters: {
         getTaskInfo: (state) => state.taskInfo,
-        getFleshIndex: (state) => state.fleshIndex,
+        getFleshTaskIndex: (state) => state.fleshTaskIndex,
+        getFleshLicenseIndex: (state) => state.fleshLicenseIndex, // 新增getter
         getLicenseCheck: (state) => state.licenseCheck, // 新增getter
     },
     actions: {
@@ -106,20 +109,29 @@ export const useWorkStore = defineStore('work', {
             }
             wsCache.delete(TASK_INFO_KEY)
         },
-        // 更新 fleshIndex
-        updateFleshIndex() {
-            this.fleshIndex += 1
+        // 更新 fleshTaskIndex
+        updateTaskFleshIndex() {
+            this.fleshTaskIndex += 1
         },
-        // 重置 fleshIndex
-        resetFleshIndex() {
-            this.fleshIndex = 0
+
+        // 更新 fleshLicenseIndex
+        updateLicenseFleshIndex() {
+            this.fleshLicenseIndex += 1
         },
-        
+        // 重置 fleshTaskIndex
+        resetTaskFleshIndex() {
+            this.fleshTaskIndex = 0
+        },
+        // 重置 fleshLicenseIndex
+        resetLicenseFleshIndex() {
+            this.fleshLicenseIndex = 0
+        },
+
         // 设置版号选择项
         setLicenseCheck(items: LicenseCheckItem[]) {
             this.licenseCheck = items
         },
-        
+
         // 更新单个版号选择状态
         updateLicenseCheckItem(id: string | number, selected: boolean) {
             const item = this.licenseCheck.find(item => item.id === id)
@@ -127,14 +139,14 @@ export const useWorkStore = defineStore('work', {
                 item.selected = selected
             }
         },
-        
+
         // 更新所有版号选择状态
         updateAllLicenseCheck(selected: boolean) {
             this.licenseCheck.forEach(item => {
                 item.selected = selected
             })
         },
-        
+
         // 清空版号选择项
         clearLicenseCheck() {
             this.licenseCheck = []

@@ -2,7 +2,7 @@
   <div class="center-bottom-container">
     <!-- 左侧当板信息 -->
     <div class="top-action-btns">
-      <button class="cyber-btn">
+      <button class="cyber-btn" @click="handAdd">
         <Icon class="btn-icon" icon="svg-icon:add" :style="{ color: '#1ecfff' }" />
         添加版
       </button>
@@ -50,14 +50,11 @@
           <div class="info-row">
             <div class="info-label">版号：</div>
             <div class="info-value flow-no">
-              {{ scanData }}
               <input 
                 ref="scannerInput" 
                 v-model="scanData" 
-                placeholder="请输入"  
-                style="position: absolute; opacity: 0; width: 0; height: 0; z-index: -1; -webkit-user-select: none;" 
-                inputmode="none" 
-                autofocus 
+                placeholder="请扫码或输入"  
+                class="transparent-input"
               />
             </div>
             <div class="action-buttons">
@@ -132,6 +129,21 @@
         </div>
       </div>
     </div>
+       <!-- 添加版弹框 -->
+       <el-dialog
+        v-model="chooseSelectNumVis"
+        title="输入采集数量"
+        width="400px"
+        :close-on-click-modal="false"
+        :show-close="true"
+        :append-to-body="true"
+        :destroy-on-close="true"
+        custom-class="add-version-dialog"
+        :modal-class="'cyber-modal'"
+   
+    >
+      <ChooseSelectNum @close="chooseSelectNumVis = false"  />
+    </el-dialog>
   </div>
 </template>
 
@@ -139,47 +151,38 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
 import { updateIsStart} from '@/api/mes/wk/index.ts'
+import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
+
 const scanData = ref(null)
 const scannerInput= ref(null)
+const chooseSelectNumVis = ref(false)
 
 
-const refocusScanner = () => {
-  if (scannerInput.value) {
-    nextTick(() => {
-      scannerInput.value.focus()
-    })
-  }
+
+
+
+
+
+const handAdd = () => {
+  chooseSelectNumVis.value = true
 }
 
 
-
-
-
-
-// 监听全局点击事件，保持扫码输入框聚焦
-const handleGlobalClick = () => {
-  refocusScanner()
-}
 const handleKeyDown = (e) => {
   const keyCode = e.keyCode
 
   if (keyCode === 13) {
     if (!e.target.value) return
     scanData.value = e.target.value
-    refocusScanner()
   }
 }
 // 组件挂载时添加全局点击事件监听
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
-  document.addEventListener('click', handleGlobalClick)
-  refocusScanner()
 })
 
 const remove_keydownlistener = () => {
   window.removeEventListener('keydown', handleKeyDown, false)
-  // 移除点击事件监听器
-  document.removeEventListener('click', handleDocumentClick)
 }
 // 组件卸载时移除全局点击事件监听
 onUnmounted(() => {
@@ -194,7 +197,17 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 20, 40, 0.7);
-
+  .transparent-input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    width: 100%;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+    height: 22px;
+  }
   .top-action-btns {
     width: 100%;
     display: flex;

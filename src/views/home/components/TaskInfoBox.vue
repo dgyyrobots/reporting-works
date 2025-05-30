@@ -126,7 +126,7 @@ watch(
 
 // 监听store中的taskInfo变化
 watch(
-  () => workStore.fleshIndex,
+  () => workStore.fleshTaskIndex,
   (index) => {
     // 如果store中的bill_no与当前设备的jobbill_no不一致，需要重新获取数据
     if (index) {
