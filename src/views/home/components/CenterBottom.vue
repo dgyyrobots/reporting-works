@@ -15,9 +15,11 @@
         切版
       </button>
       <button class="cyber-btn" >
+        <Icon class="btn-icon" icon="svg-icon:huibao"/>
         完工汇报
       </button>
       <button class="cyber-btn" >
+        <Icon class="btn-icon" icon="svg-icon:huibao"/>
         汇报
       </button>
       <!-- <button class="cyber-btn">
