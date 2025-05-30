@@ -1,13 +1,7 @@
 <template>
   <Card class="LicenseHistory" content-padding="6px 0" :show-empty="!loading && tableData.length === 0" title="生产版号">
     <template #titleRight>
-      <div class="search-container">
-        <div class="input-wrapper">
-          <input v-model="searchKeyword" class="search-input" placeholder="请输入版号" type="text" />
-          <span v-if="searchKeyword" class="clear-btn" @click="clearSearch">×</span>
-        </div>
-        <button class="search-btn" @click="handleSearch">查询</button>
-      </div>
+      <button class="detail-btn" @click="showDetailDialog">查看明细</button>
     </template>
     <div class="scroll-board">
       <div v-if="loading" class="loading-container">
@@ -42,19 +36,27 @@
       </table>
     </div>
   </Card>
+  
+  <!-- 明细弹框 -->
+  <LicenseDetailDialog 
+    v-model="detailDialogVisible" 
+    :device-id="props.currentDevice.id" 
+    :jobbill-id="jobbill_id"
+  />
 </template>
 
 <script setup>
 import Card from './Card.vue'
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { getPlateListData, getJobBillContent } from '@/api/mes/wk/index.ts'
+import LicenseDetailDialog from '../dialog/LicenseDetailDialog.vue'
 
-const searchKeyword = ref('')
 const loading = ref(false)
 const tableData = ref([])
 const originalData = ref([]) // 存储原始数据
 const jobbill_id = ref('') // 添加 jobbill_id 引用
 const selectAll = ref(false) // 全选状态
+const detailDialogVisible = ref(false) // 明细弹框显示状态
 
 // 表头定义 - 修改为只保留需要的列
 const tableHeaders = ['序号', '选择', '版号', '采集数量', '状态']
@@ -70,6 +72,11 @@ const props = defineProps({
     default: () => ({}),
   },
 })
+
+// 显示明细弹框
+const showDetailDialog = () => {
+  detailDialogVisible.value = true
+}
 
 // 处理全选变化
 const handleSelectAllChange = (val) => {
@@ -112,39 +119,9 @@ const get_jobbill_id = async () => {
   }
 }
 
-// 根据搜索关键词过滤数据
-const filteredTableData = computed(() => {
-  if (!searchKeyword.value) {
-    return originalData.value
-  }
-
-  const keyword = searchKeyword.value.toLowerCase().trim()
-  return originalData.value.filter((item) => {
-    // 检查版号是否包含关键词
-    return item.version_no && item.version_no.toLowerCase().includes(keyword)
-  })
-})
-
-// 清除搜索
-const clearSearch = () => {
-  searchKeyword.value = ''
-  // 不需要重新请求数据，直接使用原始数据
-}
-
-// 处理搜索
-const handleSearch = () => {
-  // 前端搜索，不需要请求后端
-  tableData.value = filteredTableData.value
-}
-
-// 格式化版号，只保留最后三位流水号
+// 格式化版号
 const formatVersionNo = (versionNo) => {
   if (!versionNo) return '--'
-
-  // 如果版号长度大于3，只保留最后三位
-  // if (versionNo.length > 3) {
-  //   return '...' + versionNo.slice(-3)
-  // }
   return versionNo
 }
 
@@ -176,6 +153,7 @@ const getStatusText = (statusId) => {
   }
   return statusMap[statusId] || '--'
 }
+
 // 将字符串或数字转换为整数
 const toInteger = (value) => {
   if (value === null || value === undefined) return 0
@@ -238,12 +216,7 @@ const fetchData = async () => {
       order: 'asc,asc',
       show_total: '1',
       page: 1,
-      rows: 100,
-    }
-
-    // 如果有搜索关键词，添加到参数中
-    if (searchKeyword.value) {
-      params.keyword = searchKeyword.value
+      rows: 50,
     }
 
     const res = await getPlateListData(params)
@@ -269,11 +242,6 @@ const fetchData = async () => {
     loading.value = false
   }
 }
-
-// 监听搜索关键词变化，实时过滤数据
-watch(searchKeyword, (newValue) => {
-  tableData.value = filteredTableData.value
-})
 
 onMounted(() => {
   nextTick(async () => {
@@ -319,59 +287,18 @@ onMounted(() => {
   }
 }
 
-.search-container {
-  display: flex;
-  align-items: center;
-}
-
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-right: 8px;
-}
-
-.search-input {
-  height: 28px;
-  width: 160px;
-  background: rgba(10, 42, 80, 0.5);
-  border: 1px solid rgba(33, 158, 252, 0.6);
-  border-radius: 4px;
-  color: #fff;
-  padding: 0 30px 0 10px;
-  outline: none;
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-}
-
-.clear-btn {
-  position: absolute;
-  right: 8px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 18px;
-  line-height: 18px;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:hover {
+.detail-btn {
+  background-color: #00bcd4;
     color: #fff;
-  }
-}
+    border: none;
+    padding: 4px 15px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 14px;
 
-.search-btn {
-  height: 28px;
-  background: linear-gradient(180deg, #1573ce 0%, #0a2a50 100%);
-  border: 1px solid #219efc;
-  border-radius: 4px;
-  color: #fff;
-  padding: 0 12px;
-  cursor: pointer;
-  &:hover {
-    background: linear-gradient(180deg, #1e85e2 0%, #0c315e 100%);
-  }
+    &:hover {
+      background-color: #19b8e6;
+    }
 }
 
 .scroll-board {

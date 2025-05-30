@@ -231,14 +231,17 @@ onMounted(() => {
       height: 40px !important;
       color: #1ecfff !important;
       border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      background: linear-gradient(90deg, #1573ce 0%, #0a2a50 100%);
+      padding: 12px 20px;
+      margin-right: 0;
     }
 
     .el-dialog__title {
-      color: #1ecfff !important;
+      color: #fff !important;
+      font-size: 16px;
       font-weight: 500;
       letter-spacing: 1px;
       text-shadow: 0 0 8px rgba(30, 207, 255, 0.5);
-      font-size: 16px;
     }
 
     .el-dialog__headerbtn .el-dialog__close {
