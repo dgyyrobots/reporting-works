@@ -136,7 +136,7 @@ export const updateVersionNumberManageEntryData = async (data: any) => {
 
 // 员工切板
 export const changeActiveRow = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/mes/ajax/mes_version_number_manage/action:change_active_row',
         data,
     })

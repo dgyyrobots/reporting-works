@@ -10,8 +10,8 @@
         <Icon class="btn-icon" icon="svg-icon:end" />
         结束采集
       </button>
-      <button class="cyber-btn">
-        <Icon class="btn-icon" icon="svg-icon:change" />
+      <button class="cyber-btn"  @click="handleChangeVersion">
+        <Icon class="btn-icon" icon="svg-icon:change"/>
         切版
       </button>
       <button class="cyber-btn">
@@ -150,9 +150,22 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
-import { updateIsStart} from '@/api/mes/wk/index.ts'
+import { updateIsStart, changeActiveRow} from '@/api/mes/wk/index.ts'
 import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
+import { ElMessageBox ,ElMessage} from 'element-plus'
 
+import { useWorkStore } from '@/store/modules/work' // 导入store
+
+
+const props = defineProps({
+
+currentDevice: {
+  type: Object,
+  default: () => ({})
+},
+})
+
+const workStore = useWorkStore() // 使用store
 const scanData = ref(null)
 const scannerInput= ref(null)
 const chooseSelectNumVis = ref(false)
@@ -175,6 +188,34 @@ const handleKeyDown = (e) => {
     if (!e.target.value) return
     scanData.value = e.target.value
   }
+}
+const handleChangeVersion = () => {
+  ElMessageBox.confirm(
+    '确认要切换版吗？',
+    '切版确认',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      customClass: 'cyber-confirm-box'
+    }
+  ).then(() => {
+    // 调用切版接口
+    changeActiveRow({
+      device_id: props.currentDevice.id
+    }).then(res => {
+      console.log(res, '切版')
+      if (res.ret ===0 ) {
+        ElMessage.success('操作成功!')
+        // 刷新版号列表
+        workStore.updateLicenseFleshIndex()
+      } else {
+        ElMessage.error(res.msg)
+      }
+    })
+  }).catch(() => {
+    // 用户取消操作，不做任何处理
+  })
 }
 // 组件挂载时添加全局点击事件监听
 onMounted(() => {

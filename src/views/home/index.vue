@@ -58,7 +58,7 @@
           <DashboardGauge  :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="center-box box-2">
-          <CenterBottom />
+          <CenterBottom  :currentDevice="currentDevice" />
         </div>
       </div>
 

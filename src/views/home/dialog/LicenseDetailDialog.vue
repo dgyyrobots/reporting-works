@@ -176,6 +176,7 @@ watch(dialogVisible, (newVal) => {
 
 // 监听 fleshLicenseIndex 变化
 watch(() => workStore.getFleshLicenseIndex, (newVal) => {
+  console.log('fleshLicenseIndex 变化:', newVal)
   if (newVal) {
     fetchData()
     workStore.setLicenseCheck([])
