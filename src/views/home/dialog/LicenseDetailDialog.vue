@@ -1,12 +1,12 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="生产版号明细"
-    width="80%"
+    class="license-detail-dialog"
     :close-on-click-modal="false"
     :destroy-on-close="true"
-    class="license-detail-dialog"
     :modal-class="'cyber-modal'"
+    title="生产版号明细"
+    width="80%"
   >
     <div class="dialog-content">
       <div v-if="loading" class="loading-container">
@@ -24,6 +24,9 @@
               <thead>
                 <tr>
                   <th style="width: 60px">序号</th>
+                  <th style="width: 40px">
+                    <el-checkbox v-model="selectAll" @change="handleSelectAllChange" />
+                  </th>
                   <th>版号</th>
                   <th style="width: 100px">采集数量</th>
                   <th style="width: 100px">状态</th>
@@ -38,6 +41,9 @@
               <tbody>
                 <tr v-for="(item, index) in tableData" :key="index">
                   <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
+                  <td>
+                    <el-checkbox v-model="item.selected" @change="handleItemSelectChange" />
+                  </td>
                   <td>{{ item.version_no }}</td>
                   <td>{{ toInteger(item.collection_qty) }}</td>
                   <td>
@@ -47,7 +53,11 @@
                   </td>
                   <td>{{ toInteger(item.pass_qty) }}</td>
                   <td>{{ toInteger(item.no_okqty) }}</td>
-                  <td>-</td>
+                  <td>
+                    <span class='del-span' @click.stop="confirmDelete(item)">
+                        <Icon icon="svg-icon:del" />
+                    </span>
+                  </td>
                   <td>{{ toInteger(item.ok_qty) }}</td>
                   <td>{{ toInteger(item.pass_qty) }}</td>
                   <td>{{ formatDate(item.operate_date) }}</td>
@@ -57,7 +67,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 分页 -->
       <div class="pagination-wrapper">
         <div class="total-info">共 {{ total }} 条</div>
@@ -65,9 +75,7 @@
           <span>{{ pageSize }}条/页</span>
           <Icon class="selector-icon" icon="svg-icon:arrow-down" />
           <div class="dropdown-menu">
-            <div v-for="size in [10, 20, 50, 100]" :key="size" class="dropdown-item" @click="handleSizeChange(size)">
-              {{ size }}条/页
-            </div>
+            <div v-for="size in [10, 20, 50, 100]" :key="size" class="dropdown-item" @click="handleSizeChange(size)">{{ size }}条/页</div>
           </div>
         </div>
         <div class="pagination-btns">
@@ -98,34 +106,36 @@
 </template>
 
 <script setup>
+import {  ElMessage, ElMessageBox,} from 'element-plus'
 import { ref, computed, watch } from 'vue'
-import { getPlateListData } from '@/api/mes/wk/index.ts'
+import { getPlateListData,updateVersionNumberManageEntryData } from '@/api/mes/wk/index.ts'
 import { Icon } from '/@/components/Icon'
 
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    default: false
+    default: false,
   },
   deviceId: {
     type: [String, Number],
-    default: ''
+    default: '',
   },
   jobbillId: {
     type: [String, Number],
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const dialogVisible = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: (val) => emit('update:modelValue', val),
 })
 
 const loading = ref(false)
 const tableData = ref([])
+const selectAll = ref(false) // 新增全选
 const currentPage = ref(1)
 const pageSize = ref(20)
 const total = ref(0)
@@ -164,9 +174,9 @@ watch(dialogVisible, (newVal) => {
 // 获取状态文本
 const getStatusText = (statusId) => {
   const statusMap = {
-    '0': '待采集',
-    '1': '采集中',
-    '2': '采集结束'
+    0: '待采集',
+    1: '采集中',
+    2: '采集结束',
   }
   return statusMap[statusId] || '--'
 }
@@ -174,9 +184,9 @@ const getStatusText = (statusId) => {
 // 获取状态样式类
 const getStatusClass = (statusId) => {
   const statusClassMap = {
-    '0': 'status-waiting',
-    '1': 'status-collecting',
-    '2': 'status-completed'
+    0: 'status-waiting',
+    1: 'status-collecting',
+    2: 'status-completed',
   }
   return statusClassMap[statusId] || ''
 }
@@ -184,7 +194,7 @@ const getStatusClass = (statusId) => {
 // 格式化日期
 const formatDate = (timestamp) => {
   if (!timestamp) return '--'
-  
+
   try {
     const date = new Date(parseInt(timestamp) * 1000)
     const year = date.getFullYear()
@@ -193,7 +203,7 @@ const formatDate = (timestamp) => {
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
     const seconds = String(date.getSeconds()).padStart(2, '0')
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
   } catch (error) {
     console.error('日期格式化错误:', error)
@@ -204,17 +214,17 @@ const formatDate = (timestamp) => {
 // 将字符串或数字转换为整数
 const toInteger = (value) => {
   if (value === null || value === undefined) return 0
-  
+
   // 如果是字符串，先尝试转换为数字
   if (typeof value === 'string') {
     // 移除非数字字符（保留负号）
     const numStr = value.replace(/[^\d.-]/g, '')
     value = parseFloat(numStr)
   }
-  
+
   // 如果转换后不是有效数字，返回0
   if (isNaN(value)) return 0
-  
+
   // 返回整数部分
   return Math.floor(value)
 }
@@ -260,13 +270,25 @@ const handleJumpPage = () => {
   }
 }
 
+// 全选checkbox变化
+const handleSelectAllChange = (val) => {
+  tableData.value.forEach((item) => {
+    item.selected = val
+  })
+}
+
+// 单个checkbox变化
+const handleItemSelectChange = () => {
+  selectAll.value = tableData.value.length > 0 && tableData.value.every((item) => item.selected)
+}
+
 // 获取数据
 const fetchData = async () => {
   if (!props.deviceId || !props.jobbillId) {
     console.warn('缺少必要参数: deviceId 或 jobbillId')
     return
   }
-  
+
   loading.value = true
   try {
     const params = {
@@ -274,36 +296,50 @@ const fetchData = async () => {
         {
           val: [
             { name: 'device_id', val: props.deviceId, action: '=' },
-            { name: 'jobbill_id', val: props.jobbillId, action: '=' }
+            { name: 'jobbill_id', val: props.jobbillId, action: '=' },
           ],
-          relation: 'AND'
-        }
+          relation: 'AND',
+        },
       ],
       filter_detail: {},
       other_params: { structure: 'entry1' },
       keyword_is_detail: '0',
       sum_col: [
-        'collection_uqty', 'collection_qty', 'pass_uqty', 'pass_qty',
-        'ok_uqty', 'ok_qty', 'no_ok_uqty', 'no_okqty',
-        'scrap_uqty', 'scrap_qty', 'loss_uqty', 'loss_qty'
+        'collection_uqty',
+        'collection_qty',
+        'pass_uqty',
+        'pass_qty',
+        'ok_uqty',
+        'ok_qty',
+        'no_ok_uqty',
+        'no_okqty',
+        'scrap_uqty',
+        'scrap_qty',
+        'loss_uqty',
+        'loss_qty',
       ],
       sum_col_type: '1',
       sort: 'status_id,operate_date',
       order: 'asc,asc',
       show_total: '1',
       page: currentPage.value,
-      rows: pageSize.value
+      rows: pageSize.value,
     }
-    
+
     const res = await getPlateListData(params)
-    
+
     if (res && res.rows && Array.isArray(res.rows)) {
-      tableData.value = res.rows
+      tableData.value = res.rows.map((item) => ({
+        ...item,
+        selected: false, // 默认不选中
+      }))
       total.value = res.total || 0
       jumpPage.value = currentPage.value
+      selectAll.value = false
     } else {
       tableData.value = []
       total.value = 0
+      selectAll.value = false
     }
   } catch (error) {
     console.error('获取生产版号明细数据失败:', error)
@@ -311,6 +347,47 @@ const fetchData = async () => {
     total.value = 0
   } finally {
     loading.value = false
+  }
+}
+
+const confirmDelete = async (item) => {
+  try {
+    await ElMessageBox.confirm(
+      '是否确认删除该条数据？',
+      '确认删除',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+        customClass: 'cyber-confirm-box',
+        confirmButtonClass: 'cyber-confirm-btn',
+        cancelButtonClass: 'cyber-cancel-btn'
+      }
+    )
+    
+    // 用户点击了确认按钮，执行删除操作
+    try {
+      const params =  {
+        id: item.id,
+        is_delete: 1
+       }
+      const res = await updateVersionNumberManageEntryData(params)
+      
+      console.log('删除响应数据:', res)
+      if (res && res.ret === 0) {
+        ElMessage.success('删除成功')
+        // 刷新列表
+        fetchData()
+      } else {
+        ElMessage.error(res?.message || '删除失败')
+      }
+    } catch (error) {
+      console.error('删除数据失败:', error)
+      ElMessage.error('删除失败：' + (error.message || '未知错误'))
+    }
+  } catch (e) {
+    // 用户取消了删除操作，不做任何处理
+    console.log('用户取消了删除操作')
   }
 }
 </script>
@@ -416,7 +493,9 @@ const fetchData = async () => {
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .table-container {
@@ -469,7 +548,7 @@ const fetchData = async () => {
     &::-webkit-scrollbar-track {
       background: rgba(13, 35, 65, 0.3);
     }
-    
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -632,5 +711,9 @@ const fetchData = async () => {
   .status-completed {
     color: #4caf50;
   }
+}
+.del-span {
+    cursor: pointer;
+    padding: 2px 4px;
 }
 </style>

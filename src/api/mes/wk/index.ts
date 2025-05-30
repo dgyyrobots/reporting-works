@@ -120,7 +120,7 @@ export const getDeviceRunSpeedData = async (data: any) => {
 
 // 扫码上板
 export const updateIsStart = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/mes/ajax/mes_version_number_manage/action:update_is_start',
         data,
     })
@@ -128,7 +128,7 @@ export const updateIsStart = async (data: any) => {
 
 // 添加版号
 export const updateVersionNumberManageEntryData = async (data: any) => {
-    return await request.post({
+    return await request.postOriginal({
         url: '/mes/ajax/mes_version_number_manage/action:update_version_number_manage_entry_data',
         data,
     })
