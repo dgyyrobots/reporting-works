@@ -24,7 +24,7 @@
 import { ref, reactive, defineEmits, defineProps } from 'vue'
 import { ElMessage } from 'element-plus'
 import { updateVersionNumberManageEntryData } from '@/api/mes/wk/index.ts'
-
+import { useWorkStore } from '@/store/modules/work.ts'
 const emit = defineEmits(['cancel', 'confirm'])
 
 const props = defineProps({
@@ -50,6 +50,7 @@ const props = defineProps({
 })
 
 
+const workStore = useWorkStore()
 
 const formData = reactive({
   status: '2',
@@ -82,6 +83,8 @@ const confirm = async () => {
         data: formData,
       })
       emit('close')
+      // 重置工作状态
+      workStore.updateLicenseFleshIndex()
     } else {
       ElMessage.error(res?.message || '操作失败')
       emit('confirm', {

@@ -284,6 +284,7 @@ watch(() => workStore.getFleshLicenseIndex, (newVal) => {
         await get_jobbill_id()
       }
       fetchData()
+      workStore.setLicenseCheck([])
     })
   }
 })

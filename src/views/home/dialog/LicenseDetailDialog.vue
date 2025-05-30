@@ -178,6 +178,7 @@ watch(dialogVisible, (newVal) => {
 watch(() => workStore.getFleshLicenseIndex, (newVal) => {
   if (newVal) {
     fetchData()
+    workStore.setLicenseCheck([])
   }
 })
 
