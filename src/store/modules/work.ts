@@ -8,9 +8,9 @@ export interface TaskInfoType {
     wc_id: string
     order_no: string
     bill_no: string
-    wpName: string
-    skuName: string
-    skuNo: string
+    wp_name: string
+    sku_name: string
+    sku_no: string
     plan_start_time: string
     plan_end_time: string
     act_start_time: string
@@ -41,9 +41,9 @@ export const useWorkStore = defineStore('work', {
             wc_id: '',
             order_no: '',
             bill_no: '',
-            wpName: '',
-            skuName: '',
-            skuNo: '',
+            wp_name: '',
+            sku_name: '',
+            sku_no: '',
             plan_start_time: '',
             plan_end_time: '',
             act_start_time: '',
@@ -73,9 +73,9 @@ export const useWorkStore = defineStore('work', {
                 wc_id: '',
                 order_no: '',
                 bill_no: '',
-                wpName: '',
-                skuName: '',
-                skuNo: '',
+                wp_name: '',
+                sku_name: '',
+                sku_no: '',
                 plan_start_time: '',
                 plan_end_time: '',
                 act_start_time: '',

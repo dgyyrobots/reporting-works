@@ -15,13 +15,13 @@
       </div>
       <div class="row">
         <span class="label">工&nbsp;&nbsp;&nbsp;&nbsp;序：</span>
-        <span class="value">{{ taskInfo.wpName || '--' }} / {{ taskInfo.prodesc || '--' }}</span>
+        <span class="value">{{ taskInfo.wp_name || '--' }} / {{ taskInfo.prodesc || '--' }}</span>
       </div>
       <div class="row">
         <span class="label">产&nbsp;&nbsp;&nbsp;&nbsp;品：</span>
         <span class="value">
-          {{ taskInfo.skuName || '--' }}
-          <span style="color: #ffe600">[{{ taskInfo.skuNo || '--' }}]</span>
+          {{ taskInfo.sku_name || '--' }}
+          <span style="color: #ffe600">[{{ taskInfo.sku_no || '--' }}]</span>
         </span>
       </div>
       <div class="row">
@@ -88,9 +88,9 @@ const taskInfo = reactive({
   wc_id: '',
   order_no: '',
   bill_no: '',
-  wpName: '',
-  skuName: '',
-  skuNo: '',
+  wp_name: '',
+  sku_name: '',
+  sku_no: '',
   plan_start_time: '',
   plan_end_time: '',
   act_start_time: '',
@@ -158,9 +158,9 @@ const fetchTaskInfo = async () => {
         bill_no:data.bill_no,
         wc_id: data.wc_id,
         order_no: data.order_no,
-        wpName: data.wp_name || '',
-        skuName: data.sku_name || '',
-        skuNo: data.sku_no || '',
+        wp_name: data.wp_name || '',
+        sku_name: data.sku_name || '',
+        sku_no: data.sku_no || '',
         uqty: data.plan_qty || 0,
         unit: data.unit,
         prodesc: data.prodesc,
