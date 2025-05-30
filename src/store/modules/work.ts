@@ -7,7 +7,7 @@ export interface TaskInfoType {
     rc_id: string
     wc_id: string
     order_no: string
-    billNo: string
+    bill_no: string
     wpName: string
     skuName: string
     skuNo: string
@@ -40,7 +40,7 @@ export const useWorkStore = defineStore('work', {
             rc_id: '',
             wc_id: '',
             order_no: '',
-            billNo: '',
+            bill_no: '',
             wpName: '',
             skuName: '',
             skuNo: '',
@@ -72,7 +72,7 @@ export const useWorkStore = defineStore('work', {
                 rc_id: '',
                 wc_id: '',
                 order_no: '',
-                billNo: '',
+                bill_no: '',
                 wpName: '',
                 skuName: '',
                 skuNo: '',

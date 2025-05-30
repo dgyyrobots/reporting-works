@@ -8,7 +8,7 @@
       <div class="row">
         <span class="label">生产工单：</span>
         <span class="value">
-          {{ taskInfo.rc_no || '--' }}
+          {{ taskInfo.bill_no || '--' }}
           <span class="highlight">[{{ taskInfo.ud_102869_gdlx || '' }}]</span>
         </span>
         <!-- <span  class="normal">[{{ taskInfo.billNo || '--' }}]</span> -->
@@ -87,7 +87,7 @@ const taskInfo = reactive({
   rc_id: '',
   wc_id: '',
   order_no: '',
-  billNo: '',
+  bill_no: '',
   wpName: '',
   skuName: '',
   skuNo: '',
@@ -150,10 +150,12 @@ const fetchTaskInfo = async () => {
 
     if (res && res.rows) {
       const data = res.rows[0]
+
       // 更新任务信息
       Object.assign(taskInfo, {
         rc_no: data.rc_no,
         rc_id: data.rc_id,
+        bill_no:data.bill_no,
         wc_id: data.wc_id,
         order_no: data.order_no,
         wpName: data.wp_name || '',
@@ -164,6 +166,8 @@ const fetchTaskInfo = async () => {
         prodesc: data.prodesc,
         overTime: data.over_time || '0.00',
       })
+
+      console.log('taskInfo', taskInfo)
     }
   } catch (error) {
     console.error('获取任务单信息失败:', error)

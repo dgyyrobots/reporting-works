@@ -191,6 +191,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon } from '/@/components/Icon'
 import { getJobBillContent } from '@/api/mes/wk/index.ts'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { useWorkStore } from '@/store/modules/work.ts'
 
 const props = defineProps({
   currentDevice: {
@@ -202,6 +203,10 @@ const props = defineProps({
     default: null
   }
 })
+
+// 获取工作状态
+const workStore = useWorkStore()
+const currentTaskInfo = computed(() => workStore.getTaskInfo)
 
 // 控制对话框显示状态
 const visible = ref(false)
@@ -217,8 +222,6 @@ const selectedRow = ref({})
 const queryForm = reactive({
   keyword: '',
 })
-
-
 
 // 选择行
 const handleSelectRow = (row) => {
@@ -252,6 +255,36 @@ const handleCheckboxChange = (val, row) => {
   } else {
     selectedRow.value = null;
   }
+}
+
+// 自动选中任务
+const autoSelectTask = () => {
+  if (taskList.value.length === 0) return;
+  
+  // 查找与当前任务bill_no匹配的任务
+  console.log(currentTaskInfo.value,'currentTaskInfo.value')
+  const currentRcNo = currentTaskInfo.value.bill_no;
+
+  console.log('currentRcNo', currentRcNo);
+  console.log('taskList.value',taskList.value);
+  
+  if (currentRcNo) {
+    // 尝试查找匹配的任务
+    const matchedTask = taskList.value.find(task => task.dispatch_no    === currentRcNo);
+    
+    if (matchedTask) {
+      // 找到匹配的任务，选中它
+      taskList.value.forEach(item => {
+        item.selected = item.dispatch_no === currentRcNo;
+      });
+      selectedRow.value = matchedTask;
+      return;
+    }
+  }
+  
+  // 如果没有匹配的任务或者没有当前任务，选中第一个任务
+  taskList.value[0].selected = true;
+  selectedRow.value = taskList.value[0];
 }
 
 // 数据加载
@@ -306,6 +339,9 @@ const fetchData = async (filter) => {
       
       taskList.value = workOrders
       total.value = res.total || 0
+      
+      // 数据加载完成后，自动选中任务
+      autoSelectTask();
     } else {
       taskList.value = []
       total.value = 0
@@ -334,14 +370,6 @@ const resetQuery = () => {
   fetchData([])
 }
 
-// 分页处理
-const handleCurrentChange = (val) => {
-  if (val === '...') return
-  queryForm.pageNo = val
-  fetchData()
-}
-
-
 
 // 任务操作
 const handleStartTask = () => {
@@ -366,6 +394,18 @@ const handleStartTask = () => {
   .then(() => {
     ElMessage.success('任务已开始')
     // 这里添加开工的API调用
+    
+    // 更新工作状态
+    workStore.setTaskInfo({
+      bill_no: selectedRow.value.dispatch_no,
+      wpName: selectedRow.value.wp_name,
+      skuName: selectedRow.value.sku_name,
+      skuNo: selectedRow.value.sku_no,
+      uqty: selectedRow.value.total_count,
+      exe_uqty: selectedRow.value.produced_count,
+      remainQty: selectedRow.value.available_count,
+      prodesc: selectedRow.value.process_content
+    })
   })
   .catch(() => {
     // 用户取消操作
@@ -378,7 +418,7 @@ const handleChangeTask = () => {
     return
   }
   
-  const device = props.currentDevice.name + props.currentDevice.nunber
+  const device = props.currentDevice.name + (props.currentDevice.number || '')
   ElMessageBox.confirm(
     `确认设备【 ${device }】切单(派工单号：无)？`,
     '请确认',
@@ -395,16 +435,20 @@ const handleChangeTask = () => {
   .then(() => {
     ElMessage.success('操作成功!')
     // 这里添加结束任务的API调用
+    
+    // 重置工作状态
+    workStore.resetTaskInfo()
   })
   .catch(() => {
     // 用户取消操作
   })
 }
+
 // 添加数字格式化函数
 const formatNumber = (num) => {
   if (num === undefined || num === null) return '0'
   // 将字符串转为数字
-  const number =Math.floor(num)
+  const number = Math.floor(num)
   if (isNaN(number)) return '0'
   
   // 格式化数字，添加千位分隔符
