@@ -49,8 +49,16 @@
         <div class="panel-content">
           <div class="info-row">
             <div class="info-label">版号：</div>
-            <div class="info-value flow-no">11
-              <input ref="scannerInput" v-model="scanData" placeholder="请输入"  style="position: absolute; opacity: 0; width: 0; height: 0; z-index: -1; -webkit-user-select: none;" inputmode="none" autofocus />
+            <div class="info-value flow-no">
+              {{ scanData }}
+              <input 
+                ref="scannerInput" 
+                v-model="scanData" 
+                placeholder="请输入"  
+                style="position: absolute; opacity: 0; width: 0; height: 0; z-index: -1; -webkit-user-select: none;" 
+                inputmode="none" 
+                autofocus 
+              />
             </div>
             <div class="action-buttons">
               <button class="query-btn">查询</button>
@@ -132,7 +140,7 @@ import { Icon } from '/@/components/Icon'
 
 const scanData = ref(null)
 const scannerInput= ref(null)
-const isFocused = ref(false)
+
 
 const refocusScanner = () => {
   if (scannerInput.value) {
@@ -142,6 +150,40 @@ const refocusScanner = () => {
   }
 }
 
+
+
+
+
+
+// 监听全局点击事件，保持扫码输入框聚焦
+const handleGlobalClick = () => {
+  refocusScanner()
+}
+const handleKeyDown = (e) => {
+  const keyCode = e.keyCode
+
+  if (keyCode === 13) {
+    if (!e.target.value) return
+    scanData.value = e.target.value
+    refocusScanner()
+  }
+}
+// 组件挂载时添加全局点击事件监听
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('click', handleGlobalClick)
+  refocusScanner()
+})
+
+const remove_keydownlistener = () => {
+  window.removeEventListener('keydown', handleKeyDown, false)
+  // 移除点击事件监听器
+  document.removeEventListener('click', handleDocumentClick)
+}
+// 组件卸载时移除全局点击事件监听
+onUnmounted(() => {
+  remove_keydownlistener()
+})
 </script>
 
 <style lang="scss" scoped>
