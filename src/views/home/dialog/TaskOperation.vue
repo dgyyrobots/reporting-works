@@ -29,92 +29,48 @@
         <el-button class="cyber-btn secondary" @click="resetQuery">重 置</el-button>
       </div>
 
-      <!-- 任务单列表表格 -->
-      <div v-loading="tableLoading" class="table-container">
-        <div class="table-border-wrapper">
-          <div class="scroll-board">
-            <table>
-        <thead>
-          <tr>
-            <th style="width: 50px;">选择</th>
-            <th>任务单号</th>
-            <th>工序</th>
-            <th>工序编码</th>
-            <th>物料名称</th>
-            <th>物料编号</th>
-            <th>规格型号</th>
-            <th>工艺描述</th>
-            <th>总派工数</th>
-            <th>已生产数</th>
-            <th>可生产数量</th>
-            <th>状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in taskList" :key="row.id" @click="handleSelectRow(row)" :class="{ 'selected-row': row.selected }">
-            <td @click.stop>
-              <el-checkbox v-model="row.selected" @change="(val) => handleCheckboxChange(val, row)" />
-            </td>
-            <td>{{ row.work_no }}</td>
-            <td>{{ row.wp_name }}</td>
-            <td>{{ row.wp_number }}</td>
-            <td>{{ row.sku_name }}</td>
-            <td>{{ row.sku_no }}</td>
-            <td>{{ row.specs }}</td>
-            <td>{{ row.prodesc }}</td>
-            <td>{{ formatNumber(row.total_count) }}</td>
-            <td>{{ formatNumber(row.produced_count) }}</td>
-            <td>{{ formatNumber(row.available_count) }}</td>
-            <td>
-              <span :class="['status-tag', row.status === '已开工' || row.status === '部分完工' ? 'in-progress' : 'complete']">
-                {{ row.status }}
+         <!-- 任务单卡片列表 -->
+      <div v-loading="tableLoading" class="card-container">
+        <div class="card-grid">
+          <div 
+            v-for="card in taskList" 
+            :key="card.id" 
+            class="task-card"
+            :class="{ 'selected-card': card.selected }"
+            @click="handleSelectRow(card)"
+          >
+            <div class="card-header">
+              <el-checkbox 
+                v-model="card.selected" 
+                @change="(val) => handleCheckboxChange(val, card)"
+                @click.stop
+              />
+              <span class="card-status" :class="card.status === '已开工' || card.status === '部分完工' ? 'in-progress' : 'complete'">
+                {{ card.status }}
               </span>
-            </td>
-          </tr>
-          <tr v-if="taskList.length === 0">
-            <td class="empty-data" colspan="12">暂无数据</td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+            <div class="card-body">
+              <div class="card-item">
+                <span class="card-label">派工单编号:</span>
+                <span class="card-value">{{ card.dispatch_no || '--' }}</span>
+              </div>
+              <div class="card-item">
+                <span class="card-label">物料名称:</span>
+                <span class="card-value">{{ card.sku_name || '--' }}</span>
+              </div>
+              <div class="card-item">
+                <span class="card-label">总派工数:</span>
+                <span class="card-value">{{ formatNumber(card.total_count) || '0' }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="taskList.length === 0" class="empty-data-card">
+            暂无数据
           </div>
         </div>
       </div>
 
-      <!-- 分页区域 -->
-      <div class="pagination-wrapper">
-        <div class="total-info">共 {{ total }} 条</div>
-        <div class="page-size-selector">
-          <span>{{ queryForm.pageSize }}条/页</span>
-          <Icon class="selector-icon" icon="svg-icon:arrow-down" />
-          <div class="dropdown-menu">
-            <div v-for="size in [10, 20, 50, 100]" :key="size" class="dropdown-item" @click="handleSizeChange(size)">
-              {{ size }}条/页
-            </div>
-          </div>
-        </div>
-        <div class="pagination-btns">
-          <div class="page-btn" :class="{ disabled: queryForm.pageNo <= 1 }" @click="handlePrevPage">
-            <Icon icon="svg-icon:arrow-left" />
-          </div>
-          <div
-            v-for="page in pageDisplays"
-            :key="page"
-            class="page-btn"
-            :class="{ active: page === queryForm.pageNo }"
-            @click="handleCurrentChange(page)"
-          >
-            {{ page }}
-          </div>
-          <div class="page-btn" :class="{ disabled: queryForm.pageNo >= totalPages }" @click="handleNextPage">
-            <Icon icon="svg-icon:arrow-right" />
-          </div>
-        </div>
-        <div class="page-jumper">
-          前往
-          <input v-model.number="jumpPage" class="jumper-input" type="number" @keyup.enter="handleJumpPage" />
-          页
-        </div>
-      </div>
+
 
       <!-- 任务单详情区域 -->
       <div class="task-detail" >
@@ -161,31 +117,31 @@
             </div>
             <div class="detail-item">
               <span class="label">总派工数：</span>
-              <span class="value">{{ selectedRow?.total_count || '' }}</span>
+              <span class="value">{{ formatNumber(selectedRow?.total_count) || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">已生产数：</span>
-              <span class="value">{{ selectedRow?.produced_count || '' }}</span>
+              <span class="value">{{ formatNumber(selectedRow?.produced_count) || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">数量(大张)：</span>
-              <span class="value">{{ selectedRow?.large_count || '' }}</span>
+              <span class="value">{{ formatNumber(selectedRow?.large_count) || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">可生产数量(大张)：</span>
-              <span class="value">{{ selectedRow?.available_large_count || '' }}</span>
+              <span class="value">{{ formatNumber(selectedRow?.available_large_count) || '' }}</span>
             </div>
           </div>
           <div class="detail-row">
             <div class="detail-item">
               <span class="label">合格数：</span>
-              <span class="value">{{ selectedRow?.qualified_count || '' }}</span>
+              <span class="value">{{ formatNumber(selectedRow?.qualified_count) || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">不合格数量：</span>
-              <span class="value">{{ selectedRow?.unqualified_count || '' }}</span>
+              <span class="value">{{ formatNumber(selectedRow?.unqualified_count) || '' }}</span>
             </div>
             <div class="detail-item">
               <span class="label">备注：</span>
@@ -259,32 +215,10 @@ const selectedRow = ref({})
 
 // 查询表单
 const queryForm = reactive({
-  pageNo: 1,
-  pageSize: 10,
   keyword: '',
 })
 
-// 计算属性
-const totalPages = computed(() => Math.ceil(total.value / queryForm.pageSize))
 
-const pageDisplays = computed(() => {
-  const current = queryForm.pageNo
-  const maxPages = totalPages.value
-
-  if (maxPages <= 7) {
-    return Array.from({ length: maxPages }, (_, i) => i + 1)
-  }
-
-  if (current <= 4) {
-    return [1, 2, 3, 4, 5, '...', maxPages]
-  }
-
-  if (current >= maxPages - 3) {
-    return [1, '...', maxPages - 4, maxPages - 3, maxPages - 2, maxPages - 1, maxPages]
-  }
-
-  return [1, '...', current - 1, current, current + 1, '...', maxPages]
-})
 
 // 选择行
 const handleSelectRow = (row) => {
@@ -333,8 +267,6 @@ const fetchData = async (filter) => {
       filter_detail:{},
       keyword_is_detail:0,
       show_total:1,
-      page: queryForm.pageNo,
-      rows: queryForm.pageSize,
     }
     const res = await getJobBillContent(data)
     
@@ -399,7 +331,6 @@ const handSearch = () => {
 // 重置查询
 const resetQuery = () => {
   queryForm.keyword = ''
-  queryForm.pageNo = 1
   fetchData([])
 }
 
@@ -410,35 +341,7 @@ const handleCurrentChange = (val) => {
   fetchData()
 }
 
-const handleSizeChange = (val) => {
-  queryForm.pageSize = val
-  queryForm.pageNo = 1
-  fetchData()
-}
 
-const handlePrevPage = () => {
-  if (queryForm.pageNo > 1) {
-    queryForm.pageNo--
-    fetchData()
-  }
-}
-
-const handleNextPage = () => {
-  if (queryForm.pageNo < totalPages.value) {
-    queryForm.pageNo++
-    fetchData()
-  }
-}
-
-const handleJumpPage = () => {
-  const page = jumpPage.value
-  if (page >= 1 && page <= totalPages.value) {
-    queryForm.pageNo = page
-    fetchData()
-  } else {
-    jumpPage.value = queryForm.pageNo
-  }
-}
 
 // 任务操作
 const handleStartTask = () => {
@@ -500,9 +403,8 @@ const handleChangeTask = () => {
 // 添加数字格式化函数
 const formatNumber = (num) => {
   if (num === undefined || num === null) return '0'
-  
   // 将字符串转为数字
-  const number = parseFloat(num)
+  const number =Math.floor(num)
   if (isNaN(number)) return '0'
   
   // 格式化数字，添加千位分隔符
@@ -511,6 +413,7 @@ const formatNumber = (num) => {
     maximumFractionDigits: 0
   })
 }
+
 // 打开对话框的方法，将通过父组件调用
 const openDialog = () => {
   visible.value = true
@@ -674,266 +577,127 @@ onMounted(() => {
       }
     }
   }
+// 添加卡片视图的样式
+.card-container {
+  position: relative;
+  overflow: auto;
+  height: 350px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(30, 207, 255, 0.5);
+  box-sizing: border-box;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-  .table-container {
-    position: relative;
-    overflow: hidden;
-    height: 300px;
-    margin-bottom: 10px;
+  &::-webkit-scrollbar-thumb {
+    background: rgba(30, 207, 255, 0.4);
+    border-radius: 3px;
+  }
 
-    .table-border-wrapper {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      border: 1px solid rgba(30, 207, 255, 0.5);
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-    }
+  &::-webkit-scrollbar-track {
+    background: rgba(13, 35, 65, 0.3);
+  }
+}
 
-    .scroll-board {
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      position: relative;
-      flex: 1;
-
-      &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: rgba(30, 207, 255, 0.4);
-        border-radius: 3px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: rgba(13, 35, 65, 0.3);
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        border: none;
-        background-color: transparent;
-
-        thead {
-          position: sticky;
-          top: 0;
-          z-index: 15;
-
-          &::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 1px;
-            background-color: rgba(30, 207, 255, 0.5);
-            z-index: 16;
-          }
-
-          &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 1px;
-            background-color: rgba(30, 207, 255, 0.5);
-            z-index: 16;
-          }
-
-          tr {
-            background-color: rgba(0, 21, 41, 0.95);
-          }
-        }
-
-        th {
-          padding: 8px 6px;
-          text-align: center;
-          font-size: 14px;
-          color: #1ecfff;
-          border: none;
-          background-color: rgba(0, 21, 41, 0.95);
-          font-weight: normal;
-          position: sticky;
-          top: 0;
-          z-index: 10;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-
-          &:not(:last-child) {
-            border-right: 1px solid rgba(30, 207, 255, 0.2);
-          }
-        }
-
-        td {
-          padding: 8px 6px;
-          text-align: center;
-          font-size: 13px;
-          color: rgba(255, 255, 255, 0.8);
-          border: none;
-          border-bottom: 1px solid rgba(0, 161, 255, 0.2);
-
-          &:not(:last-child) {
-            border-right: 1px solid rgba(30, 207, 255, 0.1);
-          }
-        }
-
-        tr {
-          transition: all 0.3s;
-
-          &:nth-child(even) {
-            background: rgba(13, 35, 65, 0.3);
-          }
-
-          &:hover {
-            background: rgba(30, 207, 255, 0.1);
-          }
-
-          &.selected-row {
-            background: rgba(30, 207, 255, 0.2) !important;
-            td {
-              color: #fff !important;
-            }
-          }
-        }
-        .in-progress {
-            color: #22cc55;
-        }
-        .empty-data {
-          padding: 30px 0;
-          color: rgba(134, 201, 242, 0.6);
-          font-size: 16px;
-        }
-      }
-    }
-
-    :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  .card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+.task-card {
+  background-color: rgba(0, 21, 41, 0.7);
+  border: 1px solid rgba(30, 207, 255, 0.3);
+  border-radius: 4px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &:hover {
+    background-color: rgba(30, 207, 255, 0.1);
+    border-color: rgba(30, 207, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  &.selected-card {
+    background-color: rgba(30, 207, 255, 0.2);
+    border-color: #1ecfff;
+    box-shadow: 0 0 10px rgba(30, 207, 255, 0.3);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
       background-color: #1ecfff;
-      border-color: #1ecfff;
-    }
-
-    :deep(.el-checkbox__inner) {
-      background-color: rgba(30, 207, 255, 0.1);
-      border-color: #1ecfff;
+      box-shadow: 0 0 8px rgba(30, 207, 255, 0.8);
     }
   }
+}
 
-  .pagination-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 10px 0;
+.card-item {
+  display: flex;
+  align-items: center;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(30, 207, 255, 0.2);
+}
+
+.card-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background-color: rgba(0, 21, 41, 0.5);
+  
+  &.in-progress {
+    color: #22cc55;
+    border: 1px solid rgba(34, 204, 85, 0.5);
+  }
+  
+  &.complete {
     color: #1ecfff;
-    font-size: 14px;
-    flex-shrink: 0;
-    height: 40px;
-    margin-bottom: 10px;
-
-    .total-info {
-      margin-right: 15px;
-    }
-
-    .page-size-selector {
-      position: relative;
-      margin-right: 15px;
-      padding: 4px 8px;
-      border: 1px solid rgba(30, 207, 255, 0.4);
-      border-radius: 2px;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-
-      .selector-icon {
-        margin-left: 5px;
-        font-size: 12px;
-      }
-
-      .dropdown-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: rgba(0, 21, 41, 0.95);
-        border: 1px solid #1ecfff;
-        border-top: none;
-        z-index: 10;
-
-        .dropdown-item {
-          padding: 4px 8px;
-
-          &:hover {
-            background-color: rgba(30, 207, 255, 0.2);
-          }
-        }
-      }
-
-      &:hover .dropdown-menu {
-        display: block;
-      }
-    }
-
-    .pagination-btns {
-      display: flex;
-      margin-right: 15px;
-
-      .page-btn {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(30, 207, 255, 0.4);
-        margin-right: 4px;
-        cursor: pointer;
-        user-select: none;
-        border-radius: 2px;
-        font-size: 13px;
-
-        &:hover:not(.disabled) {
-          background-color: rgba(30, 207, 255, 0.2);
-        }
-
-        &.active {
-          background-color: #1ecfff;
-          color: #001529;
-          font-weight: bold;
-        }
-
-        &.disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
-    }
-
-    .page-jumper {
-      display: flex;
-      align-items: center;
-      font-size: 13px;
-
-      .jumper-input {
-        width: 36px;
-        height: 24px;
-        background-color: rgba(13, 35, 65, 0.7);
-        border: 1px solid rgba(30, 207, 255, 0.4);
-        color: #eef1f2;
-        text-align: center;
-        margin: 0 5px;
-        border-radius: 2px;
-        outline: none;
-
-        &:focus {
-          border-color: #1ecfff;
-          box-shadow: 0 0 5px rgba(30, 207, 255, 0.3);
-        }
-      }
-    }
+    border: 1px solid rgba(30, 207, 255, 0.5);
   }
+}
+
+.card-label {
+  color: rgba(255, 255, 255, 0.7);
+  width: 90px;
+  font-size: 13px;
+}
+
+.card-value {
+  color: #1ecfff;
+  font-size: 14px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+  .empty-data-card {
+  grid-column: 1 / -1;
+  padding: 40px;
+  text-align: center;
+  color: rgba(134, 201, 242, 0.6);
+  font-size: 16px;
+  background-color: rgba(0, 21, 41, 0.3);
+  border: 1px dashed rgba(30, 207, 255, 0.3);
+  border-radius: 4px;
+}
+
+
 
   .task-detail {
     border: 1px solid rgba(30, 207, 255, 0.5);
