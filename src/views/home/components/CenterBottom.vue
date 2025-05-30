@@ -282,6 +282,9 @@ onUnmounted(() => {
     border-bottom: 1px solid rgba(30, 207, 255, 0.4);
     padding-bottom: 2px;
     min-width: 80px;
+    min-height: 22px;
+    display: flex;
+    align-items: flex-end;
   }
 
   .flow-no {
