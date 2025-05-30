@@ -62,6 +62,7 @@
             </div>
             <div class="action-buttons">
               <button class="query-btn">查询</button>
+              <button class="sumbmit-btn">提交</button>
             </div>
           </div>
           <div class="info-row">
@@ -137,7 +138,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
-
+import { updateIsStart} from '@/api/mes/wk/index.ts'
 const scanData = ref(null)
 const scannerInput= ref(null)
 
@@ -299,7 +300,7 @@ onUnmounted(() => {
   }
 
   .query-btn {
-    background-color: #1ecfff;
+    background-color: #19b8e6;
     color: #fff;
     border: none;
     padding: 4px 15px;
@@ -308,7 +309,19 @@ onUnmounted(() => {
     font-size: 14px;
 
     &:hover {
-      background-color: #19b8e6;
+      background-color: rgba(25, 184, 230,.7);
+    }
+  }
+  .sumbmit-btn {
+    height: 28px;
+    background: linear-gradient(180deg, #1573ce 0%, #0a2a50 100%);
+    border: 1px solid #219efc;
+    border-radius: 4px;
+    color: #fff;
+    padding: 0 12px;
+    cursor: pointer;
+    &:hover {
+      background: linear-gradient(180deg, #1e85e2 0%, #0c315e 100%);
     }
   }
 

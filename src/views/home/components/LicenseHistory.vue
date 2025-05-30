@@ -202,6 +202,7 @@ const fetchData = async () => {
     
     const res = await getPlateListData(params)
     
+    console.log('获取生产版号数据:', res)
     if (res && res.rows && Array.isArray(res.rows)) {
       originalData.value = res.rows // 保存原始数据
       tableData.value = res.rows
