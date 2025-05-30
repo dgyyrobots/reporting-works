@@ -14,10 +14,16 @@
         <Icon class="btn-icon" icon="svg-icon:change"/>
         切版
       </button>
-      <button class="cyber-btn">
+      <button class="cyber-btn" >
+        完工汇报
+      </button>
+      <button class="cyber-btn" >
+        汇报
+      </button>
+      <!-- <button class="cyber-btn">
         <Icon class="btn-icon" icon="svg-icon:tagprint" />
         标签打印
-      </button>
+      </button> -->
     </div>
     <div class="panel-container">
       <div class="left-panel">
