@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { defineStore } from 'pinia'
+import { useCache } from '@/hooks/web/useCache'
 
 export interface TaskInfoType {
     rc_no: string
@@ -23,9 +24,18 @@ export interface TaskInfoType {
     prodesc: string
 }
 
+// 定义缓存 key，如 TASK_INFO。
+// 在 setTaskInfo 时写入缓存，在 resetTaskInfo 时清除缓存。
+// 初始化 state 时尝试从缓存读取。
+
+
+
+const TASK_INFO_KEY = 'TASK_INFO'
+const { wsCache } = useCache('localStorage')
+
 export const useWorkStore = defineStore('work', {
     state: (): { taskInfo: TaskInfoType } => ({
-        taskInfo: {
+        taskInfo: wsCache.get(TASK_INFO_KEY) || {
             rc_no: '',
             rc_id: '',
             wc_id: '',
@@ -53,7 +63,9 @@ export const useWorkStore = defineStore('work', {
     actions: {
         setTaskInfo(info: Partial<TaskInfoType>) {
             this.taskInfo = { ...this.taskInfo, ...info }
+            wsCache.set(TASK_INFO_KEY, this.taskInfo)
         },
+        // 清空 taskInfo 并删除缓存
         resetTaskInfo() {
             this.taskInfo = {
                 rc_no: '',
@@ -76,6 +88,7 @@ export const useWorkStore = defineStore('work', {
                 ud_102869_gdlx: '',
                 prodesc: '',
             }
+            wsCache.delete(TASK_INFO_KEY)
         },
     },
 })
