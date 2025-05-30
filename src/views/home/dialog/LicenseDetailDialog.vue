@@ -174,6 +174,13 @@ watch(dialogVisible, (newVal) => {
   }
 })
 
+// 监听 fleshLicenseIndex 变化
+watch(() => workStore.getFleshLicenseIndex, (newVal) => {
+  if (newVal) {
+    fetchData()
+  }
+})
+
 // 获取状态文本
 const getStatusText = (statusId) => {
   const statusMap = {

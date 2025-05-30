@@ -275,6 +275,18 @@ const fetchData = async () => {
     loading.value = false
   }
 }
+// 监听 fleshLicenseIndex 变化
+watch(() => workStore.getFleshLicenseIndex, (newVal) => {
+  if (newVal) {
+    nextTick(async () => {
+      // 如果 jobbill_id 不存在，先获取它
+      if (!jobbill_id.value) {
+        await get_jobbill_id()
+      }
+      fetchData()
+    })
+  }
+})
 
 onMounted(() => {
   nextTick(async () => {
