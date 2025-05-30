@@ -179,7 +179,7 @@
         </div>
         <div class="detail-footer">
           <el-button class="cyber-btn" @click="handleStartTask">开工</el-button>
-          <el-button class="cyber-btn secondary" @click="handleChangeTask">工单切换</el-button>
+          <el-button class="cyber-btn secondary" @click="handleFinishTask">工单切换</el-button>
         </div>
       </div>
     </div>
@@ -189,7 +189,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon } from '/@/components/Icon'
-import { getJobBillContent } from '@/api/mes/wk/index.ts'
+import { getJobBillContent,getCleanDeviceBillData,getChangeDeviceBillData } from '@/api/mes/wk/index.ts'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { useWorkStore } from '@/store/modules/work.ts'
 
@@ -373,6 +373,8 @@ const resetQuery = () => {
 
 // 任务操作
 const handleStartTask = () => {
+  console.log(selectedRow.value,'selectedRow.value')
+  console.log(props.currentDevice,'props.currentDevice')
   if (!selectedRow.value) {
     ElMessage.warning('请先选择一个任务单')
     return
@@ -392,7 +394,29 @@ const handleStartTask = () => {
     }
   )
   .then(() => {
-    ElMessage.success('任务已开始')
+    const device =  JSON.parse(JSON.stringify(props.currentDevice))
+    device.jobbill_no = ''
+    const data = {
+      id: selectedRow.value.id,
+      action_id:1,
+      device_list: [device],
+      type:0
+    }
+    getChangeDeviceBillData(data).then(res => {
+      if(res.ret===0){   
+        ElMessage.success('操作成功!')
+          // 重置工作状态
+        workStore.updateFleshIndex()
+        // 重新加载数据
+        fetchData()
+      }else {
+        ElMessage.error(res.msg)
+        return
+      }
+   
+    }).catch(err => {
+      ElMessage.error('操作失败')
+    })
     // 这里添加开工的API调用
     
   })
@@ -400,8 +424,8 @@ const handleStartTask = () => {
     // 用户取消操作
   })
 }
-
-const handleChangeTask = () => {
+// 工单切换 (解绑任务)
+const handleFinishTask = () => {
   if (!selectedRow.value) {
     ElMessage.warning('请先选择一个任务单')
     return
@@ -422,11 +446,25 @@ const handleChangeTask = () => {
     }
   )
   .then(() => {
-    ElMessage.success('操作成功!')
-    // 这里添加结束任务的API调用
-    
-    // 重置工作状态
-    workStore.updateFleshIndex()
+    const device =  JSON.parse(JSON.stringify(props.currentDevice))
+    const data = {
+      device_id:device.id,
+    }
+    getCleanDeviceBillData(data).then(res => {
+      if(res.ret===0){   
+        ElMessage.success('操作成功!')
+          // 重置工作状态
+        workStore.updateFleshIndex()
+        // 重新加载数据
+        fetchData()
+      }else {
+        ElMessage.error(res.msg)
+        return
+      }
+   
+    }).catch(err => {
+      ElMessage.error('操作失败')
+    })
   })
   .catch(() => {
     // 用户取消操作

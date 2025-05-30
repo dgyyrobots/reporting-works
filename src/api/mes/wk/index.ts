@@ -173,3 +173,17 @@ export const deleteJobbillReport = async (data: any) => {
         data,
     })
 }
+//  解绑工单
+export const getCleanDeviceBillData = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_version_number_manage/action:clean_device_jobbill',
+        data,
+    })
+}
+// 开工工单
+export const getChangeDeviceBillData = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_jobbill/action:change_jobbill_status',
+        data,
+    })
+}

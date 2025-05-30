@@ -610,6 +610,21 @@ const WpCountData = {
     "time": "Thu May 29 06:15:30 +0000 2025"
 }
 
+const CleanDeviceBillData = {
+    "ret": 0,
+    "msg": null,
+    "data": 1,
+    "time": "Fri May 30 01:35:46 +0000 2025"
+}
+
+const ChangeDeviceBillData = {
+    "ret": 0,
+    "msg": null,
+    "data": 1,
+    "time": "Fri May 30 01:35:46 +0000 2025"
+}
+
+
 export default [
 
     // 获取工单内容
@@ -644,6 +659,23 @@ export default [
             return WpCountData
         },
     },
+    // 解绑工单
+    {
+        url: '/mes/ajax/mes_version_number_manage/action:clean_device_jobbill',
+        method: 'post',
+        response() {
+            return CleanDeviceBillData
+        },
+    },
 
+    // 开工工单
+
+    {
+        url: '/mes/ajax/mes_jobbill/action:change_jobbill_status',
+        method: 'post',
+        response() {
+            return ChangeDeviceBillData
+        },
+    },
 
 ] as MockMethod[]
