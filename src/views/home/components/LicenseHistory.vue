@@ -24,7 +24,7 @@
           <tr v-for="(item, index) in tableData" :key="index">
             <td>{{ index + 1 }}</td>
             <td>
-              <el-checkbox v-model="item.selected" @change="handleItemSelectChange" />
+              <el-checkbox v-model="item.selected" @change="() => handleItemSelectChange(item)" />
             </td>
             <td>{{ formatVersionNo(item.version_no) }}</td>
             <td>{{ toInteger(item.collection_qty) }}</td>
@@ -50,13 +50,25 @@ import Card from './Card.vue'
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { getPlateListData, getJobBillContent } from '@/api/mes/wk/index.ts'
 import LicenseDetailDialog from '../dialog/LicenseDetailDialog.vue'
+import { useWorkStore } from '@/store/modules/work' // 导入store
 
+const workStore = useWorkStore() // 使用store
 const loading = ref(false)
 const tableData = ref([])
 const originalData = ref([]) // 存储原始数据
 const jobbill_id = ref('') // 添加 jobbill_id 引用
-const selectAll = ref(false) // 全选状态
 const detailDialogVisible = ref(false) // 明细弹框显示状态
+
+// 全选状态，使用计算属性从store获取
+const selectAll = computed({
+  get: () => {
+    const licenseCheck = workStore.getLicenseCheck
+    return licenseCheck.length > 0 && licenseCheck.every(item => item.selected)
+  },
+  set: (val) => {
+    workStore.updateAllLicenseCheck(val)
+  }
+})
 
 // 表头定义 - 修改为只保留需要的列
 const tableHeaders = ['序号', '选择', '版号', '采集数量', '状态']
@@ -80,15 +92,12 @@ const showDetailDialog = () => {
 
 // 处理全选变化
 const handleSelectAllChange = (val) => {
-  tableData.value.forEach((item) => {
-    item.selected = val
-  })
+  workStore.updateAllLicenseCheck(val)
 }
 
 // 处理单个选择变化
-const handleItemSelectChange = () => {
-  // 检查是否所有项都被选中
-  selectAll.value = tableData.value.length > 0 && tableData.value.every((item) => item.selected)
+const handleItemSelectChange = (item) => {
+  workStore.updateLicenseCheckItem(item.id, item.selected)
 }
 
 // 获取工单ID
@@ -224,20 +233,44 @@ const fetchData = async () => {
     console.log('获取生产版号数据:', res)
     if (res && res.rows && Array.isArray(res.rows)) {
       // 为每一行数据添加selected属性
-      const processedData = res.rows.map((item) => ({
-        ...item,
-        selected: false,
-      }))
+      const processedData = res.rows.map((item) => {
+        // 检查store中是否已有该项
+        const existingItem = workStore.getLicenseCheck && workStore.getLicenseCheck.find 
+          ? workStore.getLicenseCheck.find(storeItem => storeItem.id === item.id)
+          : null
+        return {
+          ...item,
+          selected: existingItem ? existingItem.selected : false,
+        }
+      })
+      
+      // 更新store中的licenseCheck - 添加防御性检查
+      if (typeof workStore.setLicenseCheck === 'function') {
+        workStore.setLicenseCheck(processedData)
+      } else {
+        console.error('workStore.setLicenseCheck 不是一个函数')
+        // 如果方法不存在，直接设置本地数据
+        tableData.value = processedData
+        originalData.value = processedData
+        return
+      }
+      
       originalData.value = processedData // 保存原始数据
       tableData.value = processedData
     } else {
       originalData.value = []
       tableData.value = []
+      if (typeof workStore.clearLicenseCheck === 'function') {
+        workStore.clearLicenseCheck()
+      }
     }
   } catch (error) {
     console.error('获取生产版号数据失败:', error)
     originalData.value = []
     tableData.value = []
+    if (typeof workStore.clearLicenseCheck === 'function') {
+      workStore.clearLicenseCheck()
+    }
   } finally {
     loading.value = false
   }

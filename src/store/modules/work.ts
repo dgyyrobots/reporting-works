@@ -30,11 +30,23 @@ export interface TaskInfoType {
 
 
 
+// 定义版号选择项接口
+export interface LicenseCheckItem {
+    id: string | number
+    version_no: string
+    selected: boolean
+    [key: string]: any
+}
+
 const TASK_INFO_KEY = 'TASK_INFO'
 const { wsCache } = useCache('localStorage')
 
 export const useWorkStore = defineStore('work', {
-    state: (): { taskInfo: TaskInfoType, fleshIndex: number } => ({
+    state: (): { 
+        taskInfo: TaskInfoType, 
+        fleshIndex: number,
+        licenseCheck: LicenseCheckItem[] // 新增licenseCheck状态
+    } => ({
         taskInfo: wsCache.get(TASK_INFO_KEY) || {
             rc_no: '',
             rc_id: '',
@@ -57,10 +69,12 @@ export const useWorkStore = defineStore('work', {
             prodesc: '',
         },
         fleshIndex: 0, // 默认值为0，不从缓存读取
+        licenseCheck: [], // 不需要缓存，初始为空数组
     }),
     getters: {
         getTaskInfo: (state) => state.taskInfo,
         getFleshIndex: (state) => state.fleshIndex,
+        getLicenseCheck: (state) => state.licenseCheck, // 新增getter
     },
     actions: {
         setTaskInfo(info: Partial<TaskInfoType>) {
@@ -100,5 +114,30 @@ export const useWorkStore = defineStore('work', {
         resetFleshIndex() {
             this.fleshIndex = 0
         },
+        
+        // 设置版号选择项
+        setLicenseCheck(items: LicenseCheckItem[]) {
+            this.licenseCheck = items
+        },
+        
+        // 更新单个版号选择状态
+        updateLicenseCheckItem(id: string | number, selected: boolean) {
+            const item = this.licenseCheck.find(item => item.id === id)
+            if (item) {
+                item.selected = selected
+            }
+        },
+        
+        // 更新所有版号选择状态
+        updateAllLicenseCheck(selected: boolean) {
+            this.licenseCheck.forEach(item => {
+                item.selected = selected
+            })
+        },
+        
+        // 清空版号选择项
+        clearLicenseCheck() {
+            this.licenseCheck = []
+        }
     },
 })

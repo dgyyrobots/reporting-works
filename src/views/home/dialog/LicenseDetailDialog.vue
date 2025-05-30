@@ -42,7 +42,7 @@
                 <tr v-for="(item, index) in tableData" :key="index">
                   <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
                   <td>
-                    <el-checkbox v-model="item.selected" @change="handleItemSelectChange" />
+                    <el-checkbox v-model="item.selected" @change="() => handleItemSelectChange(item)" />
                   </td>
                   <td>{{ item.version_no }}</td>
                   <td>{{ toInteger(item.collection_qty) }}</td>
@@ -106,10 +106,13 @@
 </template>
 
 <script setup>
-import {  ElMessage, ElMessageBox,} from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, computed, watch } from 'vue'
-import { getPlateListData,updateVersionNumberManageEntryData } from '@/api/mes/wk/index.ts'
+import { getPlateListData, updateVersionNumberManageEntryData } from '@/api/mes/wk/index.ts'
 import { Icon } from '/@/components/Icon'
+import { useWorkStore } from '@/store/modules/work' // 导入store
+
+const workStore = useWorkStore() // 使用store
 
 const props = defineProps({
   modelValue: {
@@ -135,7 +138,7 @@ const dialogVisible = computed({
 
 const loading = ref(false)
 const tableData = ref([])
-const selectAll = ref(false) // 新增全选
+// const selectAll = ref(false) // 新增全选
 const currentPage = ref(1)
 const pageSize = ref(20)
 const total = ref(0)
@@ -270,16 +273,43 @@ const handleJumpPage = () => {
   }
 }
 
+// 全选状态，直接使用本地数据计算，不依赖store
+const selectAll = computed({
+  get: () => {
+    return tableData.value.length > 0 && tableData.value.every(item => item.selected)
+  },
+  set: (val) => {
+    // 更新本地数据
+    tableData.value.forEach(item => {
+      item.selected = val
+    })
+    
+    // 如果store方法存在，同步更新store
+    if (typeof workStore.updateAllLicenseCheck === 'function') {
+      workStore.updateAllLicenseCheck(val)
+    }
+  }
+})
+
 // 全选checkbox变化
 const handleSelectAllChange = (val) => {
-  tableData.value.forEach((item) => {
-    item.selected = val
-  })
+  // 直接设置计算属性的值，会触发set方法
+  selectAll.value = val
 }
 
 // 单个checkbox变化
-const handleItemSelectChange = () => {
-  selectAll.value = tableData.value.length > 0 && tableData.value.every((item) => item.selected)
+const handleItemSelectChange = (item) => {
+  // 如果store方法存在，同步更新store
+  if (typeof workStore.updateLicenseCheckItem === 'function') {
+    workStore.updateLicenseCheckItem(item.id, item.selected)
+  }
+  
+  // 手动检查是否需要更新全选状态
+  const allSelected = tableData.value.length > 0 && tableData.value.every(i => i.selected)
+  if (allSelected !== selectAll.value) {
+    // 这里不会触发无限循环，因为只有在值不同时才会更新
+    selectAll.value = allSelected
+  }
 }
 
 // 获取数据
@@ -329,17 +359,33 @@ const fetchData = async () => {
     const res = await getPlateListData(params)
 
     if (res && res.rows && Array.isArray(res.rows)) {
-      tableData.value = res.rows.map((item) => ({
-        ...item,
-        selected: false, // 默认不选中
-      }))
+      // 处理数据，与store中的数据同步选中状态
+      tableData.value = res.rows.map((item) => {
+        // 检查store中是否已有该项
+        const storeItems = workStore.getLicenseCheck || []
+        const existingItem = storeItems.find(storeItem => storeItem.id === item.id)
+        return {
+          ...item,
+          selected: existingItem ? existingItem.selected : false,
+        }
+      })
+      
+      // 更新store中可能不存在的项
+      if (typeof workStore.setLicenseCheck === 'function') {
+        const storeItems = workStore.getLicenseCheck || []
+        const newItems = tableData.value.filter(item => 
+          !storeItems.some(storeItem => storeItem.id === item.id)
+        )
+        if (newItems.length > 0) {
+          workStore.setLicenseCheck([...storeItems, ...newItems])
+        }
+      }
+      
       total.value = res.total || 0
       jumpPage.value = currentPage.value
-      selectAll.value = false
     } else {
       tableData.value = []
       total.value = 0
-      selectAll.value = false
     }
   } catch (error) {
     console.error('获取生产版号明细数据失败:', error)
