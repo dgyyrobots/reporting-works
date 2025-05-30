@@ -179,7 +179,7 @@
         </div>
         <div class="detail-footer">
           <el-button class="cyber-btn" @click="handleStartTask">开工</el-button>
-          <el-button class="cyber-btn secondary" @click="handleChangeTask">解绑工单</el-button>
+          <el-button class="cyber-btn secondary" @click="handleChangeTask">工单切换</el-button>
         </div>
       </div>
     </div>
