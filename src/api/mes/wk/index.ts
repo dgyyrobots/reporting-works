@@ -123,7 +123,7 @@ export const getDeviceRuntimeADay = async (data: any) => {
 export const getPlateListData = async (data: any) => {
     const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: `/test/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq`,
+        url: `/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq`,
         data,
     })
 }

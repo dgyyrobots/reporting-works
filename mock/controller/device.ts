@@ -2047,7 +2047,7 @@ export default [
 
     // 获取正在生产的版号列表
     {
-        url: '/test/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq',
+        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq',
         method: 'post',
         response() {
             return PlateListData
