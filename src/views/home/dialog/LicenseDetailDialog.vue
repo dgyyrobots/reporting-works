@@ -36,7 +36,6 @@
                   <th style="width: 150px">(大张)汇报数量</th>
                   <th style="width: 150px">(大张)过版数量</th>
                   <th style="width: 180px">操作时间</th>
-                  <th style="width: 180px">采集时间</th>
                 </tr>
               </thead>
               <tbody>
@@ -62,7 +61,6 @@
                   <td>{{ calculateBigSheetReportQty(item) }}</td>
                   <td>{{ calculateBigSheetPassQty(item) }}</td>
                   <td>{{ formatDate(item.operate_date) }}</td>
-                  <!-- <td>{{ formatDate(item.collect_date) }}</td> -->
                 </tr>
               </tbody>
             </table>
