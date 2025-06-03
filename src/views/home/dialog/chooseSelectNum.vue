@@ -3,14 +3,20 @@
     <div class="form-container">
       <div class="form-item">
         <div class="form-label">状态：</div>
-        <el-select v-model="formData.status" class="full-width" placeholder="请选择状态">
+        <el-select v-model="formData.status" class="full-width" placeholder="请选择状态" @change="handleStatusChange">
           <el-option label="结束采集" value="2" />
           <el-option label="待采集" value="0" />
         </el-select>
       </div>
       <div class="form-item">
         <div class="form-label">数量：</div>
-        <el-input v-model="formData.collection_qty" class="full-width" placeholder="请输入数量" type="number" />
+        <el-input 
+          v-model="formData.collection_qty" 
+          class="full-width" 
+          placeholder="请输入数量" 
+          type="number" 
+          :disabled="formData.status === '0'"
+        />
       </div>
     </div>
     <div class="form-footer">
@@ -21,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, defineEmits, defineProps } from 'vue'
+import { ref, reactive, defineEmits, defineProps, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { updateVersionNumberManageEntryData } from '@/api/mes/wk/index.ts'
 import { useWorkStore } from '@/store/modules/work.ts'
@@ -33,18 +39,18 @@ const props = defineProps({
   params: {
     type: Object,
     default: () => ({
-      work_no: 'ZYCS01-202503012',
-      bill_no: 'ZYCS01-202503012_j05',
-      order_no: '80',
-      workbill_no: 'ZYCS01-202503012_b01',
-      wc_id: '118',
-      wc_number: '08',
-      work_id: '2270',
-      wp_number: '017',
-      rc_no: 'ZYCS01-202503012_r01',
-      device_id: '66',
-      jobbill_id: '8543',
-      wp_order_no: '80',
+      // work_no: 'ZYCS01-202503012',
+      // bill_no: 'ZYCS01-202503012_j05',
+      // order_no: '80',
+      // workbill_no: 'ZYCS01-202503012_b01',
+      // wc_id: '118',
+      // wc_number: '08',
+      // work_id: '2270',
+      // wp_number: '017',
+      // rc_no: 'ZYCS01-202503012_r01',
+      // device_id: '66',
+      // jobbill_id: '8543',
+      // wp_order_no: '80',
     }),
   },
 })
@@ -55,6 +61,20 @@ const workStore = useWorkStore()
 const formData = reactive({
   status: '2',
   collection_qty: '0',
+})
+
+// 处理状态变化
+const handleStatusChange = (value) => {
+  if (value === '0') {
+    formData.collection_qty = '0'
+  }
+}
+
+// 监听状态变化，当选择"待采集"时，自动将数量设为0
+watch(() => formData.status, (newStatus) => {
+  if (newStatus === '0') {
+    formData.collection_qty = '0'
+  }
 })
 
 // 取消操作
