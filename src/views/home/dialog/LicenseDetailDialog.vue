@@ -36,6 +36,7 @@
                   <th style="width: 150px">(大张)汇报数量</th>
                   <th style="width: 150px">(大张)过版数量</th>
                   <th style="width: 180px">操作时间</th>
+                  <th style="width: 180px">采集时间</th>
                 </tr>
               </thead>
               <tbody>
@@ -54,13 +55,14 @@
                   <td>{{ toInteger(item.pass_qty) }}</td>
                   <td>{{ calculateRemaining(item) }}</td>
                   <td>
-                    <span class='del-span' @click.stop="confirmDelete(item)">
-                        <Icon icon="svg-icon:del" />
+                    <span class="del-span" @click.stop="confirmDelete(item)">
+                      <Icon icon="svg-icon:del" />
                     </span>
                   </td>
                   <td>{{ calculateBigSheetReportQty(item) }}</td>
                   <td>{{ calculateBigSheetPassQty(item) }}</td>
                   <td>{{ formatDate(item.operate_date) }}</td>
+                  <!-- <td>{{ formatDate(item.collect_date) }}</td> -->
                 </tr>
               </tbody>
             </table>
@@ -175,22 +177,25 @@ watch(dialogVisible, (newVal) => {
 })
 
 // 监听 fleshLicenseIndex 变化
-watch(() => workStore.getFleshLicenseIndex, (newVal) => {
-  console.log('fleshLicenseIndex 变化:', newVal)
-  if (newVal) {
-    fetchData()
-    workStore.setLicenseCheck([])
+watch(
+  () => workStore.getFleshLicenseIndex,
+  (newVal) => {
+    console.log('fleshLicenseIndex 变化:', newVal)
+    if (newVal) {
+      fetchData()
+      workStore.setLicenseCheck([])
+    }
   }
-})
+)
 // 计算剩余可报数量 = 采集数 - 不合格数 - 过版纸数
 const calculateRemaining = (item) => {
   const collection_qty = toInteger(item.collection_qty) || 0
   const no_okqty = toInteger(item.no_okqty) || 0
   const pass_qty = toInteger(item.pass_qty) || 0
-  
+
   // 计算剩余可报数量
   const remaining = collection_qty - no_okqty - pass_qty
-  
+
   // 确保不会出现负数
   return Math.max(0, remaining)
 }
@@ -198,15 +203,15 @@ const calculateRemaining = (item) => {
 // 计算(大张)过版数量 = pass_qty * exchange_son_uqty
 const calculateBigSheetPassQty = (item) => {
   const pass_qty = toInteger(item.pass_qty) || 0
-  const exchange_son_uqty= toInteger(item.exchange_son_uqty)
-  
+  const exchange_son_uqty = toInteger(item.exchange_son_uqty)
+
   return pass_qty * exchange_son_uqty
 }
 // 计算(大张)汇报数量 = report_qty * exchange_son_uqty
 const calculateBigSheetReportQty = (item) => {
-  const report_qty  = toInteger(item.report_qty) || 0
-  const exchange_son_uqty= toInteger(item.exchange_son_uqty)
-  
+  const report_qty = toInteger(item.report_qty) || 0
+  const exchange_son_uqty = toInteger(item.exchange_son_uqty)
+
   return report_qty * exchange_son_uqty
 }
 
@@ -312,22 +317,22 @@ const handleJumpPage = () => {
 // 全选状态，直接使用本地数据计算，不依赖store
 const selectAll = computed({
   get: () => {
-    return tableData.value.length > 0 && tableData.value.every(item => item.selected)
+    return tableData.value.length > 0 && tableData.value.every((item) => item.selected)
   },
   set: (val) => {
     // 更新本地数据
-    tableData.value.forEach(item => {
+    tableData.value.forEach((item) => {
       item.selected = val
     })
-    
+
     // 同步更新store中的licenseCheck
     if (typeof workStore.updateAllLicenseCheck === 'function') {
       workStore.updateAllLicenseCheck(val)
     }
-    
+
     // 同步更新store中的selectedLicenseCheck
     updateSelectedLicenseCheck()
-  }
+  },
 })
 
 // 全选checkbox变化
@@ -342,12 +347,12 @@ const handleItemSelectChange = (item) => {
   if (typeof workStore.updateLicenseCheckItem === 'function') {
     workStore.updateLicenseCheckItem(item.id, item.selected)
   }
-  
+
   // 同步更新store中的selectedLicenseCheck
   updateSelectedLicenseCheck()
-  
+
   // 手动检查是否需要更新全选状态
-  const allSelected = tableData.value.length > 0 && tableData.value.every(i => i.selected)
+  const allSelected = tableData.value.length > 0 && tableData.value.every((i) => i.selected)
   if (allSelected !== selectAll.value) {
     // 这里不会触发无限循环，因为只有在值不同时才会更新
     selectAll.value = allSelected
@@ -357,8 +362,8 @@ const handleItemSelectChange = (item) => {
 // 新增：更新store中的selectedLicenseCheck
 const updateSelectedLicenseCheck = () => {
   // 筛选出选中的项
-  const selectedItems = tableData.value.filter(item => item.selected)
-  
+  const selectedItems = tableData.value.filter((item) => item.selected)
+
   // 更新store中的selectedLicenseCheck
   if (typeof workStore.setSelectedLicenseCheck === 'function') {
     workStore.setSelectedLicenseCheck(selectedItems)
@@ -416,27 +421,25 @@ const fetchData = async () => {
       tableData.value = res.rows.map((item) => {
         // 检查store中是否已有该项
         const storeItems = workStore.getLicenseCheck || []
-        const existingItem = storeItems.find(storeItem => storeItem.id === item.id)
+        const existingItem = storeItems.find((storeItem) => storeItem.id === item.id)
         return {
           ...item,
           selected: existingItem ? existingItem.selected : false,
         }
       })
-      
+
       // 更新store中可能不存在的项
       if (typeof workStore.setLicenseCheck === 'function') {
         const storeItems = workStore.getLicenseCheck || []
-        const newItems = tableData.value.filter(item => 
-          !storeItems.some(storeItem => storeItem.id === item.id)
-        )
+        const newItems = tableData.value.filter((item) => !storeItems.some((storeItem) => storeItem.id === item.id))
         if (newItems.length > 0) {
           workStore.setLicenseCheck([...storeItems, ...newItems])
         }
       }
-      
+
       // 同步更新selectedLicenseCheck
       updateSelectedLicenseCheck()
-      
+
       total.value = res.total || 0
       jumpPage.value = currentPage.value
     } else {
@@ -454,27 +457,23 @@ const fetchData = async () => {
 
 const confirmDelete = async (item) => {
   try {
-    await ElMessageBox.confirm(
-      '是否确认删除该条数据？',
-      '确认删除',
-      {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning',
-        customClass: 'cyber-confirm-box',
-        confirmButtonClass: 'cyber-confirm-btn',
-        cancelButtonClass: 'cyber-cancel-btn'
-      }
-    )
-    
+    await ElMessageBox.confirm('是否确认删除该条数据？', '确认删除', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      customClass: 'cyber-confirm-box',
+      confirmButtonClass: 'cyber-confirm-btn',
+      cancelButtonClass: 'cyber-cancel-btn',
+    })
+
     // 用户点击了确认按钮，执行删除操作
     try {
-      const params =  {
+      const params = {
         id: item.id,
-        is_delete: 1
-       }
+        is_delete: 1,
+      }
       const res = await updateVersionNumberManageEntryData(params)
-      
+
       console.log('删除响应数据:', res)
       if (res && res.ret === 0) {
         ElMessage.success('删除成功')
@@ -485,7 +484,7 @@ const confirmDelete = async (item) => {
       }
     } catch (error) {
       console.error('删除数据失败:', error)
-      ElMessage.error('删除失败：' + (error.message || '未知错误'))
+      ElMessage.error(`删除失败：${error.message || '未知错误'}`)
     }
   } catch (e) {
     // 用户取消了删除操作，不做任何处理
@@ -815,7 +814,7 @@ const confirmDelete = async (item) => {
   }
 }
 .del-span {
-    cursor: pointer;
-    padding: 2px 4px;
+  cursor: pointer;
+  padding: 2px 4px;
 }
 </style>

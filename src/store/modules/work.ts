@@ -47,6 +47,7 @@ export const useWorkStore = defineStore('work', {
         fleshTaskIndex: number,
         fleshLicenseIndex: number, // 新增fleshLicenseIndex状态
         licenseCheck: LicenseCheckItem[], // 所有版号数据
+        licenseCheckSortByCollectDate: LicenseCheckItem[], // 这个数组存的是按collect_date排序后的数据
         selectedLicenseCheck: LicenseCheckItem[] // 新增：存储选中的版号数据
     } => ({
         taskInfo: wsCache.get(TASK_INFO_KEY) || {
@@ -73,6 +74,7 @@ export const useWorkStore = defineStore('work', {
         fleshTaskIndex: 0, // 默认值为0，不从缓存读取 // 刷新任务单
         fleshLicenseIndex: 0, // 默认值为0，不从缓存读取 // 刷新版本
         licenseCheck: [], // 不需要缓存，初始为空数组
+        licenseCheckSortByCollectDate: [], // 这个数组存的是按collect_date排序后的数据, 不需要缓存，初始为空数组
         selectedLicenseCheck: [] // 新增：存储选中的版号数据，初始为空数组
     }),
     getters: {
@@ -132,9 +134,35 @@ export const useWorkStore = defineStore('work', {
 
         // 设置版号选择项
         setLicenseCheck(items: LicenseCheckItem[]) {
+            console.log(items, 'items1111')
             this.licenseCheck = items
+            // 对数据按照collect_date进行排序后再赋值
+            this.sortLicenseCheckByCollectDate(items)
             // 更新选中的版号数据
             this.updateSelectedLicenseCheck()
+        },
+
+        // 新增：根据collect_date对数组进行排序
+        sortLicenseCheckByCollectDate(items: LicenseCheckItem[]) {
+            // 创建一个新数组，避免直接修改原数组
+            const sortedItems = [...items]
+            
+            // 根据collect_date进行排序，距离当前时间最近的排在前面
+            sortedItems.sort((a, b) => {
+                const dateA = a.collect_date ? new Date(parseInt(a.collect_date) * 1000).getTime() : 0
+                const dateB = b.collect_date ? new Date(parseInt(b.collect_date) * 1000).getTime() : 0
+                
+                // 如果日期不存在，则排在后面
+                if (!dateA && dateB) return 1
+                if (dateA && !dateB) return -1
+                if (!dateA && !dateB) return 0
+                
+                // 距离当前时间最近的排在前面（降序排列）
+                return dateB - dateA
+            })
+            
+            // 将排序后的数组赋值给licenseCheckSortByCollectDate
+            this.licenseCheckSortByCollectDate = sortedItems
         },
 
         // 更新单个版号选择状态

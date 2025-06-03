@@ -126,15 +126,15 @@
         <div class="panel-content">
           <div class="right-row">
             <div class="right-label">采集数：</div>
-            <div class="right-value">3118</div>
+            <div class="right-value">{{ toInteger(previousVersionInfo?.collection_qty) || 0 }}</div>
           </div>
           <div class="right-row">
             <div class="right-label">合格品数：</div>
-            <div class="right-value">0/分钟</div>
+            <div class="right-value">{{ toInteger(previousVersionInfo?.ok_qty) || 0 }}</div>
           </div>
           <div class="right-row">
             <div class="right-label">生产用时：</div>
-            <div class="right-value">0.5H</div>
+            <div class="right-value">{{ formatDuration(previousVersionInfo?.collect_time) || '0H' }}</div>
           </div>
         </div>
       </div>
@@ -182,6 +182,20 @@ const chooseSelectNumVis = ref(false)
 // 当前版号信息
 const currentVersionInfo = reactive({})
 
+
+const previousVersionInfo = computed(() => {
+  const sortedVersions = workStore.licenseCheckSortByCollectDate
+  // 检查数组长度是否大于1，如果是则返回index为1的项，否则返回空对象
+  return sortedVersions && sortedVersions.length > 1 ? sortedVersions[1] : {}
+})
+// 格式化时长显示
+const formatDuration = (seconds) => {
+  if (!seconds) return '0H'
+  
+  // 将秒数转换为小时，保留一位小数
+  const hours = (parseInt(seconds) / 3600).toFixed(1)
+  return `${hours}H`
+}
 // 查询按钮点击事件
 const handleQuery = () => {
   if (!scanData.value) {
