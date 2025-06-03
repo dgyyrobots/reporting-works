@@ -72,21 +72,21 @@
           </div>
           <div class="info-row">
             <div class="info-label">采集数：</div>
-            <div class="info-value flow-no">{{ toInteger(currentVersionInfo.collection_qty) }}</div>
+            <div class="info-value fixed-width">{{ toInteger(currentVersionInfo.collection_qty) }}</div>
             <div class="icon-placeholder"></div>
             <div class="info-label-right">废品数：</div>
-            <div class="info-value">{{ toInteger(currentVersionInfo.no_okqty)  }}</div>
+            <div class="info-value fixed-width">{{ toInteger(currentVersionInfo.no_okqty)  }}</div>
             <div class="icon-placeholder"></div>
           </div>
 
           <div class="info-row">
             <div class="info-label">过版纸数：</div>
-            <div class="info-value flow-no">
+            <div class="info-value fixed-width">
               <span>{{ toInteger(currentVersionInfo.pass_qty)  }}</span>
             </div>
             <div class="icon-placeholder"></div>
             <div class="info-label-right">合格品数：</div>
-            <div class="info-value">{{ toInteger(currentVersionInfo.ok_qty) }}</div>
+            <div class="info-value fixed-width">{{ toInteger(currentVersionInfo.ok_qty) }}</div>
             <div class="icon-placeholder"></div>
           </div>
         </div>
@@ -537,7 +537,14 @@ onUnmounted(() => {
     display: flex;
     align-items: flex-end;
   }
-
+  /* 添加固定宽度的样式 */
+  .fixed-width {
+    width: 120px; /* 设置固定宽度 */
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .flow-no {
     flex: 1;
     margin-right: 10px;
