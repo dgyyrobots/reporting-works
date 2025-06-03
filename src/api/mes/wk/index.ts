@@ -1,5 +1,19 @@
 import request from '@/config/axios'
 
+// 获取登录信息中的 stored_company
+const getStoredCompany = () => {
+    try {
+        const loginInfo = localStorage.getItem('loginInfo')
+        if (loginInfo) {
+            const parsedInfo = JSON.parse(loginInfo)
+            return parsedInfo.stored_company || '102869' // 默认值作为后备
+        }
+    } catch (error) {
+        console.error('获取 stored_company 失败:', error)
+    }
+    return '102869' // 默认值
+}
+
 export interface WorkcenterVo {
     action?: string
 }
@@ -14,8 +28,9 @@ export const getWorkcenterList = async (data: any) => {
 
 // 获取工作站下的设备列表
 export const getWorkcenterDeviceList = async (data: any) => {
+    const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: '/erp/ajax/get_obj_view_list/view_type:32/view_key:hygmqurg/object_key:base_mes_device/root_view_key:hygmqurg',
+        url: `/erp/ajax/get_obj_view_list/view_type:32/view_key:hygmqurg/object_key:base_mes_device/root_view_key:hygmqurg/context_company_id:${companyId}`,
         data,
     })
 }
@@ -46,8 +61,9 @@ export const getRunningBanciDevice = async (data: any) => {
 
 // 设备计时的工单
 export const getRunningBanCiWorkOrder = async (data: any) => {
+    const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:yxpciuyh/object_key:bill_mes_rc_wpentry/root_view_key:yxpciuyh',
+        url: `/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:yxpciuyh/object_key:bill_mes_rc_wpentry/root_view_key:yxpciuyh`,
         data,
     })
 }
@@ -70,16 +86,18 @@ export const getJobBillContent = async (data: any) => {
 
 // 获取工单实际开工时间和生产数量
 export const getJobBillTimeAndNumber = async (data: any) => {
+    const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:zlwumhtk/object_key:bill_mes_rc_wpentry/root_view_key:zlwumhtk',
+        url: `/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:zlwumhtk/object_key:bill_mes_rc_wpentry/root_view_key:zlwumhtk`,
         data,
     })
 }
 
 // 获取工单类型和计划开工时间
 export const getJobBillTypeAndStartTime = async (data: any) => {
+    const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:jbkbxpwi/object_key:bill_mes_work/root_view_key:jbkbxpwi',
+        url: `/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:jbkbxpwi/object_key:bill_mes_work/root_view_key:jbkbxpwi`,
         data,
     })
 }
@@ -94,16 +112,18 @@ export const getCollectionQty = async (data: any) => {
 
 // 获取当日设备计时列表-左下角设备计时
 export const getDeviceRuntimeADay = async (data: any) => {
+    const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: '/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:xfdxxdaa/object_key:bill_mes_device_collect_record_by_Manual/root_view_key:xfdxxdaa',
+        url: `/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:xfdxxdaa/object_key:bill_mes_device_collect_record_by_Manual/root_view_key:xfdxxdaa`,
         data,
     })
 }
 
 // 获取正在生产的版号列表
 export const getPlateListData = async (data: any) => {
+    const companyId = getStoredCompany()
     return await request.postOriginal({
-        url: '/test/erp/ajax/get_obj_view_list/context_company_id:102869/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq',
+        url: `/test/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:wcpvbyqq/object_key:bill_mes_version_number_manage/root_view_key:wcpvbyqq`,
         data,
     })
 }
@@ -151,12 +171,12 @@ export const collectionFinish = async (data: any) => {
 }
 
 // 员工查询已经汇报的版号信息接口
-export const getReportedVersionInfo = async (data: any) => {
-    return await request.postOriginal({
-        url: '/erp/ajax/erp_view_api/view_key:skjsiwuz/data_id:294098',
-        data,
-    })
-}
+// export const getReportedVersionInfo = async (data: any) => {
+//     return await request.postOriginal({
+//         url: '/erp/ajax/erp_view_api/view_key:skjsiwuz/data_id:294098',
+//         data,
+//     })
+// }
 
 // 员工汇报接口
 export const reportVersion = async (data: any) => {
