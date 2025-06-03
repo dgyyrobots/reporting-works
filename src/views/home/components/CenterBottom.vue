@@ -18,7 +18,7 @@
         <Icon class="btn-icon" icon="svg-icon:huibao"/>
         完工汇报
       </button>
-      <button class="cyber-btn" >
+      <button class="cyber-btn" @click="handleReport">
         <Icon class="btn-icon" icon="svg-icon:huibao"/>
         汇报
       </button>
@@ -158,7 +158,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
-import { updateIsStart, changeActiveRow,collectionFinish} from '@/api/mes/wk/index.ts'
+import { updateIsStart, changeActiveRow,collectionFinish ,   reportVersion } from '@/api/mes/wk/index.ts'
 import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
 import { ElMessageBox ,ElMessage} from 'element-plus'
 
@@ -181,8 +181,52 @@ const chooseSelectNumVis = ref(false)
 
 
 
+const handleReport = () => {
+  const selectedLicenseCheck = workStore.selectedLicenseCheck
+  const taskInfo = workStore.taskInfo
+  
+  if (!selectedLicenseCheck.length) {
+    return ElMessage.error('请至少选择一行汇报')
+  }
 
-
+  
+  if (!taskInfo.id) {
+    return ElMessage.error('未找到当前设备的工单信息')
+  }
+  
+  ElMessageBox.confirm(
+    '确认要汇报选中的版号吗？',
+    '汇报确认',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      customClass: 'cyber-confirm-box'
+    }
+  ).then(() => {
+    // 调用汇报接口
+    const params = {
+      data: selectedLicenseCheck, // 获取选中版号的ID数组
+      jobbill_id: taskInfo.id
+    }
+    
+    reportVersion(params).then(res => {
+      console.log(res, '汇报结果')
+      if (res.ret === 0) {
+        ElMessage.success('汇报成功!')
+        // 刷新版号列表
+        workStore.updateLicenseFleshIndex()
+      } else {
+        ElMessage.error(res.msg || '汇报失败')
+      }
+    }).catch(error => {
+      console.error('汇报失败:', error)
+      ElMessage.error('汇报失败: ' + (error.message || '未知错误'))
+    })
+  }).catch(() => {
+    // 用户取消操作，不做任何处理
+  })
+}
 
 const handAdd = () => {
   chooseSelectNumVis.value = true
