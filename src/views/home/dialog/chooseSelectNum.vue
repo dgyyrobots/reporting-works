@@ -3,7 +3,7 @@
     <div class="form-container">
       <div class="form-item">
         <div class="form-label">状态：</div>
-        <el-select v-model="formData.status" class="full-width" placeholder="请选择状态" @change="handleStatusChange">
+        <el-select v-model="formData.status_id" class="full-width" placeholder="请选择状态" @change="handleStatusChange">
           <el-option label="结束采集" value="2" />
           <el-option label="待采集" value="0" />
         </el-select>
@@ -15,7 +15,7 @@
           class="full-width" 
           placeholder="请输入数量" 
           type="number" 
-          :disabled="formData.status === '0'"
+          :disabled="formData.status_id === '0'"
         />
       </div>
     </div>
@@ -38,20 +38,7 @@ const props = defineProps({
   // 传入其他参数
   params: {
     type: Object,
-    default: () => ({
-      // work_no: 'ZYCS01-202503012',
-      // bill_no: 'ZYCS01-202503012_j05',
-      // order_no: '80',
-      // workbill_no: 'ZYCS01-202503012_b01',
-      // wc_id: '118',
-      // wc_number: '08',
-      // work_id: '2270',
-      // wp_number: '017',
-      // rc_no: 'ZYCS01-202503012_r01',
-      // device_id: '66',
-      // jobbill_id: '8543',
-      // wp_order_no: '80',
-    }),
+    default: () => ({}),
   },
 })
 
@@ -59,7 +46,7 @@ const props = defineProps({
 const workStore = useWorkStore()
 
 const formData = reactive({
-  status: '2',
+  status_id: '2',
   collection_qty: '0',
 })
 
@@ -71,7 +58,7 @@ const handleStatusChange = (value) => {
 }
 
 // 监听状态变化，当选择"待采集"时，自动将数量设为0
-watch(() => formData.status, (newStatus) => {
+watch(() => formData.status_id, (newStatus) => {
   if (newStatus === '0') {
     formData.collection_qty = '0'
   }
@@ -85,12 +72,20 @@ const cancel = () => {
 // 确认操作
 const confirm = async () => {
   try {
-    // 构建请求参数
+    // 从workStore获取taskInfo
+    const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+
+    console.log('taskInfo', taskInfo)
+    
+    // 构建请求参数，合并taskInfo、props.params和formData
     const requestParams = {
-      ...props.params,
-      status_id: formData.status,
+      // 从taskInfo中获取必要参数
+  
+      // 表单数据
+      ...taskInfo,
+      status_id: formData.status_id,
       collection_qty: formData.collection_qty,
-      collection_uqty: 0,
+      collection_uqty: formData.collection_qty,
     }
 
     // 调用接口

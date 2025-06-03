@@ -37,7 +37,7 @@
       </div>
       <div class="row">
         <span class="label">超&nbsp;&nbsp;&nbsp;&nbsp;时：</span>
-        <span class="value">{{ taskInfo.overTime || '0.00' }} (小时)</span>
+        <span class="value">{{ taskInfo.over_time || '0.00' }} (小时)</span>
       </div>
     </div>
     <div class="progress-row">
@@ -98,7 +98,7 @@ const taskInfo = reactive({
   uqty: 0,
   exe_uqty: 0,
   unit: '',
-  overTime: '',
+  over_time: '',
   remainQty: 0,
   ud_102869_gdlx: '',
   prodesc: '',
@@ -187,20 +187,7 @@ const fetchTaskInfo = async () => {
       const data = res.rows[0]
 
       // 更新任务信息
-      Object.assign(taskInfo, {
-        rc_no: data.rc_no,
-        rc_id: data.rc_id,
-        bill_no: data.bill_no,
-        wc_id: data.wc_id,
-        order_no: data.order_no,
-        wp_name: data.wp_name || '',
-        sku_name: data.sku_name || '',
-        sku_no: data.sku_no || '',
-        uqty: data.plan_qty || 0,
-        unit: data.unit,
-        prodesc: data.prodesc,
-        overTime: data.over_time || '0.00',
-      })
+      Object.assign(taskInfo,data)
 
       console.log('taskInfo', taskInfo)
     } else {
@@ -232,7 +219,7 @@ const resetTaskInfo = () => {
     uqty: 0,
     exe_uqty: 0,
     unit: '',
-    overTime: '0.00',
+    over_time: '0.00',
     remainQty: 0,
     ud_102869_gdlx: '',
     prodesc: '',
@@ -356,7 +343,7 @@ const fetchTypeAndStartTime = async () => {
         }
 
         // 计算超时时间
-        taskInfo.overTime = calculateOvertime(
+        taskInfo.over_time = calculateOvertime(
           taskInfo.plan_start_time,
           taskInfo.plan_end_time,
           taskInfo.act_start_time,

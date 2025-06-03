@@ -150,7 +150,7 @@
         :modal-class="'cyber-modal'"
    
     >
-      <ChooseSelectNum @close="chooseSelectNumVis = false"  />
+      <ChooseSelectNum @close="chooseSelectNumVis = false" :currentDevice="currentDevice" />
     </el-dialog>
   </div>
 </template>
