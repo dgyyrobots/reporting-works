@@ -33,7 +33,7 @@
                   <th style="width: 120px">过版纸数量</th>
                   <th style="width: 120px">剩余可报</th>
                   <th style="width: 100px">操作</th>
-                  <th style="width: 150px">(大张)正报数量</th>
+                  <th style="width: 150px">(大张)汇报数量</th>
                   <th style="width: 150px">(大张)过版数量</th>
                   <th style="width: 180px">操作时间</th>
                 </tr>
@@ -52,14 +52,14 @@
                     </span>
                   </td>
                   <td>{{ toInteger(item.pass_qty) }}</td>
-                  <td>{{ toInteger(item.no_okqty) }}</td>
+                  <td>{{ calculateRemaining(item) }}</td>
                   <td>
                     <span class='del-span' @click.stop="confirmDelete(item)">
                         <Icon icon="svg-icon:del" />
                     </span>
                   </td>
-                  <td>{{ toInteger(item.ok_qty) }}</td>
-                  <td>{{ toInteger(item.pass_qty) }}</td>
+                  <td>{{ calculateBigSheetReportQty(item) }}</td>
+                  <td>{{ calculateBigSheetPassQty(item) }}</td>
                   <td>{{ formatDate(item.operate_date) }}</td>
                 </tr>
               </tbody>
@@ -182,6 +182,33 @@ watch(() => workStore.getFleshLicenseIndex, (newVal) => {
     workStore.setLicenseCheck([])
   }
 })
+// 计算剩余可报数量 = 采集数 - 不合格数 - 过版纸数
+const calculateRemaining = (item) => {
+  const collection_qty = toInteger(item.collection_qty) || 0
+  const no_okqty = toInteger(item.no_okqty) || 0
+  const pass_qty = toInteger(item.pass_qty) || 0
+  
+  // 计算剩余可报数量
+  const remaining = collection_qty - no_okqty - pass_qty
+  
+  // 确保不会出现负数
+  return Math.max(0, remaining)
+}
+
+// 计算(大张)过版数量 = pass_qty * exchange_son_uqty
+const calculateBigSheetPassQty = (item) => {
+  const pass_qty = toInteger(item.pass_qty) || 0
+  const exchange_son_uqty= toInteger(item.exchange_son_uqty)
+  
+  return pass_qty * exchange_son_uqty
+}
+// 计算(大张)汇报数量 = report_qty * exchange_son_uqty
+const calculateBigSheetReportQty = (item) => {
+  const report_qty  = toInteger(item.report_qty) || 0
+  const exchange_son_uqty= toInteger(item.exchange_son_uqty)
+  
+  return report_qty * exchange_son_uqty
+}
 
 // 获取状态文本
 const getStatusText = (statusId) => {
@@ -225,7 +252,7 @@ const formatDate = (timestamp) => {
 
 // 将字符串或数字转换为整数
 const toInteger = (value) => {
-  if (value === null || value === undefined) return 0
+  if (value === null || value === undefined) return ''
 
   // 如果是字符串，先尝试转换为数字
   if (typeof value === 'string') {

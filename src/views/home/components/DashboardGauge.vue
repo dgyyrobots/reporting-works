@@ -391,7 +391,7 @@ const initCollectionQty = async () => {
 
 // 将字符串或数字转换为整数
 const toInteger = (value) => {
-  if (value === null || value === undefined) return 0
+  if (value === null || value === undefined) return ''
   
   // 如果是字符串，先尝试转换为数字
   if (typeof value === 'string') {

@@ -53,7 +53,7 @@
             </defs>
           </svg>
         </div>
-        <div class="panel-title">当版信息</div>
+        <div class="panel-title">版信息查询</div>
         <div class="panel-content">
           <div class="info-row">
             <div class="info-label">版号：</div>
@@ -66,32 +66,34 @@
               />
             </div>
             <div class="action-buttons">
-              <button class="query-btn">查询</button>
-              <button class="sumbmit-btn">提交</button>
+              <button class="query-btn" @click="handleQuery">查询</button>
+              <button class="sumbmit-btn" @click="handSubmit">提交</button>
             </div>
           </div>
           <div class="info-row">
             <div class="info-label">采集数：</div>
-            <div class="info-value flow-no">采集数</div>
+            <div class="info-value flow-no">{{ toInteger(currentVersionInfo.collection_qty) }}</div>
             <div class="icon-placeholder"></div>
             <div class="info-label-right">废品数：</div>
-            <div class="info-value">0</div>
+            <div class="info-value">{{ toInteger(currentVersionInfo.no_okqty)  }}</div>
             <div class="icon-placeholder"></div>
           </div>
 
           <div class="info-row">
             <div class="info-label">过版纸数：</div>
             <div class="info-value flow-no">
-              <span>合格品</span>
+              <span>{{ toInteger(currentVersionInfo.pass_qty)  }}</span>
             </div>
             <div class="icon-placeholder"></div>
             <div class="info-label-right">合格品数：</div>
-            <div class="info-value">0</div>
+            <div class="info-value">{{ toInteger(currentVersionInfo.ok_qty) }}</div>
             <div class="icon-placeholder"></div>
           </div>
         </div>
 
-        <div class="timestamp">2023-12-08 13:55:40</div>
+        <div class="timestamp">
+          {{  formatDate(currentVersionInfo.collect_date)  }}
+        </div>
       </div>
 
       <!-- 右侧产量信息 -->
@@ -158,7 +160,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
-import { updateIsStart, changeActiveRow,collectionFinish , reportVersion,finishReportVersion } from '@/api/mes/wk/index.ts'
+import { updateIsStart, changeActiveRow,collectionFinish , reportVersion,finishReportVersion,addVersionByCode  } from '@/api/mes/wk/index.ts'
 import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
 import { ElMessageBox ,ElMessage} from 'element-plus'
 
@@ -177,10 +179,52 @@ const workStore = useWorkStore() // 使用store
 const scanData = ref(null)
 const scannerInput= ref(null)
 const chooseSelectNumVis = ref(false)
+// 当前版号信息
+const currentVersionInfo = reactive({})
 
+// 查询按钮点击事件
+const handleQuery = () => {
+  if (!scanData.value) {
+    return ElMessage.error('请输入版号')
+  }
+  
+  const licenseCheck = workStore.licenseCheck
 
+  
+  // 查找匹配的版号
+  const matchedVersion = licenseCheck.find(item => item.version_no === scanData.value)
+  console.log(matchedVersion, 'matchedVersion')
+  
+  if (matchedVersion) {
+    // 找到匹配的版号，更新显示信息
+    Object.assign(currentVersionInfo, matchedVersion)
 
+    console.log(currentVersionInfo, 'currentVersionInfo')
+    
+    ElMessage.success('查询成功')
+  } else {
+    ElMessage.warning('未找到匹配的版号信息')
+  }
+}
 
+const handSubmit = () => {
+  if (!scanData.value) return ElMessage.error('版号不能为空')
+  const taskInfo = workStore.taskInfo
+  addVersionByCode({
+    device: props.currentDevice,
+    version_no: scanData.value,
+    jobbill_id: taskInfo.id,
+    is_device_collect: 1
+  }).then(res => {
+    if (res.ret === 0) {
+      ElMessage.success('添加版成功!')
+      // 刷新版号列表
+      workStore.updateLicenseFleshIndex()
+    } else {
+      ElMessage.error(res.msg)
+    }
+  })
+}
 const handleReport = () => {
   const selectedLicenseCheck = workStore.selectedLicenseCheck
   const taskInfo = workStore.taskInfo
@@ -276,7 +320,42 @@ const handleCompleteReport = () => {
 const handAdd = () => {
   chooseSelectNumVis.value = true
 }
+// 将字符串或数字转换为整数
+const toInteger = (value) => {
+  if (value === null || value === undefined) return ''
 
+  // 如果是字符串，先尝试转换为数字
+  if (typeof value === 'string') {
+    // 移除非数字字符（保留负号）
+    const numStr = value.replace(/[^\d.-]/g, '')
+    value = parseFloat(numStr)
+  }
+
+  // 如果转换后不是有效数字，返回0
+  if (isNaN(value)) return 0
+
+  // 返回整数部分
+  return Math.floor(value)
+}
+// 格式化日期
+const formatDate = (timestamp) => {
+  if (!timestamp) return '--'
+
+  try {
+    const date = new Date(parseInt(timestamp) * 1000)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  } catch (error) {
+    console.error('日期格式化错误:', error)
+    return timestamp
+  }
+}
 
 const handleKeyDown = (e) => {
   const keyCode = e.keyCode

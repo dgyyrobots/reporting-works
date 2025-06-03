@@ -196,4 +196,10 @@ export const getChangeDeviceBillData = async (data: any) => {
         data,
     })
 }
-// 完工汇报
+// 扫码上版
+export const addVersionByCode = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_version_number_manage/action:report',
+        data,
+    })
+}
