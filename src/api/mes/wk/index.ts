@@ -165,6 +165,15 @@ export const reportVersion = async (data: any) => {
         data,
     })
 }
+// 员工完工汇报接口
+export const finishReportVersion = async (data: any) => {
+    return await request.postOriginal({
+        url: '/mes/ajax/mes_version_number_manage/action:finish_report',
+        data,
+    })
+}
+
+
 
 // 员工删除汇报接口
 export const deleteJobbillReport = async (data: any) => {

@@ -2514,9 +2514,17 @@ export default [
             return ReportVersionHistory
         },
     },
-    // 6.员工汇报接口
+    // 6.1 员工汇报接口
     {
         url: '/mes/ajax/mes_version_number_manage/action:report',
+        method: 'post',
+        response() {
+            return ReportVersion
+        },
+    },
+    // 6.2 员工汇报接口
+    {
+        url: '/mes/ajax/mes_version_number_manage/action:finish_report',
         method: 'post',
         response() {
             return ReportVersion
