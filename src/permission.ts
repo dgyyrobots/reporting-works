@@ -11,17 +11,17 @@ const whiteList = ['/login', '/bigsceen', '/social-login', '/auth-redirect', '/b
 // 路由加载前
 router.beforeEach(async (to, from, next) => {
   start()
-  // next()
-  if (getAccessToken()) {
-    // 有token直接放行
-    next()
-  } else {
-    if (whiteList.indexOf(to.path) !== -1) {
-      next()
-    } else {
-      next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
-    }
-  }
+  next()
+  // if (getAccessToken()) {
+  //   // 有token直接放行
+  //   next()
+  // } else {
+  //   if (whiteList.indexOf(to.path) !== -1) {
+  //     next()
+  //   } else {
+  //     next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
+  //   }
+  // }
 })
 
 router.afterEach((to) => {

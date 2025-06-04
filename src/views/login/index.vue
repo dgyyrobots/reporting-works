@@ -63,8 +63,8 @@ const selectedWorkcenter = ref<any>(null)
 
 // 创建 loginAxios 实例
 const loginAxios = axios.create({
-  baseURL: 'http://172.16.12.99', // 添加
-  // baseURL: '', // 添加
+  // baseURL: 'http://172.16.12.99', // 添加
+  baseURL: '', // 添加
   timeout: 10000,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
