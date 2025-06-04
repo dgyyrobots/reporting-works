@@ -12,10 +12,20 @@ export interface SmsLoginVO {
   code: string
 }
 
+
+export interface UserNameVO {
+  userName: string
+}
+
+
+
 // 登录
 export const login = (data: UserLoginVO) => {
   return request.post({ url: '/system/auth/login', data })
 }
+// export const login = (data: UserNameVO) => {
+//   return request.postOriginal({ url: '/mes/login/login', data })
+// }
 
 // 刷新访问令牌
 export const refreshToken = () => {

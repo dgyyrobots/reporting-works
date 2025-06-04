@@ -118,7 +118,7 @@ import { useUserStore } from '/@/store/modules/user'
 import { storeToRefs } from 'pinia'
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { getWorkcenterList } from '@/api/mes/wk/index.ts'
 
 // 控制工序选择弹窗
@@ -282,6 +282,41 @@ onBeforeUnmount(() => {
 
 const openTimeRegistration = () => {
   timeRegistrationRef.value?.openDialog()
+}
+// 处理退出登录
+const handleLogout = () => {
+  ElMessageBox.confirm('确定要退出登录吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    // 清除 token
+    removeToken()
+    
+    // 清除 localStorage 中的缓存
+    const keysToRemove = [
+      'userInfo',
+      'selectedWorkcenter',
+      'selectedDevice',
+      'loginInfo',
+      'TASK_INFO' // 工作任务信息缓存
+    ]
+    
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key)
+    })
+    
+    // 重置用户状态
+    userStore.resetState()
+    
+    // 提示用户
+    ElMessage.success('已退出登录')
+    
+    // 跳转到登录页
+    router.push('/login')
+  }).catch(() => {
+    // 用户取消退出
+  })
 }
 
 
