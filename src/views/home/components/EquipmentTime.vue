@@ -104,7 +104,10 @@ const showDetailDialog = async () => {
   dialogVisible.value = true
   detailLoading.value = true
   
-  // 直接使用已有的数据，不重新请求接口
+  // 在弹框打开时请求数据
+  await fetchDeviceRuntime()
+  
+  // 使用获取到的数据
   detailTableData.value = tableData.value
   
   // 短暂延迟以显示加载效果
@@ -133,7 +136,7 @@ const fetchDeviceRuntime = async () => {
   loading.value = true
   const getShiftDateRangeResult = getShiftDateRange()
   try {
-    const device_number =props.currentDevice.number
+    const device_number = props.currentDevice.number
     const params = {
       // device_id: device.id,
       filter:JSON.stringify([{"val":[{"name":"device_number","val":device_number,"action":"="}],"relation":"OR"},{"val":[{"name":"bill_date","val":{"range":"custom","start":getShiftDateRangeResult.start,"end":getShiftDateRangeResult.end},"action":"date_range"}],"relation":"OR"}]),
@@ -194,17 +197,7 @@ const getShiftDateRange = () => {
     end: isDayShift ? today : tomorrowStr
   }
 }
-// 监听设备变化
-watch(() => props.currentDevice, (newDevice, oldDevice) => {
-  if (newDevice && newDevice.id && newDevice.id !== oldDevice?.id) {
-    fetchDeviceRuntime()
-  }
-}, { deep: true })
 
-
-onMounted(() => {
-  fetchDeviceRuntime()
-})
 </script>
 
 <style lang="scss">
