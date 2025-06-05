@@ -383,7 +383,7 @@ const handleLogout = () => {
       font-weight: bold;
       text-shadow: 0 0 20px rgba(#40c4ff, 0.7);
       color: #40c4ff;
-      font-size: 30px;
+      font-size: 28px;
       margin: 0;
       letter-spacing: 2px;
       position: relative;
@@ -468,7 +468,7 @@ const handleLogout = () => {
 
     .nav-btn {
       min-width: 100px;
-      height: 40px;
+      height: 36px;
       border: none;
       border-radius: 4px;
       background: linear-gradient(to bottom, #00d2ff, #00bcd4);
