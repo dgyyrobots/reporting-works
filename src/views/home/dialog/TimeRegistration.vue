@@ -646,9 +646,7 @@ onMounted(() => {
     right: 16px;
   }
 
-  :deep(.el-dialog__headerbtn .el-dialog__close) {
-    /* 移除这里的颜色设置，改为全局样式 */
-  }
+
 
   :deep(.el-loading-mask) {
     background-color: rgba(0, 21, 41, 0.7) !important;

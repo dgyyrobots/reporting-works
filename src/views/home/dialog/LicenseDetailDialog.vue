@@ -518,6 +518,9 @@ const confirmDelete = async (item) => {
       background: linear-gradient(90deg, #1573ce 0%, #0a2a50 100%);
       padding: 12px 20px;
       margin-right: 0;
+      display: flex;
+      align-items: center;
+      position: relative;
     }
 
     .el-dialog__title {
@@ -528,11 +531,19 @@ const confirmDelete = async (item) => {
       text-shadow: 0 0 8px rgba(30, 207, 255, 0.5);
     }
 
-    .el-dialog__headerbtn .el-dialog__close {
-      color: #fff !important;
+    .el-dialog__headerbtn {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      z-index: 1;
+      
+      .el-dialog__close {
+        color: #fff !important;
 
-      &:hover {
-        color: #4fdcff !important;
+        &:hover {
+          color: #4fdcff !important;
+        }
       }
     }
 
