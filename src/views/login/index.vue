@@ -409,17 +409,33 @@ onMounted(() => {
     background: #066bb9;
     padding: 15px 20px;
     margin: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
     
     .el-dialog__title {
       color: white;
       font-weight: 500;
+      font-size: 18px;
     }
     
-    .el-dialog__close {
-      color: white;
+    .el-dialog__headerbtn {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
       
-      &:hover {
-        color: rgba(255, 255, 255, 0.8);
+      .el-dialog__close {
+        color: white;
+        font-size: 20px;
+        
+        &:hover {
+          color: rgba(255, 255, 255, 0.8);
+        }
       }
     }
   }
