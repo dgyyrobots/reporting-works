@@ -113,6 +113,7 @@ const selectDevice = (item) => {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 16px;
     min-height: 200px;
+    position: relative; /* 添加相对定位 */
     
     .device-item {
       display: flex;
@@ -171,13 +172,20 @@ const selectDevice = (item) => {
 // 修改Element Plus组件样式以匹配主题
 :deep(.el-empty) {
   padding: 40px 0;
+  position: absolute; /* 使用绝对定位 */
+  top: 50%; /* 垂直居中 */
+  left: 50%; /* 水平居中 */
+  transform: translate(-50%, -50%); /* 精确居中 */
+  width: 100%; /* 确保宽度占满 */
   
   .el-empty__image {
     opacity: 0.7;
+    margin: 0 auto; /* 确保图片居中 */
   }
   
   .el-empty__description {
     color: #40c4ff;
+    text-align: center; /* 确保文字居中 */
   }
 }
 
