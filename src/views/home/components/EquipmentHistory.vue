@@ -8,7 +8,20 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
 import Card from './Card.vue'
+import { getDeviceOutput } from '@/api/mes/wk/index.ts'
 // 这里可以接收props或后续做数据对接
+
+const props = defineProps({
+
+currentWorkcenter: {
+  type: Object,
+  default: () => ({})
+},
+currentDevice: {
+  type: Object,
+  default: () => ({})
+},
+})
 
 const chartRef = ref(null)
 let chart = null
@@ -147,8 +160,18 @@ const handleResize = () => {
   chart?.resize()
 }
 
+const initData = () => {
+  const params = {
+    deviceNumber:props.currentDevice.number,
+  }
+  getDeviceOutput(params).then((res) => {
+    console.log(res,'55555')
+  })
+}
+
 onMounted(() => {
   initChart()
+  initData()
 })
 
 onUnmounted(() => {

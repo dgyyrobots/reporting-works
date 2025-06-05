@@ -68,7 +68,7 @@
           <TaskInfoBox v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="right-box box-2">
-          <EquipmentHistory />
+          <EquipmentHistory   :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice"/>
         </div>
         <div class="right-box box-3">
           <LicenseHistory :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />

@@ -223,3 +223,10 @@ export const addVersionByCode = async (data: any) => {
         data,
     })
 }
+// 设备速度产量
+export const getDeviceOutput = async (data: any) => {
+    return await request.get({
+        url: '/mes/OrderInProduction/getDeviceNumber',
+        data,
+    })
+}
