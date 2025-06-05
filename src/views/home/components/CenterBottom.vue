@@ -207,7 +207,6 @@ const handleQuery = () => {
   
   // 查找匹配的版号
   const matchedVersion = licenseCheck.find(item => item.version_no === scanData.value)
-  console.log(matchedVersion, 'matchedVersion')
   
   if (matchedVersion) {
     // 找到匹配的版号，更新显示信息
@@ -269,7 +268,6 @@ const handleReport = () => {
     }
     
     reportVersion(params).then(res => {
-      console.log(res, '汇报结果')
       if (res.ret === 0) {
         ElMessage.success('汇报成功!')
         // 刷新版号列表
@@ -394,7 +392,6 @@ const handleChangeVersion = () => {
     changeActiveRow({
       device_id: props.currentDevice.id
     }).then(res => {
-      console.log(res, '切版')
       if (res.ret ===0 ) {
         ElMessage.success('操作成功!')
         // 刷新版号列表
@@ -417,7 +414,6 @@ const handCollectionFinish = () => {
     arr.push(item.id)
   })
   collectionFinish({ids:arr}).then(res => {
-    console.log(res, '结束采集')
     if (res.ret === 0 ) {
       ElMessage.success('操作成功!')
       // 刷新版号列表

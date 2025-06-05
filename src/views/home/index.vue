@@ -45,20 +45,20 @@
           <PayInfo />
         </div>
         <div class="left-box box-2">
-          <StaffInfo :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <StaffInfo  v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="left-box box-3">
-          <EquipmentTime :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <EquipmentTime  v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
       </div>
 
       <!-- 中间面板 -->
       <div class="panel center-panel">
         <div class="center-box box-1">
-          <DashboardGauge  :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <DashboardGauge  v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="center-box box-2">
-          <CenterBottom  :currentDevice="currentDevice" />
+          <CenterBottom  v-if="currentDevice" :currentDevice="currentDevice" />
         </div>
       </div>
 
@@ -68,21 +68,19 @@
           <TaskInfoBox v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
         <div class="right-box box-2">
-          <EquipmentHistory   :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice"/>
+          <EquipmentHistory  v-if="currentDevice"  :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice"/>
         </div>
         <div class="right-box box-3">
-          <LicenseHistory :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <LicenseHistory v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
         </div>
       </div>
     </div>
 
     <!-- 添加ProcessSelect组件 -->
-    <ProcessSelect ref="processSelectRef" :currentDevice="currentDevice" />
+    <ProcessSelect ref="processSelectRef" v-if="currentDevice" :currentDevice="currentDevice" />
+
     
-    <!-- 移除原来的TaskOperation组件引用 -->
-    <!-- <TaskOperation ref="taskOperationRef" :currentDevice="currentDevice" /> -->
-    
-    <TimeRegistration :currentDevice="currentDevice" ref="timeRegistrationRef" />
+    <TimeRegistration v-if="currentDevice" :currentDevice="currentDevice" ref="timeRegistrationRef" />
         
     <!-- 添加工作中心选择弹框 -->
     <el-dialog

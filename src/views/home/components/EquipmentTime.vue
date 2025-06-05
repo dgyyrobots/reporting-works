@@ -149,7 +149,6 @@ const fetchDeviceRuntime = async () => {
     
     const res = await getDeviceRuntimeADay(params)
     
-    console.log('res:', res)
     if (res && res.rows && Array.isArray(res.rows)) {
       // 直接使用返回的数据结构
       tableData.value = res.rows

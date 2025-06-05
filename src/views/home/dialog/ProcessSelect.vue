@@ -122,8 +122,11 @@ const initData = (showMessage) => {
       loading.value = false
     })
 }
+
+// 移除 onMounted 中的 initData 调用，只在弹框打开时请求数据
 onMounted(() => {
-  initData()
+  // 不再在组件挂载时请求数据
+  // initData()
 })
 
 // 暴露方法给父组件

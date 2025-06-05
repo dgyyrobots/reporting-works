@@ -233,7 +233,6 @@ const fetchData = async () => {
 
     const res = await getPlateListData(params)
 
-    console.log('获取生产版号数据:', res)
     if (res && res.rows && Array.isArray(res.rows)) {
       // 为每一行数据添加selected属性
       const processedData = res.rows.map((item) => {

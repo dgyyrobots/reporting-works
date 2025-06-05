@@ -512,7 +512,6 @@ const getCurrentDate = () => {
 }
 
 onMounted( () => {
-
   nextTick( async() => {
     await  get_jobbill_id()
     initCollectionQty()

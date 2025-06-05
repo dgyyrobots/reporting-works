@@ -48,6 +48,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       },
       https,
       proxy: {
+        '/mes/OrderInProduction/getDeviceNumber': {
+          target: 'http://192.168.127.8/', // 替换为实际的目标服务器地址
+          changeOrigin: true,
+          // rewrite: (path) => path.replace(/^\/mes/, '')
+        },
         '/zy': {
           target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
           changeOrigin: true,

@@ -43,48 +43,50 @@ const props = defineProps({
     default: () => ({})
   },
 })
-const tableHeaders = ['姓名', '工号', '班次', '状态']
 const tableData = ref([])
 const title = ref('员工信息')
 
 const initData = () => {
   const device = props.currentDevice
   const currentWorkcenter = props.currentWorkcenter
+  
+  // 添加有效性检查
+  if (!device || !device.id || !currentWorkcenter || !currentWorkcenter.id) {
+    console.warn('设备ID或工作中心ID不存在，无法获取员工信息')
+    return
+  }
+  
   const timestamp = new Date().getTime()
   const data = {
     wc_id: currentWorkcenter.id,
     bill_date: timestamp,
-    status_id:0,
-    device_id:device.id
+    status_id: 0,
+    device_id: device.id
   }
+  
   getCurrentWorker(data).then((res) => {
     tableData.value = []
-    res.map((item) => {
-      const name = item.emp_name || '--'
-      const number = item.emp_number || '--'
-      const status = item.status_name || '--'
-      const classtype_name = item.classtype_name || '--'
-      tableData.value.push([name, number, classtype_name, status])
-    })
+    if (res && Array.isArray(res)) {
+      res.map((item) => {
+        const name = item.emp_name || '--'
+        const number = item.emp_number || '--'
+        const status = item.status_name || '--'
+        const classtype_name = item.classtype_name || '--'
+        tableData.value.push([name, number, classtype_name, status])
+      })
+    }
+  }).catch(error => {
+    console.error('获取员工信息失败:', error)
   })
 }
-watch(() => props.currentDevice, (newDevice, oldDevice) => {
-  if (newDevice && newDevice.id && newDevice.id !== oldDevice?.id) {
+
+// 修改 watch 逻辑，确保只有当设备和工作中心都有效时才请求数据
+watch(() => [props.currentDevice, props.currentWorkcenter], ([newDevice, newWorkcenter]) => {
+  if (newDevice && newDevice.id && newWorkcenter && newWorkcenter.id) {
     initData()
   }
-}, { deep: true })
+}, { deep: true, immediate: true })
 
-// 同样监听 currentWorkcenter 变化
-watch(() => props.currentWorkcenter, (newWorkcenter, oldWorkcenter) => {
-  if (newWorkcenter && newWorkcenter.id && newWorkcenter.id !== oldWorkcenter?.id) {
-    initData()
-  }
-}, { deep: true })
-
-
-onMounted(() => {
-  initData()
-})
 </script>
 
 <style lang="scss" scoped>

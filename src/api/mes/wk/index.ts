@@ -17,7 +17,9 @@ const getStoredCompany = () => {
 export interface WorkcenterVo {
     action?: string
 }
-
+export interface DeviceNumberParams {
+    deviceNumber?: string
+}
 // 获取设备工作站
 export const getWorkcenterList = async (data: any) => {
     return await request.postMultipart({
@@ -224,9 +226,7 @@ export const addVersionByCode = async (data: any) => {
     })
 }
 // 设备速度产量
-export const getDeviceOutput = async (data: any) => {
-    return await request.get({
-        url: '/mes/OrderInProduction/getDeviceNumber',
-        data,
-    })
+
+export const getDeviceOutput = async (params: DeviceNumberParams) => {
+    return await request.get({ url: '/mes/OrderInProduction/getDeviceNumber', params })
 }

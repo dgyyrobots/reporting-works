@@ -52,7 +52,8 @@ const userName = ref('用户')
 const loading = ref(false)
 
 onMounted(() => {
-  try {
+  nextTick( async() => {
+    try {
     const userInfoStr = localStorage.getItem('userInfo')
     if (userInfoStr) {
       const userInfo = JSON.parse(userInfoStr)
@@ -63,13 +64,13 @@ onMounted(() => {
     console.error('获取用户信息失败:', error)
   }
   initData()
+  })
 })
 
 const initData = () => {
   loading.value = true // 开始加载
   // 实际API调用示例
   const wc_id = props.currentWorkcenter.id
-  console.log(wc_id,'wc_id')
   const data = {
     filter: JSON.stringify([{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
   }

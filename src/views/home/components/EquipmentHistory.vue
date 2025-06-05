@@ -1,6 +1,10 @@
 <template>
   <Card class="EquipmentHistory" title="设备运行历史">
-    <div ref="chartRef" class="chart-container"></div>
+    <div v-if="list.length>0" ref="chartRef" class="chart-container"></div>
+     <div v-else class="no-data">
+        <Icon icon="svg-icon:empty-box" />
+        暂无数据
+      </div>
   </Card>
 </template>
 
@@ -24,7 +28,9 @@ currentDevice: {
 })
 
 const chartRef = ref(null)
+const  list = ref([])
 let chart = null
+
 
 const initChart = () => {
   if (chartRef.value) {
@@ -159,19 +165,60 @@ const initChart = () => {
 const handleResize = () => {
   chart?.resize()
 }
+const formatDateTime = (timestamp) => {
+  if (!timestamp) return '--'
 
+  try {
+    const date = new Date(timestamp * 1000)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`
+  } catch (e) {
+    return '--'
+  }
+}
 const initData = () => {
+  // 检查 currentDevice 是否有效
+  if (!props.currentDevice || !props.currentDevice.number) {
+    console.warn('当前设备信息不完整，无法获取设备运行历史')
+    return
+  }
+  
   const params = {
-    deviceNumber:props.currentDevice.number,
+    deviceNumber: 'TJ01#',
   }
   getDeviceOutput(params).then((res) => {
-    console.log(res,'55555')
+    if(res && Array.isArray(res) && res.length > 0){
+      res.forEach(item => {
+        item.createTime = formatDateTime(item.createTime)
+      })
+      list.value = res
+    }
+  }).catch(error => {
+    // 添加错误处理
+    console.error('获取设备输出数据失败:', error)
   })
 }
 
+
+// 监听设备变化，当设备信息有效时再请求数据
+watch(() => props.currentDevice, (newDevice) => {
+  if (newDevice && newDevice.number) {
+    initData()
+  }
+}, { deep: true, immediate: true })
+
 onMounted(() => {
   initChart()
-  initData()
+  // 移除这里的 initData() 调用，改为通过 watch 触发
+  setTimeout(() => {
+    initData()
+  }, 200);
 })
 
 onUnmounted(() => {
@@ -194,5 +241,17 @@ onUnmounted(() => {
     height: 100%;
     position: relative;
   }
+  .no-data {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #999;
+    gap: 10px;
+  }
 }
+
 </style>
