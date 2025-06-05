@@ -208,6 +208,16 @@ const getShiftDateRange = () => {
     end: isDayShift ? today : tomorrowStr
   }
 }
+// 添加对 currentDevice 的监听
+watch(() => props.currentDevice, (newDevice, oldDevice) => {
+  // 检查设备是否变化且有效
+  if (newDevice && newDevice.number && 
+      (!oldDevice || newDevice.number !== oldDevice.number)) {
+    console.log('设备变化，重新获取数据:', newDevice.name || newDevice.number)
+    fetchDeviceRuntime()
+  }
+}, { deep: true })
+
 onMounted(() => {
   nextTick(async () => {
     fetchDeviceRuntime()
