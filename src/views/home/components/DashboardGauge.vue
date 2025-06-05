@@ -97,12 +97,21 @@ const currentSpeed = ref(0)
 const passUqty = ref(0)
 
 const initChart = () => {
-  console.log(collectionQty.value, 'collectionQty.value')
+  // 即使没有数据也显示仪表盘，使用默认值0
+  const displayValue = collectionQty.value || 0
+  console.log(displayValue, 'displayValue')
+  
   const newData = {
-    value: collectionQty.value || 0, // 使用响应式数据
+    value: displayValue, // 使用响应式数据，如果为空则显示0
     name: '当版产量',
     max: 100,
   }
+  
+  // 如果chart已经存在，先销毁
+  if (chart) {
+    chart.dispose()
+  }
+  
   chart = echarts.init(gaugeRef.value)
   const option = {
     title: [
@@ -349,43 +358,93 @@ const initChart = () => {
   chart.setOption(option)
 }
 
-const  get_jobbill_id = async () => {
-  const activeJob = props.currentDevice.jobbill_no
+const get_jobbill_id = async () => {
+  try {
+    const activeJob = props.currentDevice.jobbill_no
     const wc_id = props.currentWorkcenter.id
-    if (!activeJob) return
-    const params= {
+    
+    if (!activeJob || !wc_id) {
+      console.warn('缺少必要参数，无法获取jobbill_id')
+      jobbill_id.value = ''
+      return false
+    }
+    
+    const params = {
       filter: [{"val":[{"name":"wc_id","val":wc_id,"action":"="},{"name":"bill_no","val":activeJob,"action":"="}],"relation":"AND"}]
     }
+    
     const res = await getJobBillContent(params)
-    jobbill_id.value = res.rows[0].id
+    
+    if (res && res.rows && res.rows.length > 0 && res.rows[0].id) {
+      jobbill_id.value = res.rows[0].id
+      return true
+    } else {
+      console.warn('未找到匹配的jobbill_id')
+      jobbill_id.value = ''
+      return false
+    }
+  } catch (error) {
+    console.error('获取jobbill_id失败:', error)
+    jobbill_id.value = ''
+    return false
+  }
 }
 const initCollectionQty = async () => {
   try {
+    // 如果没有jobbill_id，使用默认值
+    if (!jobbill_id.value) {
+      console.warn('没有获取到jobbill_id，使用默认值')
+      collectionQty.value = 0
+      noOkQty.value = 0
+      passUqty.value = 0
+      // 即使没有数据也初始化图表
+      initChart()
+      return
+    }
+    
     const res = await getCollectionQty({
       jobbill_id: jobbill_id.value,
       device_id: props.currentDevice.id,
     })
-    console.log(res, 'rrrrrrrrrrrrrrr')
     
     // 从接口获取当版产量数据并赋值
     if (res && res.data && res.data[0]) {
       // 获取当版产量
       if (res.data[0].collection_qty) {
         collectionQty.value = toInteger(res.data[0].collection_qty) || 0
-        initChart()
+      } else {
+        collectionQty.value = 0
       }
       
       // 获取不合格品数量
       if (res.data[0].no_okqty !== undefined) {
         noOkQty.value = toInteger(res.data[0].no_okqty) || 0
+      } else {
+        noOkQty.value = 0
       }
+      
       // 过版数量
       if (res.data[0].pass_uqty !== undefined) {
         passUqty.value = toInteger(res.data[0].pass_uqty) || 0
+      } else {
+        passUqty.value = 0
       }
+    } else {
+      // 如果没有数据，设置默认值
+      collectionQty.value = 0
+      noOkQty.value = 0
+      passUqty.value = 0
     }
+    
+    // 无论是否有数据，都初始化图表
+    initChart()
   } catch (error) {
     console.error('获取当版产量数据失败:', error)
+    // 发生错误时，设置默认值并初始化图表
+    collectionQty.value = 0
+    noOkQty.value = 0
+    passUqty.value = 0
+    initChart()
   }
 }
 
