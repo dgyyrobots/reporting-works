@@ -101,7 +101,7 @@ const handleLogin = async () => {
             userName: String(form.userName),
           }
 
-          const response = await loginAxios.post('/mes/login/login', loginData)
+          const response = await loginAxios.post('/zy/mes/login/login', loginData)
 
   
           if (!response.data || response.status !== 200) {
@@ -112,17 +112,14 @@ const handleLogin = async () => {
     
           const res = response.data.data
 
-
-          // 存储登录信息到本地存储
-          localStorage.setItem('loginInfo', JSON.stringify(res))
-
+          console.log(res, 'res -- 登录的res')
         // 存储登录信息到cookies
         if( res.iworkerid ) {
-          Cookies.set('IWORKERID', res.iworkerid)
-          Cookies.set('stored_company', res.stored_company)
-          Cookies.set('stored_iworker', res.stored_iworker)
-          // 设置其他可能需要的 Cookie
+          Cookies.set('IWORKERID', decodeURIComponent(res.iworkerid))
           Cookies.set('login_from_6_1_1', '1')
+          // 设置其他可能需要的 Cookie
+          document.cookie = `stored_iworker=${res.stored_iworker}; path=/;`;
+          document.cookie = `stored_company=${res.stored_company}; path=/;`;
         }
 
 
@@ -140,6 +137,9 @@ const handleLogin = async () => {
           setToken(tokenData)
 
           console.log(tokenData, 'tokenData')
+
+          // 存储登录信息到本地存储
+          localStorage.setItem('loginInfo', JSON.stringify(res))
           
           // 获取用户信息
           try {
@@ -202,7 +202,31 @@ const getCode = async () => {
   })
 }
 
+// 清除所有 cookies 的函数
+const clearAllCookies = () => {
+  // 获取所有 cookie
+  const cookies = document.cookie.split(';')
+  
+  // 遍历并删除每个 cookie
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i]
+    const eqPos = cookie.indexOf('=')
+    const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim()
+    
+    // 使用 js-cookie 删除 cookie
+    Cookies.remove(name)
+    
+    // 为了确保删除，也使用原生方式设置过期时间为过去
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + window.location.hostname
+  }
+  
+  console.log('所有 cookies 已清除')
+}
+
 onMounted(() => {
+  // 清除所有 cookies
+  clearAllCookies()
   removeToken()
   if (route.query.logout === 'true') {
     userStore.loginOut()
@@ -289,14 +313,17 @@ onMounted(() => {
       }
 
       .title img {
-        height: 200px;
+        height: 100px;
+        margin-bottom: 20px
       }
 
       .title-tips {
         margin-top: 29px;
         font-size: 26px;
         font-weight: 400;
-        color: var(--el-color-black);
+        color: rgba(6, 107, 185,1);
+        font-weight: 600;
+        letter-spacing: 4px;
       }
 
       .login-btn {

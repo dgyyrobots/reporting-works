@@ -45,7 +45,7 @@ const responseUser = {
 
 export default [
     {
-        url: '/mes/login/login',
+        url: '/zy/mes/login/login',
         method: 'post',
         response() {
             console.log('Mock接口被调用')

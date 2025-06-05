@@ -8,7 +8,7 @@ import { ThemeTypes } from '/@/types/theme'
 import { humpToUnderline, setCssVar } from '/@/utils'
 // import { tenantPromise } from '/@/config/axios'
 import { useSettingsStore } from './settings.ts'
-import logoImg from '/@/assets/logo.png'
+import logoImg from '/@/assets/logo.jpg'
 import iconImg from '/@/assets/icon.png'
 
 const { wsCache } = useCache()

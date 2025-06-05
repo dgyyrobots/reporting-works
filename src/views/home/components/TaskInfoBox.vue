@@ -231,8 +231,8 @@ const fetchTimeAndNumber = async () => {
   try {
     const rc_id = taskInfo.rc_id
     const params = {
-      filter: [{ val: [{ name: 'parentid', val: rc_id, action: '=' }], relation: 'OR' }],
-      filter_detail: {},
+      filter: JSON.stringify([{ val: [{ name: 'parentid', val: rc_id, action: '=' }], relation: 'OR' }]),
+      filter_detail: JSON.stringify({}),
       keyword_is_detail: 0,
       show_total: 1,
       page: 1,
@@ -301,8 +301,8 @@ const fetchTypeAndStartTime = async () => {
   loading.value = true
   const activeJob = props.currentDevice.jobbill_no
   const params = {
-    filter: [{ val: [{ name: 'bill_no', val: activeJob, action: 'LIKE' }], relation: 'OR' }],
-    filter_detail: {},
+    filter: JSON.stringify([{ val: [{ name: 'bill_no', val: activeJob, action: 'LIKE' }], relation: 'OR' }]),
+    filter_detail: JSON.stringify({}),
     keyword_is_detail: 0,
     sum_col: ['uqty', 'exec_uqty'],
     show_total: 1,
@@ -326,7 +326,7 @@ const fetchTypeAndStartTime = async () => {
       //   }
       // 安全地解析JSON
       try {
-        if (data.json_values) {
+        if (data?.json_values) {
           const jsonValue = data.json_values
           const jsonObject = JSON.parse(jsonValue)
           if (jsonObject && jsonObject.ud_102869_gdlx) {
@@ -335,10 +335,10 @@ const fetchTypeAndStartTime = async () => {
         }
 
         // 这些操作不依赖于JSON解析，可以单独执行
-        if (data.plan_start_time) {
+        if (data?.plan_start_time) {
           taskInfo.plan_start_time = formatDateTime(data.plan_start_time)
         }
-        if (data.plan_end_time) {
+        if (data?.plan_end_time) {
           taskInfo.plan_end_time = formatDateTime(data.plan_end_time)
         }
 

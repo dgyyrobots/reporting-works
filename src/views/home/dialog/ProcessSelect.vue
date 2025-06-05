@@ -49,7 +49,7 @@
 import { ref, reactive,onMounted } from 'vue'
 import { Icon } from '/@/components/Icon'
 import TaskOperation from './TaskOperation.vue'
-
+import { ElMessage } from 'element-plus'
 import { getWpCountData } from '@/api/mes/wk/index.ts'
 const props = defineProps({
   currentDevice: {
@@ -71,6 +71,8 @@ const processList = ref([
 // 打开对话框
 const openDialog = () => {
   visible.value = true
+  // 每次打开弹框时重新获取数据
+  initData(true)
 }
 
 // 关闭对话框
@@ -87,15 +89,38 @@ const selectProcess = (process) => {
     taskOperationRef.value?.openDialog(process)
   }, 200);
 }
-const initData = () => {
+// 在 script setup 部分添加 loading 状态
+const loading = ref(false)
+
+const initData = (showMessage) => {
+  // 检查设备ID是否存在
+  if (!props.currentDevice?.id & showMessage) {
+    ElMessage.error('设备ID不存在，无法获取工序数据')
+    return
+  }
+  
+  loading.value = true
+  processList.value = [] // 清空之前的数据
+  
   const data = {
     wc_id: props.currentDevice.id,
   }
-  getWpCountData(data).then((res) => {
-    if (res.length>0) {
-      processList.value = res
-    }
-  }) 
+  
+  getWpCountData(data)
+    .then((res) => {
+      if (res && res.length > 0) {
+        processList.value = res
+      } else {
+        processList.value = []
+      }
+    })
+    .catch((error) => {
+      console.error('获取工序数据失败:', error)
+      processList.value = []
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 onMounted(() => {
   initData()

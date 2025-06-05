@@ -136,8 +136,8 @@ const fetchDeviceRuntime = async () => {
     const device_number =props.currentDevice.number
     const params = {
       // device_id: device.id,
-      filter:[{"val":[{"name":"device_number","val":device_number,"action":"="}],"relation":"OR"},{"val":[{"name":"bill_date","val":{"range":"custom","start":getShiftDateRangeResult.start,"end":getShiftDateRangeResult.end},"action":"date_range"}],"relation":"OR"}],
-      filter_detail:{},
+      filter:JSON.stringify([{"val":[{"name":"device_number","val":device_number,"action":"="}],"relation":"OR"},{"val":[{"name":"bill_date","val":{"range":"custom","start":getShiftDateRangeResult.start,"end":getShiftDateRangeResult.end},"action":"date_range"}],"relation":"OR"}]),
+      filter_detail:JSON.stringify({}),
       keyword_is_detail:0,
       show_total:1,
       page:1,
@@ -410,6 +410,7 @@ onMounted(() => {
   }
   
   .dialog-content {
+    min-height: 260px;
     .table-container {
       margin-top: 15px;
       

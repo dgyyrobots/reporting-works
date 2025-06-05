@@ -68,10 +68,12 @@ export default {
     const res = await request({ method: 'POST', ...option })
     return res.data as unknown as T
   },
+
   postOriginal: async (option: any) => {
     const res = await request({ method: 'POST', ...option })
     return res
   },
+
   delete: async <T = any>(option: any) => {
     const res = await request({ method: 'DELETE', ...option })
     return res.data as unknown as T
@@ -88,6 +90,39 @@ export default {
     option.headersType = 'multipart/form-data'
     const res = await request({ method: 'POST', ...option })
     return res as unknown as Promise<T>
+  },
+  // 新增 multipart/form-data 类型的 POST 请求方法
+  postMultipart: async <T = any>(option: any) => {
+    // 如果提供了 data 且是对象类型，将其转换为 FormData 格式
+
+    console.log(option, 'option')
+    const formData = new FormData();
+    for (const key in option.data) {
+      formData.append(key, option.data[key]);
+    }
+    option.data = formData;
+    option.headersType = 'multipart/form-data';
+
+
+    const res = await request({ method: 'POST', ...option });
+    return res.data as unknown as T;
+  },
+
+  // 新增 multipart/form-data 类型的 POST 请求方法，返回原始响应
+  postMultipartOriginal: async <T = any>(option: any) => {
+    // 如果提供了 data 且是对象类型，将其转换为 FormData 格式
+
+    const formData = new FormData();
+    for (const key in option.data) {
+      formData.append(key, option.data[key]);
+    }
+    option.data = formData;
+
+
+    option.headersType = 'multipart/form-data';
+
+    const res = await request({ method: 'POST', ...option });
+    return res as unknown as T;
   },
 }
 

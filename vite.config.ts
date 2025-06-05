@@ -20,6 +20,7 @@ import {
   reportCompressedSize,
 } from '/@/config'
 import { createVitePlugin, createWatch } from '/@vab/build'
+import { cliConfig } from './src/config/cli.config'
 
 const lastBuildTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
 const info = { dependencies, devDependencies, lastBuildTime, name, version }
@@ -33,7 +34,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   console.log(info.lastBuildTime)
 
   return {
-    base,
+    base: cliConfig.base as string,
     root,
     server: {
       open,
@@ -69,7 +70,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       exclude,
     },
     build: {
-      assetsDir,
+      assetsDir: cliConfig.assetsDir as string,
       chunkSizeWarningLimit,
       cssCodeSplit,
       outDir,
@@ -79,9 +80,37 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           return
         },
         output: {
-          chunkFileNames: outputHash ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
-          entryFileNames: outputHash ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
-          assetFileNames: outputHash ? 'static/[ext]/[name]-[hash].[ext]' : 'static/[ext]/[name].[ext]',
+          // 使用自定义静态资源输出路径
+          assetFileNames: (assetInfo) => {
+            const prefix = cliConfig.assetPathPrefix ? `${cliConfig.assetPathPrefix.replace(/^\//, '')}/` : '';
+            const assetsDir = cliConfig.assetsDir as string;
+            const info = assetInfo.name.split('.');
+            const ext = info[info.length - 1];
+            
+            if (/\.(png|jpe?g|gif|svg|webp)$/.test(assetInfo.name)) {
+              return `${prefix}${assetsDir}/img/[name]-[hash].[ext]`;
+            }
+            
+            if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
+              return `${prefix}${assetsDir}/fonts/[name]-[hash].[ext]`;
+            }
+            
+            if (/\.(css)$/.test(assetInfo.name)) {
+              return `${prefix}${assetsDir}/css/[name]-[hash].[ext]`;
+            }
+            
+            return `${prefix}${assetsDir}/[ext]/[name]-[hash].[ext]`;
+          },
+          chunkFileNames: (chunkInfo) => {
+            const prefix = cliConfig.assetPathPrefix ? `${cliConfig.assetPathPrefix.replace(/^\//, '')}/` : '';
+            const assetsDir = cliConfig.assetsDir as string;
+            return `${prefix}${assetsDir}/js/[name]-[hash].js`;
+          },
+          entryFileNames: (chunkInfo) => {
+            const prefix = cliConfig.assetPathPrefix ? `${cliConfig.assetPathPrefix.replace(/^\//, '')}/` : '';
+            const assetsDir = cliConfig.assetsDir as string;
+            return `${prefix}${assetsDir}/js/[name]-[hash].js`;
+          }
         },
       },
       minify,

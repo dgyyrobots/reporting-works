@@ -367,8 +367,8 @@ const fetchTopData = async (filter) => {
   try {
     // 调用API获取工单数据
     const data = {
-      filter: filter || [],
-      filter_detail:{},
+      filter: JSON.stringify(filter) || [],
+      filter_detail:JSON.stringify({}),
       keyword_is_detail:0,
       show_total:1,
       page:topQueryForm.pageNo,

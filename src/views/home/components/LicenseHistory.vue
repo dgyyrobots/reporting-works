@@ -197,7 +197,7 @@ const fetchData = async () => {
     }
 
     const params = {
-      filter: [
+      filter: JSON.stringify([
         {
           val: [
             { name: 'device_id', val: props.currentDevice.id, action: '=' },
@@ -205,11 +205,11 @@ const fetchData = async () => {
           ],
           relation: 'AND',
         },
-      ],
-      filter_detail: {},
-      other_params: { structure: 'entry1' },
+      ]),
+      filter_detail: JSON.stringify({}),
+      other_params: JSON.stringify({ structure: 'entry1' }),
       keyword_is_detail: '0',
-      sum_col: [
+      sum_col: JSON.stringify([
         'collection_uqty',
         'collection_qty',
         'pass_uqty',
@@ -222,7 +222,7 @@ const fetchData = async () => {
         'scrap_qty',
         'loss_uqty',
         'loss_qty',
-      ],
+      ]),
       sum_col_type: '1',
       sort: 'status_id,operate_date',
       order: 'asc,asc',
