@@ -104,10 +104,7 @@ const showDetailDialog = async () => {
   dialogVisible.value = true
   detailLoading.value = true
   
-  // 在弹框打开时请求数据
-  await fetchDeviceRuntime()
-  
-  // 使用获取到的数据
+  // 使用已获取的数据，不再重新请求
   detailTableData.value = tableData.value
   
   // 短暂延迟以显示加载效果
@@ -133,6 +130,12 @@ const formatTimestamp = (timestamp) => {
 
 // 获取设备运行时间数据
 const fetchDeviceRuntime = async () => {
+  // 检查设备信息是否完整
+  if (!props.currentDevice || !props.currentDevice.number) {
+    console.warn('设备信息不完整，无法获取设备运行时间')
+    return
+  }
+  
   loading.value = true
   const getShiftDateRangeResult = getShiftDateRange()
   try {
@@ -162,6 +165,9 @@ const fetchDeviceRuntime = async () => {
     loading.value = false
   }
 }
+
+
+
 // 判断班次并返回日期范围
 const getShiftDateRange = () => {
   const now = new Date()
@@ -196,6 +202,11 @@ const getShiftDateRange = () => {
     end: isDayShift ? today : tomorrowStr
   }
 }
+onMounted(() => {
+  nextTick(async () => {
+    fetchDeviceRuntime()
+  })
+})
 
 </script>
 
