@@ -33,7 +33,7 @@ export const createVitePlugin = (env: Record<string, string>) => {
   vitePlugins.push(UnoCSS())
   vitePlugins.push(createProgress(env))
   vitePlugins.push(createUnPlugin(env))
-  vitePlugins.push(createMock(localEnabled, prodEnabled))
+  vitePlugins.push(createMock(false, prodEnabled))
   vitePlugins.push(createSvgIcons())
   vitePlugins.push(createBanner())
   if (compress) vitePlugins.push(createCompress(compress))

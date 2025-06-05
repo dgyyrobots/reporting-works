@@ -48,10 +48,25 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       },
       https,
       proxy: {
+        '/zy': {
+          target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
+          changeOrigin: true,
+          // rewrite: (path) => path.replace(/^\/zy/, '')
+        },
         '/mes': {
           target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/mes/, '')
+          // rewrite: (path) => path.replace(/^\/mes/, '')
+        },
+        '/erp': {
+          target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
+          changeOrigin: true,
+          // rewrite: (path) => path.replace(/^\/erp/, '')
+        },
+        '/apps': {
+          target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
+          changeOrigin: true,
+          // 
         }
       },
     },
@@ -86,19 +101,19 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             const assetsDir = cliConfig.assetsDir as string;
             const info = assetInfo.name.split('.');
             const ext = info[info.length - 1];
-            
+
             if (/\.(png|jpe?g|gif|svg|webp)$/.test(assetInfo.name)) {
               return `${prefix}${assetsDir}/img/[name]-[hash].[ext]`;
             }
-            
+
             if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
               return `${prefix}${assetsDir}/fonts/[name]-[hash].[ext]`;
             }
-            
+
             if (/\.(css)$/.test(assetInfo.name)) {
               return `${prefix}${assetsDir}/css/[name]-[hash].[ext]`;
             }
-            
+
             return `${prefix}${assetsDir}/[ext]/[name]-[hash].[ext]`;
           },
           chunkFileNames: (chunkInfo) => {

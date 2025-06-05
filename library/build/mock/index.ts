@@ -1,7 +1,7 @@
 // library/build/mock/index.ts
 import { viteMockServe } from 'vite-plugin-mock'
 
-export function createMock(localEnabled = true, prodEnabled = false) {
+export function createMock(localEnabled = false, prodEnabled = false) {
   return viteMockServe({
     mockPath: 'mock',
     localEnabled, // 开发环境启用

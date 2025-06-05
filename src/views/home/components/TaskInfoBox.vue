@@ -171,7 +171,7 @@ const fetchTaskInfo = async () => {
     }
     
     const params = {
-      filter: [
+      filter: JSON.stringify([
         {
           val: [
             { name: 'wc_id', val: wc_id, action: '=' },
@@ -179,10 +179,11 @@ const fetchTaskInfo = async () => {
           ],
           relation: 'AND',
         },
-      ],
+      ]),
     }
     const res = await getJobBillContent(params)
 
+    
     if (res && res.rows && res.rows.length > 0) {
       const data = res.rows[0]
 

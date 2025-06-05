@@ -370,7 +370,7 @@ const get_jobbill_id = async () => {
     }
     
     const params = {
-      filter: [{"val":[{"name":"wc_id","val":wc_id,"action":"="},{"name":"bill_no","val":activeJob,"action":"="}],"relation":"AND"}]
+      filter: JSON.stringify([{"val":[{"name":"wc_id","val":wc_id,"action":"="},{"name":"bill_no","val":activeJob,"action":"="}],"relation":"AND"}])
     }
     
     const res = await getJobBillContent(params)

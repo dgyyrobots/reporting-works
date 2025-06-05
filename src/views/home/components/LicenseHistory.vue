@@ -110,7 +110,7 @@ const get_jobbill_id = async () => {
   if (!activeJob) return
 
   const params = {
-    filter: [
+    filter: JSON.stringify([
       {
         val: [
           { name: 'wc_id', val: wc_id, action: '=' },
@@ -118,7 +118,7 @@ const get_jobbill_id = async () => {
         ],
         relation: 'AND',
       },
-    ],
+    ]),
   }
 
   try {
