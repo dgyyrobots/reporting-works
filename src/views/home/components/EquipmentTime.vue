@@ -76,7 +76,7 @@ import Card from './Card.vue'
 import { ref, onMounted, watch } from 'vue'
 import { getDeviceRuntimeADay } from '@/api/mes/wk/index.ts'
 import { Icon } from '/@/components/Icon'
-
+import { ElMessage} from 'element-plus'
 // 定义props接收设备和工作中心信息
 const props = defineProps({
   currentDevice: {
@@ -101,16 +101,22 @@ const detailTableData = ref([])
 
 // 显示详情弹框
 const showDetailDialog = async () => {
-  dialogVisible.value = true
-  detailLoading.value = true
-  
-  // 使用已获取的数据，不再重新请求
-  detailTableData.value = tableData.value
-  
-  // 短暂延迟以显示加载效果
-  setTimeout(() => {
-    detailLoading.value = false
-  }, 300)
+ // 确保有数据才打开弹框
+ if (tableData.value && tableData.value.length > 0) {
+    dialogVisible.value = true
+    detailLoading.value = true
+    
+    // 使用已获取的数据
+    detailTableData.value = tableData.value
+    
+    // 短暂延迟以显示加载效果
+    setTimeout(() => {
+      detailLoading.value = false
+    }, 300)
+  } else {
+    // 如果没有数据，可以考虑显示一个提示
+    ElMessage.error('暂无数据~')
+  }
 }
 
 
