@@ -267,6 +267,10 @@ onMounted(() => {
   timer = setInterval(updateDateTime, 1000) // 每秒更新一次
 
   initTestData()
+
+  setTimeout(() => {
+    console.log(currentDevice.value,'device')
+  }, 400);
 })
 
 onBeforeUnmount(() => {

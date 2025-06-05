@@ -224,7 +224,7 @@ const handSubmit = () => {
   if (!scanData.value) return ElMessage.error('版号不能为空')
   const taskInfo = workStore.taskInfo
   addVersionByCode({
-    device: props.currentDevice,
+    device: JSON.stringify(props.currentDevice),
     version_no: scanData.value,
     jobbill_id: taskInfo.id,
     is_device_collect: 1
