@@ -1,24 +1,28 @@
 <template>
   <div class="login-container">
     <div class="login-form">
-      <img alt="" class="left-img" :src="leftImg" />
-      <el-form ref="formRef" label-position="left" :model="form" :rules="rules" @submit.prevent>
-        <div class="title">
-          <img :alt="title" :src="logo" />
-        </div>
-        <div class="title-tips">报工系统登录</div>
-        <el-form-item prop="userName">
-          <el-input v-model.trim="form.userName" v-focus clearable :placeholder="translate('请输入用户名')" type="text">
-            <template #prefix>
-              <vab-icon icon="user-line" />
-            </template>
-          </el-input>
-        </el-form-item>
+      <div class="login-left">
+        <img alt="" class="left-img" :src="leftImg" />
+      </div>
+      <div class="login-right">
+        <el-form ref="formRef" label-position="left" :model="form" :rules="rules" @submit.prevent>
+          <div class="title">
+            <img :alt="title" :src="logo" />
+          </div>
+          <div class="title-tips">报工系统登录</div>
+          <el-form-item prop="userName">
+            <el-input v-model.trim="form.userName" v-focus clearable :placeholder="translate('请输入用户名')" type="text">
+              <template #prefix>
+                <vab-icon icon="user-line" />
+              </template>
+            </el-input>
+          </el-form-item>
 
-        <el-button v-throttle="getCode" class="login-btn" :loading="loading" native-type="submit" type="primary">
-          {{ translate('登录') }}
-        </el-button>
-      </el-form>
+          <el-button v-throttle="getCode" class="login-btn" :loading="loading" native-type="submit" type="primary">
+            {{ translate('登录') }}
+          </el-button>
+        </el-form>
+      </div>
     </div>
     
     <!-- 工作中心选择弹框 -->
@@ -239,115 +243,189 @@ onMounted(() => {
 .login-container {
   position: relative;
   height: 100vh;
-  background: linear-gradient(to top, var(--el-color-primary), var(--el-color-primary-light-3));
-
-  @media (max-width: 696px) {
-    .login-form {
-      width: 90vw !important;
-      margin: auto !important;
-
-      .left-img {
-        display: none !important;
-      }
-
-      :deep() {
-        .el-form--default {
-          width: 100% !important;
-          margin-right: auto !important;
-          margin-left: auto !important;
-        }
-      }
-    }
-  }
-
-  @media (min-width: 696px) and (max-width: 999px) {
-    .login-form {
-      width: 90vw !important;
-      margin: auto !important;
-
-      :deep() {
-        .el-form--default {
-          width: 50% !important;
-        }
-      }
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/@/assets/login_images/bg-pattern.png');
+    opacity: 0.05;
+    pointer-events: none;
   }
 
   .login-form {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
     width: 1000px;
     height: 550px;
-    padding: 4.5vh;
-    margin: auto;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    background: var(--el-color-white);
-    background-size: 100% 100%;
-    border: 1px solid var(--el-border-color);
-    border-radius: 15px;
-    transition: var(--el-transition);
-
-    .left-img {
-      width: 50%;
+    transition: all 0.3s ease;
+    
+    .login-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #066bb9 0%, #0a4d8c 100%);
+      padding: 20px;
+      
+      .left-img {
+        width: 100%;
+        max-width: 400px;
+        object-fit: contain;
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+      }
+    }
+    
+    .login-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
     }
 
     :deep() {
-      * {
-        transition: var(--el-transition);
-      }
-
       .el-form--default {
-        width: 45%;
+        width: 100%;
+        max-width: 360px;
       }
 
       .title {
-        height: 80px;
         display: flex;
         align-items: center;
-      }
-
-      .title img {
-        height: 100px;
-        margin-bottom: 20px
+        justify-content: center;
+        margin-bottom: 10px;
+        
+        img {
+          height: 80px;
+          transition: transform 0.3s ease;
+          
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
       }
 
       .title-tips {
-        margin-top: 29px;
-        font-size: 26px;
-        font-weight: 400;
-        color: rgba(6, 107, 185,1);
+        text-align: center;
+        margin: 15px 0 30px;
+        font-size: 24px;
         font-weight: 600;
-        letter-spacing: 4px;
+        color: #066bb9;
+        letter-spacing: 2px;
+        position: relative;
+        
+
+      }
+
+      .el-form-item {
+        margin-bottom: 25px;
+        
+        .el-input {
+          height: 50px;
+          
+          .el-input__wrapper {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            
+            &:hover, &:focus-within {
+              box-shadow: 0 3px 12px rgba(6, 107, 185, 0.15);
+            }
+          }
+          
+          .el-input__inner {
+            height: 50px;
+            font-size: 16px;
+          }
+        }
       }
 
       .login-btn {
         width: 100%;
         height: 50px;
-      }
-
-      .el-form-item {
-        margin: 20px 0;
-
-        &__error {
-          position: absolute;
-          font-size: var(--el-font-size-small);
-          line-height: 18px;
-          color: var(--el-color-error);
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        background: linear-gradient(to right, #066bb9, #0a4d8c);
+        border: none;
+        box-shadow: 0 4px 12px rgba(6, 107, 185, 0.3);
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(6, 107, 185, 0.4);
         }
-
-        .el-input {
-          width: 100%;
-          height: 48px;
-          line-height: 48px;
+        
+        &:active {
+          transform: translateY(0);
         }
       }
     }
+  }
+
+  @media (max-width: 1024px) {
+    .login-form {
+      width: 90%;
+      max-width: 800px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .login-form {
+      flex-direction: column;
+      height: auto;
+      max-height: 90vh;
+      
+      .login-left {
+        display: none;
+      }
+      
+      .login-right {
+        padding: 30px 20px;
+      }
+    }
+  }
+}
+
+// 添加对话框样式优化
+:deep(.el-dialog) {
+  border-radius: 12px;
+  overflow: hidden;
+  
+  .el-dialog__header {
+    background: #066bb9;
+    padding: 15px 20px;
+    margin: 0;
+    
+    .el-dialog__title {
+      color: white;
+      font-weight: 500;
+    }
+    
+    .el-dialog__close {
+      color: white;
+      
+      &:hover {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+  
+  .el-dialog__body {
+    padding: 25px;
   }
 }
 </style>
