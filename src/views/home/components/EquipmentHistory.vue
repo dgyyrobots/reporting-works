@@ -28,6 +28,7 @@ const props = defineProps({
 const chartRef = ref(null)
 const list = ref([])
 let chart = null
+let dataRefreshTimer = null // 添加定时器变量
 
 // 处理接口返回的数据，转换为图表所需格式
 const processChartData = (data) => {
@@ -297,10 +298,28 @@ const initData = () => {
   })
 }
 
+// 设置定时刷新数据
+const setupDataRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
+  
+  // 设置新的定时器，每30分钟执行一次
+  dataRefreshTimer = setInterval(() => {
+    console.log('定时刷新设备运行历史数据')
+    if (props.currentDevice && props.currentDevice.number) {
+      initData()
+    }
+  }, 30 * 60 * 1000) // 30分钟 = 30 * 60 * 1000毫秒
+}
+
 // 监听设备变化，当设备信息有效时再请求数据
 watch(() => props.currentDevice, (newDevice) => {
   if (newDevice && newDevice.number) {
     initData()
+    // 设备变化时重新设置定时器
+    setupDataRefreshTimer()
   }
 }, { deep: true, immediate: true })
 
@@ -318,6 +337,8 @@ onMounted(() => {
   if (props.currentDevice && props.currentDevice.number) {
     setTimeout(() => {
       initData()
+      // 初始化定时器
+      setupDataRefreshTimer()
     }, 200)
   }
 })
@@ -325,6 +346,12 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   chart?.dispose()
+  
+  // 组件卸载时清除定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+    dataRefreshTimer = null
+  }
 })
 </script>
 
