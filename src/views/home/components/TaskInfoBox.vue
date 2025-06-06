@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch, onUnmounted, nextTick } from 'vue'
 import { getJobBillContent, getJobBillTimeAndNumber, getJobBillTypeAndStartTime } from '@/api/mes/wk/index.ts'
 import Card from './Card.vue'
 import { useWorkStore } from '@/store/modules/work'
@@ -112,6 +112,25 @@ const initFromStore = () => {
   }
 }
 
+// 添加定时器变量
+let dataRefreshTimer = null
+
+// 设置定时刷新数据
+const setupDataRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
+  
+  // 设置新的定时器，每15分钟执行一次
+  dataRefreshTimer = setInterval(() => {
+    console.log('定时刷新任务单信息数据')
+    if (props.currentDevice && props.currentDevice.jobbill_no) {
+      refreshAllData()
+    }
+  }, 15 * 60 * 1000) // 15分钟 = 15 * 60 * 1000毫秒
+}
+
 // 监听当前设备的工单号变化
 watch(
   () => props.currentDevice.jobbill_no,
@@ -119,6 +138,8 @@ watch(
     if (newBillNo && newBillNo !== oldBillNo) {
       // 当前设备的工单号发生变化，重新获取数据
       refreshAllData()
+      // 重新设置定时器
+      setupDataRefreshTimer()
     }
   },
   { immediate: true }
@@ -420,6 +441,17 @@ onMounted(() => {
   ) {
     // 不一致，需要重新获取数据
     nextTick(refreshAllData)
+  }
+  
+  // 初始化定时器
+  setupDataRefreshTimer()
+})
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+    dataRefreshTimer = null
   }
 })
 
