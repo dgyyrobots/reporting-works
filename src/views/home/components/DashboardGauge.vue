@@ -64,15 +64,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
 import { getCollectionQty } from '@/api/mes/wk/index.ts'
 import { getJobBillContent,getDeviceRunSpeedData} from '@/api/mes/wk/index.ts'
+
+// 添加定时器变量
+let dataRefreshTimer = null
+
 // 定义props
 const props = defineProps({
-
   currentWorkcenter: {
     type: Object,
     default: () => ({})
@@ -511,15 +514,47 @@ const getCurrentDate = () => {
   return `${year}-${month}-${day}`
 }
 
-onMounted( () => {
-  nextTick( async() => {
-    await  get_jobbill_id()
+// 刷新所有数据的函数
+const refreshAllData = async () => {
+  console.log('定时刷新仪表盘数据')
+  await get_jobbill_id()
+  await initCollectionQty()
+  await getDeviceSpeed()
+}
+
+// 设置定时刷新数据
+const setupDataRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
+  
+  // 设置新的定时器，每5分钟执行一次
+  dataRefreshTimer = setInterval(() => {
+    if (props.currentDevice && props.currentDevice.id) {
+      refreshAllData()
+    }
+  }, 5 * 60 * 1000) // 5分钟 = 5 * 60 * 1000毫秒
+}
+
+onMounted(() => {
+  nextTick(async() => {
+    await get_jobbill_id()
     initCollectionQty()
     getDeviceSpeed()
+    
+    // 初始化定时器
+    setupDataRefreshTimer()
   })
 })
 
 onBeforeUnmount(() => {
+  // 组件卸载时清除定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+    dataRefreshTimer = null
+  }
+  
   if (chart) {
     chart.dispose()
   }
