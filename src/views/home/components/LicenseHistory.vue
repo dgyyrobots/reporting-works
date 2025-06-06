@@ -47,7 +47,7 @@
 
 <script setup>
 import Card from './Card.vue'
-import { ref, onMounted, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, computed, watch, nextTick, onUnmounted } from 'vue'
 import { getPlateListData, getJobBillContent } from '@/api/mes/wk/index.ts'
 import LicenseDetailDialog from '../dialog/LicenseDetailDialog.vue'
 import { useWorkStore } from '@/store/modules/work' // 导入store
@@ -58,6 +58,7 @@ const tableData = ref([])
 const originalData = ref([]) // 存储原始数据
 const jobbill_id = ref('') // 添加 jobbill_id 引用
 const detailDialogVisible = ref(false) // 明细弹框显示状态
+let dataRefreshTimer = null // 添加定时器变量
 
 // 全选状态，使用计算属性从store获取
 const selectAll = computed({
@@ -279,6 +280,34 @@ const fetchData = async () => {
     loading.value = false
   }
 }
+// 设置定时刷新数据
+const setupDataRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
+  
+  // 设置新的定时器，每15分钟执行一次
+  dataRefreshTimer = setInterval(() => {
+    console.log('定时刷新生产版号数据')
+    if (props.currentDevice && props.currentDevice.id && jobbill_id.value) {
+      fetchData()
+    }
+  }, 15 * 60 * 1000) // 15分钟 = 15 * 60 * 1000毫秒
+}
+
+// 监听设备变化，当设备信息有效时重新请求数据
+watch(() => props.currentDevice, async (newDevice) => {
+  if (newDevice && newDevice.id) {
+    await get_jobbill_id()
+    if (jobbill_id.value) {
+      fetchData()
+      // 设备变化时重新设置定时器
+      setupDataRefreshTimer()
+    }
+  }
+}, { deep: true })
+
 // 监听 fleshLicenseIndex 变化
 watch(() => workStore.getFleshLicenseIndex, (newVal) => {
   if (newVal) {
@@ -297,7 +326,17 @@ onMounted(() => {
   nextTick(async () => {
     await get_jobbill_id()
     fetchData()
+    // 初始化定时器
+    setupDataRefreshTimer()
   })
+})
+
+onUnmounted(() => {
+  // 组件卸载时清除定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+    dataRefreshTimer = null
+  }
 })
 </script>
 
