@@ -28,7 +28,7 @@
 
 <script setup>
 import Card from './Card.vue'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { getCurrentWorker } from '@/api/mes/wk/index.ts'
 import headSvg from '@/assets/bigscreen/head.svg'
 
@@ -45,6 +45,25 @@ const props = defineProps({
 })
 const tableData = ref([])
 const title = ref('员工信息')
+// 添加定时器变量
+let dataRefreshTimer = null
+
+// 设置定时刷新数据
+const setupDataRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
+  
+  // 设置新的定时器，每2小时执行一次
+  dataRefreshTimer = setInterval(() => {
+    console.log('定时刷新员工信息数据')
+    if (props.currentDevice && props.currentDevice.id && 
+        props.currentWorkcenter && props.currentWorkcenter.id) {
+      initData()
+    }
+  }, 2 * 60 * 60 * 1000) // 2小时 = 2 * 60 * 60 * 1000毫秒
+}
 
 const initData = () => {
   const device = props.currentDevice
@@ -84,9 +103,26 @@ const initData = () => {
 watch(() => [props.currentDevice, props.currentWorkcenter], ([newDevice, newWorkcenter]) => {
   if (newDevice && newDevice.id && newWorkcenter && newWorkcenter.id) {
     initData()
+    // 设备或工作中心变化时重新设置定时器
+    setupDataRefreshTimer()
   }
 }, { deep: true, immediate: true })
 
+// 组件挂载时初始化定时器
+onMounted(() => {
+  if (props.currentDevice && props.currentDevice.id && 
+      props.currentWorkcenter && props.currentWorkcenter.id) {
+    setupDataRefreshTimer()
+  }
+})
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+    dataRefreshTimer = null
+  }
+})
 </script>
 
 <style lang="scss" scoped>
