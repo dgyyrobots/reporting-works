@@ -73,10 +73,14 @@
 
 <script setup>
 import Card from './Card.vue'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted, nextTick } from 'vue'
 import { getDeviceRuntimeADay } from '@/api/mes/wk/index.ts'
 import { Icon } from '/@/components/Icon'
 import { ElMessage} from 'element-plus'
+
+// 添加定时器变量
+let dataRefreshTimer = null
+
 // 定义props接收设备和工作中心信息
 const props = defineProps({
   currentDevice: {
@@ -98,6 +102,22 @@ const dialogVisible = ref(false)
 const detailLoading = ref(false)
 const detailTableHeaders = ['设备名称', '工序名称', '工作中心名称', '班次名称', '类型名称', '开始时间', '结束时间', '时长']
 const detailTableData = ref([])
+
+// 设置定时刷新数据
+const setupDataRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
+  
+  // 设置新的定时器，每2小时执行一次
+  dataRefreshTimer = setInterval(() => {
+    console.log('定时刷新设备计时数据')
+    if (props.currentDevice && props.currentDevice.number) {
+      fetchDeviceRuntime()
+    }
+  }, 2 * 60 * 60 * 1000) // 2小时 = 2 * 60 * 60 * 1000毫秒
+}
 
 // 显示详情弹框
 const showDetailDialog = async () => {
@@ -215,15 +235,26 @@ watch(() => props.currentDevice, (newDevice, oldDevice) => {
       (!oldDevice || newDevice.number !== oldDevice.number)) {
     console.log('设备变化，重新获取数据:', newDevice.name || newDevice.number)
     fetchDeviceRuntime()
+    // 设备变化时重新设置定时器
+    setupDataRefreshTimer()
   }
 }, { deep: true })
 
 onMounted(() => {
   nextTick(async () => {
     fetchDeviceRuntime()
+    // 初始化定时器
+    setupDataRefreshTimer()
   })
 })
 
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+    dataRefreshTimer = null
+  }
+})
 </script>
 
 <style lang="scss">
