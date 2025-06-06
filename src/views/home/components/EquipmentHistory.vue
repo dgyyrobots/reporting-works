@@ -9,32 +9,88 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as echarts from 'echarts'
 import Card from './Card.vue'
 import { getDeviceOutput } from '@/api/mes/wk/index.ts'
-// 这里可以接收props或后续做数据对接
 
 const props = defineProps({
-
-currentWorkcenter: {
-  type: Object,
-  default: () => ({})
-},
-currentDevice: {
-  type: Object,
-  default: () => ({})
-},
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
+  currentDevice: {
+    type: Object,
+    default: () => ({})
+  },
 })
 
 const chartRef = ref(null)
-const  list = ref([])
+const list = ref([])
 let chart = null
 
+// 处理接口返回的数据，转换为图表所需格式
+const processChartData = (data) => {
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return {
+      xAxisData: [],
+      quantityData: [],
+      speedData: []
+    }
+  }
 
-const initChart = () => {
+  // 按start排序
+  data.sort((a, b) => a.start - b.start)
+  
+  // 提取x轴数据（小时）
+  const hours = [...new Set(data.map(item => item.start))].sort((a, b) => a - b)
+  const xAxisData = hours.map(hour => `第${hour}小时`)
+  
+  // 提取数量和平均速度数据
+  const quantityData = []
+  const speedData = []
+  
+  hours.forEach(hour => {
+    // 查找对应小时的数量数据
+    const quantityItem = data.find(item => item.start === hour && item.item === '数量')
+    if (quantityItem) {
+      quantityData.push(parseFloat(quantityItem.value))
+    } else {
+      quantityData.push(0)
+    }
+    
+    // 查找对应小时的平均速度数据
+    const speedItem = data.find(item => item.start === hour && item.item === '平均速度')
+    if (speedItem) {
+      speedData.push(parseFloat(speedItem.value))
+    } else {
+      speedData.push(0)
+    }
+  })
+  
+  return {
+    xAxisData,
+    quantityData,
+    speedData
+  }
+}
+
+const initChart = (chartData) => {
   if (chartRef.value) {
-    chart = echarts.init(chartRef.value)
+    if (!chart) {
+      chart = echarts.init(chartRef.value)
+    }
+    
+
+    
+    // 计算数量的最大值，用于设置y轴范围和背景条
+    const maxQuantity = Math.max(...chartData.quantityData, 1) // 至少为1，避免为0
+    const yMaxQuantity = Math.ceil(maxQuantity / 1000) * 1000 // 向上取整到最近的1000
+    
+    // 计算速度的最大值，用于设置右侧y轴范围
+    const maxSpeed = Math.max(...chartData.speedData, 1) // 至少为1，避免为0
+    const yMaxSpeed = Math.ceil(maxSpeed / 1000) * 1000 // 向上取整到最近的1000
+    
     const option = {
       backgroundColor: 'transparent',
       tooltip: {
@@ -49,10 +105,20 @@ const initChart = () => {
         right: '5%',
         bottom: '5%',
         containLabel: true,
+
+      },
+      legend: {
+        show:false,
+        data: ['数量', '平均速度'],
+        textStyle: {
+          color: '#fff'
+        },
+        right: '5%',
+        top: '2%'
       },
       xAxis: {
         type: 'category',
-        data: ['设备1', '设备2', '设备3', '设备4', '设备5'],
+        data: chartData.xAxisData,
         axisLine: {
           lineStyle: {
             color: '#0B3E5E',
@@ -61,11 +127,13 @@ const initChart = () => {
         axisLabel: {
           color: '#fff',
           fontSize: 12,
+          rotate: 45,  // 添加旋转角度
+          margin: 10   // 增加标签与轴线
         },
       },
       series: [
         {
-          name: '运行时间',
+          name: '数量',
           type: 'bar',
           stack: 'total',
           label: {
@@ -76,7 +144,7 @@ const initChart = () => {
             fontSize: 12,
             formatter: '{c}',
           },
-          data: [390, 134, 201, 102, 220],
+          data: chartData.quantityData,
           itemStyle: {
             borderRadius: 5,
             color: '#00D8FF',
@@ -93,10 +161,14 @@ const initChart = () => {
             color: 'rgba(230, 247, 255, 0.3)',
           },
           z: -12,
-          data: [400, 400, 400, 400, 400],
+          data: Array(chartData.xAxisData.length).fill(yMaxQuantity),
+          silent: true,
+          tooltip: {
+            show: false
+          }
         },
         {
-          name: '运行效率',
+          name: '平均速度',
           type: 'line',
           smooth: true,
           showAllSymbol: true,
@@ -106,16 +178,16 @@ const initChart = () => {
           itemStyle: {
             color: '#1890FF',
           },
-          data: [85, 92, 78, 88, 95],
+          data: chartData.speedData,
         },
       ],
       yAxis: [
         {
           type: 'value',
-          name: '运行时间',
+          name: '数量',
           min: 0,
-          max: 400,
-          interval: 100,
+          max: yMaxQuantity,
+          interval: yMaxQuantity / 4,
           axisLine: {
             show: false,
           },
@@ -132,7 +204,7 @@ const initChart = () => {
         },
         {
           type: 'value',
-          name: '效率(%)',
+          name: '平均速度',
           nameLocation: 'end',
           nameGap: 15,
           nameTextStyle: {
@@ -141,8 +213,8 @@ const initChart = () => {
             padding: [0, 0, 0, 0],
           },
           min: 0,
-          max: 100,
-          interval: 20,
+          max: yMaxSpeed,
+          interval: yMaxSpeed / 5,
           axisLine: {
             show: false,
           },
@@ -152,19 +224,18 @@ const initChart = () => {
           axisLabel: {
             color: '#fff',
             fontSize: 12,
-            formatter: '{value}%',
           },
         },
       ],
     }
     chart.setOption(option)
-    window.addEventListener('resize', handleResize)
   }
 }
 
 const handleResize = () => {
   chart?.resize()
 }
+
 const formatDateTime = (timestamp) => {
   if (!timestamp) return '--'
 
@@ -175,13 +246,13 @@ const formatDateTime = (timestamp) => {
     const day = String(date.getDate()).padStart(2, '0')
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
-    const seconds = String(date.getSeconds()).padStart(2, '0')
 
     return `${year}-${month}-${day} ${hours}:${minutes}`
   } catch (e) {
     return '--'
   }
 }
+
 const initData = () => {
   // 检查 currentDevice 是否有效
   if (!props.currentDevice || !props.currentDevice.number) {
@@ -190,21 +261,41 @@ const initData = () => {
   }
   
   const params = {
-    deviceNumber: 'TJ01#',
+    deviceNumber: props.currentDevice.number,
   }
+  
   getDeviceOutput(params).then((res) => {
-    if(res && Array.isArray(res) && res.length > 0){
+    if (res && Array.isArray(res) && res.length > 0) {
+      // 处理时间格式
       res.forEach(item => {
-        item.createTime = formatDateTime(item.createTime)
+        if (item.createTime) {
+          item.createTime = formatDateTime(item.createTime)
+        }
       })
+      
       list.value = res
+      
+      // 处理数据并更新图表
+      const chartData = processChartData(res)
+      initChart(chartData)
+    } else {
+      // 没有数据时显示空图表
+      initChart({
+        xAxisData: [],
+        quantityData: [],
+        speedData: []
+      })
     }
   }).catch(error => {
-    // 添加错误处理
     console.error('获取设备输出数据失败:', error)
+    // 错误时显示空图表
+    initChart({
+      xAxisData: [],
+      quantityData: [],
+      speedData: []
+    })
   })
 }
-
 
 // 监听设备变化，当设备信息有效时再请求数据
 watch(() => props.currentDevice, (newDevice) => {
@@ -214,11 +305,21 @@ watch(() => props.currentDevice, (newDevice) => {
 }, { deep: true, immediate: true })
 
 onMounted(() => {
-  initChart()
-  // 移除这里的 initData() 调用，改为通过 watch 触发
-  setTimeout(() => {
-    initData()
-  }, 200);
+  // 初始化空图表
+  initChart({
+    xAxisData: [],
+    quantityData: [],
+    speedData: []
+  })
+  
+  window.addEventListener('resize', handleResize)
+  
+  // 如果设备信息已经有效，则请求数据
+  if (props.currentDevice && props.currentDevice.number) {
+    setTimeout(() => {
+      initData()
+    }, 200)
+  }
 })
 
 onUnmounted(() => {
