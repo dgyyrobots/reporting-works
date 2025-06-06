@@ -1,10 +1,6 @@
 <template>
   <Card class="EquipmentHistory" title="设备运行历史">
-    <div v-if="list.length>0" ref="chartRef" class="chart-container"></div>
-     <div v-else class="no-data">
-        <Icon icon="svg-icon:empty-box" />
-        暂无数据
-      </div>
+    <div ref="chartRef" class="chart-container"></div>
   </Card>
 </template>
 
@@ -267,6 +263,7 @@ const initData = () => {
   
   getDeviceOutput(params).then((res) => {
     if (res && Array.isArray(res) && res.length > 0) {
+      console.log('获取设备输出数据成功:', res)
       // 处理时间格式
       res.forEach(item => {
         if (item.createTime) {
