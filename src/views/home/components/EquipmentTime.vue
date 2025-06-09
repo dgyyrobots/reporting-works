@@ -110,13 +110,13 @@ const setupDataRefreshTimer = () => {
     clearInterval(dataRefreshTimer)
   }
   
-  // 设置新的定时器，每2小时执行一次
+  // 设置新的定时器，每1分钟执行一次
   dataRefreshTimer = setInterval(() => {
     console.log('定时刷新设备计时数据')
     if (props.currentDevice && props.currentDevice.number) {
       fetchDeviceRuntime()
     }
-  }, 2 * 60 * 60 * 1000) // 2小时 = 2 * 60 * 60 * 1000毫秒
+  }, 1 * 60 * 1000) // 1分钟 = 1 * 60 * 1000毫秒
 }
 
 // 显示详情弹框
