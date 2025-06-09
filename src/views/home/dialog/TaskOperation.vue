@@ -298,13 +298,9 @@ const fetchData = async (filter) => {
     // 调用API获取工单数据
     const data = {
       filter:JSON.stringify(filterData)  || [],
-      filter_detail:JSON.stringify({}),
-      keyword_is_detail:0,
-      show_total:1,
     }
     const res = await getJobBillContent(data)
     
-    console.log(res,'res1111111333333333')
     
     if (res && res.rows) {
       // 处理API返回的数据，根据JobbillContentData的真实字段进行映射
