@@ -320,7 +320,7 @@ const toInteger = (value) => {
 
 const fetchTypeAndStartTime = async () => {
   loading.value = true
-  const activeJob = props.currentDevice.jobbill_no
+  const activeJob = '%'+taskInfo.work_no +'%'
   const params = {
     filter: JSON.stringify([{ val: [{ name: 'bill_no', val: activeJob, action: 'LIKE' }], relation: 'OR' }]),
     filter_detail: JSON.stringify({}),
