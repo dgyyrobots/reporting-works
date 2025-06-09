@@ -529,12 +529,12 @@ const setupDataRefreshTimer = () => {
     clearInterval(dataRefreshTimer)
   }
   
-  // 设置新的定时器，每5分钟执行一次
+  // 设置新的定时器，每5秒执行一次
   dataRefreshTimer = setInterval(() => {
     if (props.currentDevice && props.currentDevice.id) {
       refreshAllData()
     }
-  }, 5 * 60 * 1000) // 5分钟 = 5 * 60 * 1000毫秒
+  }, 5 * 1000) // 5秒 =5 * 1000毫秒
 }
 
 onMounted(() => {
