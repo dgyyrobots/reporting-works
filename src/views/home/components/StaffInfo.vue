@@ -62,7 +62,7 @@ const setupDataRefreshTimer = () => {
         props.currentWorkcenter && props.currentWorkcenter.id) {
       initData()
     }
-  }, 2 * 60 * 60 * 1000) // 2小时 = 2 * 60 * 60 * 1000毫秒
+  }, 0.5 * 60 * 60 * 1000) // 0.5小时 = 0.5 * 60 * 60 * 1000毫秒
 }
 
 const initData = () => {
