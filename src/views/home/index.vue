@@ -32,7 +32,7 @@
       <button class="nav-btn" @click="openTimeRegistration">计时登记</button>
       <button class="nav-btn">异常登记</button>
       <button class="nav-btn">质量管理</button>
-      <button class="nav-btn">设备管理</button>
+      <button class="nav-btn">生产日报</button>
       <button class="nav-btn">其他操作</button>
       <button class="nav-btn">帮助</button>
     </div>
