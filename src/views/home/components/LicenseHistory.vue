@@ -186,14 +186,20 @@ const toInteger = (value) => {
 }
 
 // 获取数据
-const fetchData = async () => {
-  loading.value = true
+const fetchData = async (isBackgroundRefresh = false) => {
+  // 只有在非后台刷新时才显示加载状态
+  if (!isBackgroundRefresh) {
+    loading.value = true
+  }
+  
   try {
     // 确保有 jobbill_id 和 device_id
     if (!jobbill_id.value || !props.currentDevice.id) {
       console.warn('缺少必要参数: jobbill_id 或 device_id')
-      tableData.value = []
-      originalData.value = []
+      if (!isBackgroundRefresh) {
+        tableData.value = []
+        originalData.value = []
+      }
       return
     }
 
@@ -241,45 +247,121 @@ const fetchData = async () => {
         const existingItem = workStore.getLicenseCheck && workStore.getLicenseCheck.find 
           ? workStore.getLicenseCheck.find(storeItem => storeItem.id === item.id)
           : null
+          
+        // 检查当前表格中是否已有该项（用于保留选中状态）
+        const existingTableItem = tableData.value.find(tableItem => tableItem.id === item.id)
+        
         return {
           ...item,
-          selected: existingItem ? existingItem.selected : false,
+          selected: existingItem ? existingItem.selected : 
+                   (existingTableItem ? existingTableItem.selected : false),
         }
       })
       
       // 更新store中的licenseCheck - 添加防御性检查
       if (typeof workStore.setLicenseCheck === 'function') {
-        workStore.setLicenseCheck(processedData)
-        // 这里不需要额外更新selectedLicenseCheck，因为setLicenseCheck已经包含了这个逻辑
+        // 如果是后台刷新，保留已选中的项
+        if (isBackgroundRefresh) {
+          const updatedData = processedData.map(newItem => {
+            const existingItem = workStore.getLicenseCheck.find(item => item.id === newItem.id)
+            if (existingItem) {
+              return { ...newItem, selected: existingItem.selected }
+            }
+            return newItem
+          })
+          workStore.setLicenseCheck(updatedData)
+        } else {
+          workStore.setLicenseCheck(processedData)
+        }
       } else {
         console.error('workStore.setLicenseCheck 不是一个函数')
         // 如果方法不存在，直接设置本地数据
-        tableData.value = processedData
-        originalData.value = processedData
+        if (!isBackgroundRefresh || tableData.value.length === 0) {
+          tableData.value = processedData
+          originalData.value = processedData
+        } else {
+          // 无感刷新：只更新数据，保留选中状态
+          updateTableDataNoFlicker(processedData)
+        }
         return
       }
       
       originalData.value = processedData // 保存原始数据
-      tableData.value = processedData
+      
+      // 无感刷新：只在初次加载或数据为空时直接替换，否则智能更新
+      if (!isBackgroundRefresh || tableData.value.length === 0) {
+        tableData.value = processedData
+      } else {
+        updateTableDataNoFlicker(processedData)
+      }
     } else {
-      originalData.value = []
-      tableData.value = []
-      if (typeof workStore.clearLicenseCheck === 'function') {
-        workStore.clearLicenseCheck()
-        // clearLicenseCheck 已经包含了清空 selectedLicenseCheck 的逻辑
+      if (!isBackgroundRefresh) {
+        originalData.value = []
+        tableData.value = []
+        if (typeof workStore.clearLicenseCheck === 'function') {
+          workStore.clearLicenseCheck()
+        }
       }
     }
   } catch (error) {
     console.error('获取生产版号数据失败:', error)
-    originalData.value = []
-    tableData.value = []
-    if (typeof workStore.clearLicenseCheck === 'function') {
-      workStore.clearLicenseCheck()
+    if (!isBackgroundRefresh) {
+      originalData.value = []
+      tableData.value = []
+      if (typeof workStore.clearLicenseCheck === 'function') {
+        workStore.clearLicenseCheck()
+      }
     }
   } finally {
-    loading.value = false
+    if (!isBackgroundRefresh) {
+      loading.value = false
+    }
   }
 }
+
+// 无感刷新：智能更新表格数据而不引起闪烁
+const updateTableDataNoFlicker = (newData) => {
+  // 如果数据长度不同，可能需要添加或删除行
+  if (tableData.value.length !== newData.length) {
+    // 找出需要保留的行的选中状态
+    const selectedStates = {}
+    tableData.value.forEach(item => {
+      if (item.id) {
+        selectedStates[item.id] = item.selected
+      }
+    })
+    
+    // 应用选中状态到新数据
+    newData.forEach(item => {
+      if (item.id && selectedStates[item.id] !== undefined) {
+        item.selected = selectedStates[item.id]
+      }
+    })
+    
+    // 替换整个数组，但保留了选中状态
+    tableData.value = newData
+    return
+  }
+  
+  // 如果长度相同，逐项更新以避免整体刷新
+  newData.forEach((newItem, index) => {
+    const currentItem = tableData.value[index]
+    
+    // 保留选中状态
+    const selected = currentItem.selected
+    
+    // 更新除了selected之外的所有属性
+    Object.keys(newItem).forEach(key => {
+      if (key !== 'selected') {
+        currentItem[key] = newItem[key]
+      }
+    })
+    
+    // 确保选中状态不变
+    currentItem.selected = selected
+  })
+}
+
 // 设置定时刷新数据
 const setupDataRefreshTimer = () => {
   // 清除可能存在的旧定时器
@@ -290,9 +372,10 @@ const setupDataRefreshTimer = () => {
   // 设置新的定时器，每5秒执行一次
   dataRefreshTimer = setInterval(() => {
     if (props.currentDevice && props.currentDevice.id && jobbill_id.value) {
-      fetchData()
+      // 使用后台刷新模式，不显示loading状态
+      fetchData(true)
     }
-  },5 * 1000) // 5秒 = 5 * 1000毫秒
+  }, 5 * 1000) // 5秒 = 5 * 1000毫秒
 }
 
 // 监听设备变化，当设备信息有效时重新请求数据
@@ -300,7 +383,8 @@ watch(() => props.currentDevice, async (newDevice) => {
   if (newDevice && newDevice.id) {
     await get_jobbill_id()
     if (jobbill_id.value) {
-      fetchData()
+      // 设备变化时使用常规刷新，显示loading
+      fetchData(false)
       // 设备变化时重新设置定时器
       setupDataRefreshTimer()
     }
@@ -324,7 +408,8 @@ watch(() => workStore.getFleshLicenseIndex, (newVal) => {
 onMounted(() => {
   nextTick(async () => {
     await get_jobbill_id()
-    fetchData()
+    // 初始加载使用常规刷新，显示loading
+    fetchData(false)
     // 初始化定时器
     setupDataRefreshTimer()
   })

@@ -103,6 +103,12 @@ const taskInfo = reactive({
   ud_102869_gdlx: '',
   prodesc: '',
 })
+// 刷新所有数据
+const refreshAllData = async () => {
+  await fetchTaskInfo()
+  await fetchTimeAndNumber()
+  fetchTypeAndStartTime()
+}
 
 // 页面初始化时，尝试从store恢复数据
 const initFromStore = () => {
@@ -124,7 +130,6 @@ const setupDataRefreshTimer = () => {
   
   // 设置新的定时器，每30分钟执行一次
   dataRefreshTimer = setInterval(() => {
-    console.log('定时刷新任务单信息数据')
     if (props.currentDevice && props.currentDevice.jobbill_no) {
       refreshAllData()
     }
@@ -173,12 +178,6 @@ const progressPercent = computed(() => {
   return percent.toFixed(2)
 })
 
-// 刷新所有数据
-const refreshAllData = async () => {
-  await fetchTaskInfo()
-  await fetchTimeAndNumber()
-  fetchTypeAndStartTime()
-}
 
 // 获取任务单信息
 const fetchTaskInfo = async () => {
@@ -378,6 +377,25 @@ const fetchTypeAndStartTime = async () => {
     loading.value = false
   })
 
+
+}
+
+    const parseDatetime = (dateTimeStr) => {
+
+      // 判断是否为时间戳格式（纯数字）
+      if (typeof dateTimeStr === 'number' || (typeof dateTimeStr === 'string' && /^\d+$/.test(dateTimeStr))) {
+      dateTimeStr = formatDateTime(dateTimeStr)
+      }
+      if (!dateTimeStr || typeof dateTimeStr !== 'string' || !dateTimeStr.includes(' ') || !dateTimeStr.includes('-') || !dateTimeStr.includes(':')) {
+        console.log(`无效的日期时间格式: ${dateTimeStr}`)
+        throw new Error(`无效的日期时间格式: ${dateTimeStr}`)
+      }
+      const [datePart, timePart] = dateTimeStr.split(' ')
+      const [year, month, day] = datePart.split('-').map(Number)
+      const [hour, minute] = timePart.split(':').map(Number)
+      return new Date(year, month - 1, day, hour, minute)
+    }
+
   /**
    * 计算超时时间（实际时间 - 计划时间）
    * @param {string} planStartTime 计划开始时间
@@ -386,38 +404,37 @@ const fetchTypeAndStartTime = async () => {
    * @param {string} actualEndTime 实际结束时间
    * @returns {string} 超时时间（小时），保留2位小数
    */
-  const calculateOvertime = (planStartTime, planEndTime, actualStartTime, actualEndTime) => {
+   const calculateOvertime = (planStartTime, planEndTime, actualStartTime, actualEndTime) => {
     // 如果任何一个参数为空，返回0
+
+
     if (!planStartTime || !planEndTime || !actualStartTime || !actualEndTime) {
       return '0.00'
     }
 
     try {
       // 将时间字符串转换为Date对象
-      const parseDatetime = (dateTimeStr) => {
-        const [datePart, timePart] = dateTimeStr.split(' ')
-        const [year, month, day] = datePart.split('-').map(Number)
-        const [hour, minute] = timePart.split(':').map(Number)
-        return new Date(year, month - 1, day, hour, minute)
-      }
 
       const planStart = parseDatetime(planStartTime)
       const planEnd = parseDatetime(planEndTime)
+
+
+   
       const actualStart = parseDatetime(actualStartTime)
+ 
       const actualEnd = parseDatetime(actualEndTime)
 
       // 计算计划时间段和实际时间段的持续时间（毫秒）
       const planDuration = planEnd - planStart
+
+  
       const actualDuration = actualEnd - actualStart
+
+
 
       // 计算超时时间（小时）
       const overtimeMs = actualDuration - planDuration
       const overtimeHours = overtimeMs / (1000 * 60 * 60)
-
-      // 如果超时为负数，表示提前完成，返回0
-      if (overtimeHours <= 0) {
-        return '0.00'
-      }
 
       // 返回超时时间，保留2位小数
       return overtimeHours.toFixed(2)
@@ -426,7 +443,7 @@ const fetchTypeAndStartTime = async () => {
       return '0.00'
     }
   }
-}
+
 // 组件挂载时获取数据
 onMounted(() => {
   initFromStore()

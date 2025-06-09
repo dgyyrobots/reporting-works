@@ -99,7 +99,8 @@ const currentSpeed = ref(0)
 // 过版数量
 const passUqty = ref(0)
 
-const initChart = () => {
+// 修改 initChart 函数，添加 forceRefresh 参数
+const initChart = (forceRefresh = false) => {
   // 即使没有数据也显示仪表盘，使用默认值0
   const displayValue = collectionQty.value || 0
   
@@ -109,12 +110,7 @@ const initChart = () => {
     max: 100,
   }
   
-  // 如果chart已经存在，先销毁
-  if (chart) {
-    chart.dispose()
-  }
-  
-  chart = echarts.init(gaugeRef.value)
+  // 创建图表选项
   const option = {
     title: [
       {
@@ -357,16 +353,31 @@ const initChart = () => {
     ],
   }
 
-  chart.setOption(option)
+  // 如果chart不存在或强制刷新，则创建/重新创建图表
+  if (!chart || forceRefresh) {
+    // 如果chart已经存在，先销毁
+    if (chart) {
+      chart.dispose()
+    }
+    
+    chart = echarts.init(gaugeRef.value)
+    chart.setOption(option)
+  } else {
+    // 无感刷新：只更新标题部分，不重新创建图表
+    chart.setOption({
+      title: option.title
+    })
+  }
 }
 
-const get_jobbill_id = async () => {
+// 修改 get_jobbill_id 函数，添加静默模式参数
+const get_jobbill_id = async (silent = false) => {
   try {
     const activeJob = props.currentDevice.jobbill_no
     const wc_id = props.currentWorkcenter.id
     
     if (!activeJob || !wc_id) {
-      console.warn('缺少必要参数，无法获取jobbill_id')
+      if (!silent) console.warn('缺少必要参数，无法获取jobbill_id')
       jobbill_id.value = ''
       return false
     }
@@ -381,26 +392,30 @@ const get_jobbill_id = async () => {
       jobbill_id.value = res.rows[0].id
       return true
     } else {
-      console.warn('未找到匹配的jobbill_id')
+      if (!silent) console.warn('未找到匹配的jobbill_id')
       jobbill_id.value = ''
       return false
     }
   } catch (error) {
-    console.error('获取jobbill_id失败:', error)
+    if (!silent) console.error('获取jobbill_id失败:', error)
     jobbill_id.value = ''
     return false
   }
 }
-const initCollectionQty = async () => {
+
+// 修改 initCollectionQty 函数，添加后台刷新模式参数
+const initCollectionQty = async (isBackgroundRefresh = false) => {
   try {
     // 如果没有jobbill_id，使用默认值
     if (!jobbill_id.value) {
-      console.warn('没有获取到jobbill_id，使用默认值')
-      collectionQty.value = 0
-      noOkQty.value = 0
-      passUqty.value = 0
-      // 即使没有数据也初始化图表
-      initChart()
+      if (!isBackgroundRefresh) {
+        console.warn('没有获取到jobbill_id，使用默认值')
+        collectionQty.value = 0
+        noOkQty.value = 0
+        passUqty.value = 0
+        // 初次加载时初始化图表
+        initChart(true)
+      }
       return
     }
     
@@ -412,81 +427,68 @@ const initCollectionQty = async () => {
     // 从接口获取当版产量数据并赋值
     if (res && res.data && res.data[0]) {
       // 获取当版产量
-      if (res.data[0].collection_qty) {
-        collectionQty.value = toInteger(res.data[0].collection_qty) || 0
-      } else {
-        collectionQty.value = 0
-      }
-      
+      const newCollectionQty = res.data[0].collection_qty ? toInteger(res.data[0].collection_qty) || 0 : 0
       // 获取不合格品数量
-      if (res.data[0].no_okqty !== undefined) {
-        noOkQty.value = toInteger(res.data[0].no_okqty) || 0
-      } else {
-        noOkQty.value = 0
-      }
-      
+      const newNoOkQty = res.data[0].no_okqty !== undefined ? toInteger(res.data[0].no_okqty) || 0 : 0
       // 过版数量
-      if (res.data[0].pass_uqty !== undefined) {
-        passUqty.value = toInteger(res.data[0].pass_uqty) || 0
-      } else {
-        passUqty.value = 0
+      const newPassUqty = res.data[0].pass_uqty !== undefined ? toInteger(res.data[0].pass_uqty) || 0 : 0
+      
+      // 检查数据是否有变化
+      const dataChanged = 
+        newCollectionQty !== collectionQty.value || 
+        newNoOkQty !== noOkQty.value || 
+        newPassUqty !== passUqty.value
+      
+      // 更新数据
+      collectionQty.value = newCollectionQty
+      noOkQty.value = newNoOkQty
+      passUqty.value = newPassUqty
+      
+      // 只有在数据变化或非后台刷新时才更新图表
+      if (dataChanged || !isBackgroundRefresh) {
+        initChart(false) // 无感刷新，不重新创建图表
       }
     } else {
       // 如果没有数据，设置默认值
+      if (!isBackgroundRefresh) {
+        collectionQty.value = 0
+        noOkQty.value = 0
+        passUqty.value = 0
+        // 初次加载时初始化图表
+        initChart(true)
+      }
+    }
+  } catch (error) {
+    if (!isBackgroundRefresh) {
+      console.error('获取当版产量数据失败:', error)
+      // 发生错误时，设置默认值并初始化图表
       collectionQty.value = 0
       noOkQty.value = 0
       passUqty.value = 0
+      initChart(true)
     }
-    
-    // 无论是否有数据，都初始化图表
-    initChart()
-  } catch (error) {
-    console.error('获取当版产量数据失败:', error)
-    // 发生错误时，设置默认值并初始化图表
-    collectionQty.value = 0
-    noOkQty.value = 0
-    passUqty.value = 0
-    initChart()
   }
 }
 
-// 将字符串或数字转换为整数
-const toInteger = (value) => {
-  if (value === null || value === undefined) return ''
-  
-  // 如果是字符串，先尝试转换为数字
-  if (typeof value === 'string') {
-    // 移除非数字字符（保留负号）
-    const numStr = value.replace(/[^\d.-]/g, '')
-    value = parseFloat(numStr)
-  }
-  
-  // 如果转换后不是有效数字，返回0
-  if (isNaN(value)) return 0
-  
-  // 返回整数部分
-  return Math.floor(value)
-}
-// 获取设备运行速度
-const getDeviceSpeed = async () => {
-
-  const loginInfo= JSON.parse(localStorage.getItem('loginInfo'))
+// 修改 getDeviceSpeed 函数，添加后台刷新模式参数
+const getDeviceSpeed = async (isBackgroundRefresh = false) => {
+  const loginInfo = JSON.parse(localStorage.getItem('loginInfo'))
 
   try {
     if (!props.currentDevice.id) {
-      console.warn('缺少设备ID，无法获取设备速度')
+      if (!isBackgroundRefresh) console.warn('缺少设备ID，无法获取设备速度')
       return
     }
     
     const params = {
-      sel_device_no:props.currentDevice.number,
-      sel_device_item:'速度',
+      sel_device_no: props.currentDevice.number,
+      sel_device_item: '速度',
       working_date_day: getCurrentDate(),
-      sel_device_time:0,
-      sel_device_time_text:'1M',
-      my_company_id:loginInfo.stored_company,
-      page:1,
-      rows:100,
+      sel_device_time: 0,
+      sel_device_time_text: '1M',
+      my_company_id: loginInfo.stored_company,
+      page: 1,
+      rows: 100,
     }
     
     const res = await getDeviceRunSpeedData(params)
@@ -494,33 +496,33 @@ const getDeviceSpeed = async () => {
     if (res && res.rows && Array.isArray(res.rows) && res.rows.length > 0) {
       // 获取列表第一行的速度数据
       const speedData = res.rows[0]
-      currentSpeed.value = toInteger(speedData.speed) || 0
-    } else {
-      // 如果列表为空，速度为0
+      const newSpeed = toInteger(speedData.speed) || 0
+      
+      // 只有在速度变化时才更新，避免不必要的重渲染
+      if (newSpeed !== currentSpeed.value) {
+        currentSpeed.value = newSpeed
+      }
+    } else if (!isBackgroundRefresh) {
+      // 如果列表为空且非后台刷新，速度为0
       currentSpeed.value = 0
     }
   } catch (error) {
-    console.error('获取设备速度数据失败:', error)
-    currentSpeed.value = 0
+    if (!isBackgroundRefresh) {
+      console.error('获取设备速度数据失败:', error)
+      currentSpeed.value = 0
+    }
   }
 }
-// 获取当前日期的函数，格式为 YYYY-MM-DD
-const getCurrentDate = () => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+
+// 修改刷新所有数据的函数
+const refreshAllData = async (isBackgroundRefresh = false) => {
+  // 后台刷新时静默获取jobbill_id
+  await get_jobbill_id(isBackgroundRefresh)
+  await initCollectionQty(isBackgroundRefresh)
+  await getDeviceSpeed(isBackgroundRefresh)
 }
 
-// 刷新所有数据的函数
-const refreshAllData = async () => {
-  await get_jobbill_id()
-  await initCollectionQty()
-  await getDeviceSpeed()
-}
-
-// 设置定时刷新数据
+// 修改定时器设置函数
 const setupDataRefreshTimer = () => {
   // 清除可能存在的旧定时器
   if (dataRefreshTimer) {
@@ -530,16 +532,41 @@ const setupDataRefreshTimer = () => {
   // 设置新的定时器，每5秒执行一次
   dataRefreshTimer = setInterval(() => {
     if (props.currentDevice && props.currentDevice.id) {
-      refreshAllData()
+      // 使用后台刷新模式，避免闪烁
+      refreshAllData(true)
     }
-  }, 5 * 1000) // 5秒 =5 * 1000毫秒
+  }, 5 * 1000) // 5秒 = 5 * 1000毫秒
 }
-
+  // 获取当前日期的函数，格式为 YYYY-MM-DD
+  const getCurrentDate = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  
+  const toInteger = (value) => {
+    if (value === null || value === undefined) return ''
+    
+    // 如果是字符串，先尝试转换为数字
+    if (typeof value === 'string') {
+      // 移除非数字字符（保留负号）
+      const numStr = value.replace(/[^\d.-]/g, '')
+      value = parseFloat(numStr)
+    }
+    
+    // 如果转换后不是有效数字，返回0
+    if (isNaN(value)) return 0
+    
+    // 返回整数部分
+    return Math.floor(value)
+  }  
+// 修改 onMounted 钩子
 onMounted(() => {
   nextTick(async() => {
-    await get_jobbill_id()
-    initCollectionQty()
-    getDeviceSpeed()
+    // 初始加载使用常规刷新模式
+    await refreshAllData(false)
     
     // 初始化定时器
     setupDataRefreshTimer()
