@@ -336,17 +336,21 @@ const fetchData = async (filter) => {
         rawData: item
       }))
       
+      // 保存完整数据列表，用于本地搜索
+      fullTaskList.value = workOrders
       taskList.value = workOrders
       total.value = res.total || 0
       
       // 数据加载完成后，自动选中任务
       autoSelectTask();
     } else {
+      fullTaskList.value = []
       taskList.value = []
       total.value = 0
     }
   } catch (error) {
     console.error('获取工单数据失败:', error)
+    fullTaskList.value = []
     taskList.value = []
     total.value = 0
   } finally {
@@ -355,18 +359,58 @@ const fetchData = async (filter) => {
   }
 }
 
+// 添加一个变量保存完整的任务列表
+const fullTaskList = ref([])
+
+// 修改为本地搜索
 const handSearch = () => {
-  const work_no = queryForm.keyword
-  const wp_id = props.selectedProcess.id
-  const wc_id = props.currentWorkcenter.id
-  const filter = [{"val":[{"name":"wp_id","val":wp_id,"action":"="},{"name":"wc_id","val":wc_id,"action":"="},{"name":"work_no","val":work_no,"action":"LIKE"}],"relation":"OR"}]
-  fetchData(filter)
+  tableLoading.value = true
+  
+  try {
+    const keyword = queryForm.keyword.trim().toLowerCase()
+    
+    if (!keyword) {
+      // 如果关键词为空，显示所有数据
+      taskList.value = [...fullTaskList.value]
+    } else {
+      // 在本地数据中进行筛选
+      taskList.value = fullTaskList.value.filter(item => {
+        // 在多个字段中搜索关键词
+        return (
+          (item.work_no && item.work_no.toLowerCase().includes(keyword)) ||
+          (item.dispatch_no && item.dispatch_no.toLowerCase().includes(keyword)) ||
+          (item.sku_name && item.sku_name.toLowerCase().includes(keyword)) ||
+          (item.sku_no && item.sku_no.toLowerCase().includes(keyword)) ||
+          (item.wp_name && item.wp_name.toLowerCase().includes(keyword))
+        )
+      })
+    }
+    
+    // 重置选中状态
+    selectedRow.value = null
+    
+    // 如果有结果，自动选中第一个
+    if (taskList.value.length > 0) {
+      autoSelectTask()
+    }
+  } catch (error) {
+    console.error('本地搜索失败:', error)
+  } finally {
+    tableLoading.value = false
+  }
 }
 
 // 重置查询
 const resetQuery = () => {
   queryForm.keyword = ''
-  fetchData([])
+  // 直接使用完整数据，不再调用接口
+  taskList.value = [...fullTaskList.value]
+  // 重置选中状态
+  if (taskList.value.length > 0) {
+    autoSelectTask()
+  } else {
+    selectedRow.value = null
+  }
 }
 
 
@@ -487,7 +531,16 @@ const formatNumber = (num) => {
 // 打开对话框的方法，将通过父组件调用
 const openDialog = () => {
   visible.value = true
-  fetchData()
+  // 首次打开时需要从接口获取数据
+  if (fullTaskList.value.length === 0) {
+    fetchData()
+  } else {
+    // 如果已有数据，直接使用
+    taskList.value = [...fullTaskList.value]
+    if (taskList.value.length > 0) {
+      autoSelectTask()
+    }
+  }
 }
 
 const handleClose = () => {
