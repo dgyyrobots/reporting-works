@@ -122,13 +122,13 @@ const setupDataRefreshTimer = () => {
     clearInterval(dataRefreshTimer)
   }
   
-  // 设置新的定时器，每15分钟执行一次
+  // 设置新的定时器，每30分钟执行一次
   dataRefreshTimer = setInterval(() => {
     console.log('定时刷新任务单信息数据')
     if (props.currentDevice && props.currentDevice.jobbill_no) {
       refreshAllData()
     }
-  }, 15 * 60 * 1000) // 15分钟 = 15 * 60 * 1000毫秒
+  }, 30 * 60 * 1000) // 30分钟 = 30 * 60 * 1000毫秒
 }
 
 // 监听当前设备的工单号变化
