@@ -287,13 +287,13 @@ const setupDataRefreshTimer = () => {
     clearInterval(dataRefreshTimer)
   }
   
-  // 设置新的定时器，每15分钟执行一次
+  // 设置新的定时器，每5秒执行一次
   dataRefreshTimer = setInterval(() => {
     console.log('定时刷新生产版号数据')
     if (props.currentDevice && props.currentDevice.id && jobbill_id.value) {
       fetchData()
     }
-  }, 15 * 60 * 1000) // 15分钟 = 15 * 60 * 1000毫秒
+  },5 * 1000) // 5秒 = 5 * 1000毫秒
 }
 
 // 监听设备变化，当设备信息有效时重新请求数据
