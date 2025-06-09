@@ -233,7 +233,6 @@ watch(() => props.currentDevice, (newDevice, oldDevice) => {
   // 检查设备是否变化且有效
   if (newDevice && newDevice.number && 
       (!oldDevice || newDevice.number !== oldDevice.number)) {
-    console.log('设备变化，重新获取数据:', newDevice.name || newDevice.number)
     fetchDeviceRuntime()
     // 设备变化时重新设置定时器
     setupDataRefreshTimer()

@@ -134,7 +134,6 @@ export const useWorkStore = defineStore('work', {
 
         // 设置版号选择项
         setLicenseCheck(items: LicenseCheckItem[]) {
-            console.log(items, 'items1111')
             this.licenseCheck = items
             // 对数据按照collect_date进行排序后再赋值
             this.sortLicenseCheckByCollectDate(items)
@@ -146,21 +145,21 @@ export const useWorkStore = defineStore('work', {
         sortLicenseCheckByCollectDate(items: LicenseCheckItem[]) {
             // 创建一个新数组，避免直接修改原数组
             const sortedItems = [...items]
-            
+
             // 根据collect_date进行排序，距离当前时间最近的排在前面
             sortedItems.sort((a, b) => {
                 const dateA = a.collect_date ? new Date(parseInt(a.collect_date) * 1000).getTime() : 0
                 const dateB = b.collect_date ? new Date(parseInt(b.collect_date) * 1000).getTime() : 0
-                
+
                 // 如果日期不存在，则排在后面
                 if (!dateA && dateB) return 1
                 if (dateA && !dateB) return -1
                 if (!dateA && !dateB) return 0
-                
+
                 // 距离当前时间最近的排在前面（降序排列）
                 return dateB - dateA
             })
-            
+
             // 将排序后的数组赋值给licenseCheckSortByCollectDate
             this.licenseCheckSortByCollectDate = sortedItems
         },

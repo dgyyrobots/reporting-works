@@ -102,7 +102,6 @@ const passUqty = ref(0)
 const initChart = () => {
   // 即使没有数据也显示仪表盘，使用默认值0
   const displayValue = collectionQty.value || 0
-  console.log(displayValue, 'displayValue')
   
   const newData = {
     value: displayValue, // 使用响应式数据，如果为空则显示0
@@ -516,7 +515,6 @@ const getCurrentDate = () => {
 
 // 刷新所有数据的函数
 const refreshAllData = async () => {
-  console.log('定时刷新仪表盘数据')
   await get_jobbill_id()
   await initCollectionQty()
   await getDeviceSpeed()

@@ -289,7 +289,6 @@ const setupDataRefreshTimer = () => {
   
   // 设置新的定时器，每5秒执行一次
   dataRefreshTimer = setInterval(() => {
-    console.log('定时刷新生产版号数据')
     if (props.currentDevice && props.currentDevice.id && jobbill_id.value) {
       fetchData()
     }

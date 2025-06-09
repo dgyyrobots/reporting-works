@@ -211,7 +211,6 @@ const fetchTaskInfo = async () => {
       // 更新任务信息
       Object.assign(taskInfo,data)
 
-      console.log('taskInfo', taskInfo)
     } else {
       // 如果没有找到数据，清空当前任务信息
       resetTaskInfo()

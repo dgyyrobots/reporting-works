@@ -266,7 +266,7 @@ onMounted(() => {
   updateDateTime() // 初始化时间
   timer = setInterval(updateDateTime, 1000) // 每秒更新一次
 
-  initTestData()
+  // initTestData()
 
   setTimeout(() => {
     console.log(currentDevice.value,'device')

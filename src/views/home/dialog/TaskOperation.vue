@@ -201,7 +201,11 @@ const props = defineProps({
   selectedProcess: {
     type: Object,
     default: null
-  }
+  },
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
 })
 
 // 获取工作状态
@@ -262,11 +266,8 @@ const autoSelectTask = () => {
   if (taskList.value.length === 0) return;
   
   // 查找与当前任务bill_no匹配的任务
-  console.log(currentTaskInfo.value,'currentTaskInfo.value')
   const currentRcNo = currentTaskInfo.value.bill_no;
 
-  console.log('currentRcNo', currentRcNo);
-  console.log('taskList.value',taskList.value);
   
   if (currentRcNo) {
     // 尝试查找匹配的任务
@@ -291,7 +292,7 @@ const autoSelectTask = () => {
 const fetchData = async (filter) => {
   tableLoading.value = true
   const wp_id = props.selectedProcess.id
-  const wc_id = props.currentDevice.id
+  const wc_id = props.currentWorkcenter.id
   const filterData = filter? filter : [{"val":[{"name":"wp_id","val": wp_id ,"action":"="},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]
   try {
     // 调用API获取工单数据
@@ -302,6 +303,8 @@ const fetchData = async (filter) => {
       show_total:1,
     }
     const res = await getJobBillContent(data)
+    
+    console.log(res,'res1111111333333333')
     
     if (res && res.rows) {
       // 处理API返回的数据，根据JobbillContentData的真实字段进行映射
@@ -359,7 +362,7 @@ const fetchData = async (filter) => {
 const handSearch = () => {
   const work_no = queryForm.keyword
   const wp_id = props.selectedProcess.id
-  const wc_id = props.currentDevice.id
+  const wc_id = props.currentWorkcenter.id
   const filter = [{"val":[{"name":"wp_id","val":wp_id,"action":"="},{"name":"wc_id","val":wc_id,"action":"="},{"name":"work_no","val":work_no,"action":"LIKE"}],"relation":"OR"}]
   fetchData(filter)
 }

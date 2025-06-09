@@ -42,6 +42,7 @@
     ref="taskOperationRef" 
     :currentDevice="props.currentDevice" 
     :selectedProcess="selectedProcess"
+    :currentWorkcenter="props.currentWorkcenter"
   />
 </template>
 

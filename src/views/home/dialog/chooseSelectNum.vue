@@ -75,7 +75,6 @@ const confirm = async () => {
     // 从workStore获取taskInfo
     const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
 
-    console.log('taskInfo', taskInfo)
     
     // 构建请求参数，合并taskInfo、props.params和formData
     const requestParams = {
