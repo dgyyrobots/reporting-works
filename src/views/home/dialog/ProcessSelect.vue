@@ -56,6 +56,10 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
 })
 
 // 控制对话框显示状态
@@ -94,8 +98,8 @@ const loading = ref(false)
 
 const initData = (showMessage) => {
   // 检查设备ID是否存在
-  if (!props.currentDevice?.id & showMessage) {
-    ElMessage.error('设备ID不存在，无法获取工序数据')
+  if (!props.currentWorkcenter?.id & showMessage) {
+    ElMessage.error('工作站id不存在，无法获取工序数据')
     return
   }
   
@@ -103,7 +107,7 @@ const initData = (showMessage) => {
   processList.value = [] // 清空之前的数据
   
   const data = {
-    wc_id: props.currentDevice.id,
+    wc_id: props.currentWorkcenter.id,
   }
   
   getWpCountData(data)

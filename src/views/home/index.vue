@@ -77,7 +77,7 @@
     </div>
 
     <!-- 添加ProcessSelect组件 -->
-    <ProcessSelect ref="processSelectRef" v-if="currentDevice" :currentDevice="currentDevice" />
+    <ProcessSelect ref="processSelectRef" v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
 
     
     <TimeRegistration v-if="currentDevice" :currentDevice="currentDevice" ref="timeRegistrationRef" />
