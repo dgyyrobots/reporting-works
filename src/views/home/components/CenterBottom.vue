@@ -22,10 +22,10 @@
         <Icon class="btn-icon" icon="svg-icon:huibao"/>
         汇报
       </button>
-      <!-- <button class="cyber-btn">
+      <button class="cyber-btn">
         <Icon class="btn-icon" icon="svg-icon:tagprint" />
-        标签打印
-      </button> -->
+        模版套打
+      </button>
     </div>
     <div class="panel-container">
       <div class="left-panel">
