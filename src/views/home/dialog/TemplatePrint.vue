@@ -127,10 +127,37 @@ const fetchPrintInfo = async () => {
         selectedTemplate.value = templates.value[0].id
       }
       
-      // 设置默认选中人员
-      if (res.data.users?.checked_user_id) {
+      // 获取当前登录用户名
+      let currentUserName = ''
+      try {
+        const userInfoStr = localStorage.getItem('userInfo')
+        if (userInfoStr) {
+          const userInfo = JSON.parse(userInfoStr)
+          currentUserName = userInfo.fullname || ''
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+      }
+      
+      // 根据用户名匹配选择打印人员
+      if (currentUserName && staffList.value.length > 0) {
+        // 查找匹配的人员
+        const matchedStaff = staffList.value.find(staff => staff.user_name === currentUserName)
+        if (matchedStaff) {
+          // 找到匹配的人员，选中
+          selectedStaff.value = matchedStaff.user_id
+        } else if (res.data.users?.checked_user_id) {
+          // 没找到匹配的，使用接口返回的默认选中
+          selectedStaff.value = res.data.users.checked_user_id
+        } else {
+          // 都没有则选中第一个
+          selectedStaff.value = staffList.value[0].user_id
+        }
+      } else if (res.data.users?.checked_user_id) {
+        // 没有当前用户名，使用接口返回的默认选中
         selectedStaff.value = res.data.users.checked_user_id
       } else if (staffList.value.length > 0) {
+        // 都没有则选中第一个
         selectedStaff.value = staffList.value[0].user_id
       }
     } else {
