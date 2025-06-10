@@ -151,11 +151,4 @@ const confirm = async () => {
     margin-top: 20px;
   }
 }
-
-
-
-
-
-
-
 </style>

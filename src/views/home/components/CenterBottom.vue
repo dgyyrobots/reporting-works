@@ -22,8 +22,8 @@
         <Icon class="btn-icon" icon="svg-icon:huibao"/>
         汇报
       </button>
-      <button class="cyber-btn">
-        <Icon class="btn-icon" icon="svg-icon:tagprint" />
+      <button class="cyber-btn"   @click="handleTemplatePrint">
+        <Icon class="btn-icon" icon="svg-icon:tagprint"/>
         模版套打
       </button>
     </div>
@@ -154,6 +154,21 @@
     >
       <ChooseSelectNum @close="chooseSelectNumVis = false" :currentDevice="currentDevice" />
     </el-dialog>
+        
+    <!-- 模版套打弹框 -->
+      <el-dialog
+        v-model="templatePrintVis"
+        title="套打"
+        width="1200px"
+        :close-on-click-modal="false"
+        :show-close="true"
+        :append-to-body="true"
+        :destroy-on-close="true"
+        class="template-print-dialog"
+        :modal-class="'cyber-modal'"
+      >
+        <TemplatePrint @close="templatePrintVis = false" :currentDevice="currentDevice" />
+      </el-dialog>
   </div>
 </template>
 
@@ -163,7 +178,7 @@ import { Icon } from '/@/components/Icon'
 import { updateIsStart, changeActiveRow,collectionFinish , reportVersion,finishReportVersion,addVersionByCode  } from '@/api/mes/wk/index.ts'
 import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
 import { ElMessageBox ,ElMessage} from 'element-plus'
-
+import TemplatePrint from '../dialog/TemplatePrint.vue'
 import { useWorkStore } from '@/store/modules/work' // 导入store
 
 
@@ -181,7 +196,7 @@ const scannerInput= ref(null)
 const chooseSelectNumVis = ref(false)
 // 当前版号信息
 const currentVersionInfo = reactive({})
-
+const templatePrintVis = ref(false)
 
 const previousVersionInfo = computed(() => {
   const sortedVersions = workStore.licenseCheckSortByCollectDate
@@ -423,6 +438,9 @@ const handCollectionFinish = () => {
     }
   })
 }
+const handleTemplatePrint = () => {
+  templatePrintVis.value = true
+}
 // 组件挂载时添加全局点击事件监听
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
@@ -436,7 +454,74 @@ onUnmounted(() => {
   remove_keydownlistener()
 })
 </script>
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(5px);
+}
 
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.template-print-dialog{
+    background-color: rgba(0, 21, 41, 0.85);
+    border: 1px solid #1ecfff;
+    border-radius: 2px;
+    box-shadow: 0 0 20px rgba(30, 207, 255, 0.4);
+    margin-top: 8vh !important; /* 确保优先级足够高 */
+
+    .el-dialog__body {
+      padding: 0 !important;
+    }
+
+    .el-dialog__header {
+      height: 40px !important;
+      color: #1ecfff !important;
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      background: linear-gradient(90deg, #1573ce 0%, #0a2a50 100%);
+      padding: 12px 20px;
+      margin-right: 0;
+    }
+
+    .el-dialog__title {
+      color: #fff !important;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(30, 207, 255, 0.5);
+    }
+
+    .el-dialog__headerbtn .el-dialog__close {
+      color: #1ecfff !important;
+
+      &:hover {
+        color: #4fdcff !important;
+      }
+    }
+
+    .el-dialog__body {
+      padding: 0 !important;
+    }
+  }
+}
+
+/* 修改loading样式 */
+.el-loading-mask {
+  background-color: rgba(0, 21, 41, 0.7) !important;
+
+  .el-loading-spinner {
+    .circular {
+      .path {
+        stroke: #1ecfff !important;
+      }
+    }
+
+    .el-loading-text {
+      color: #1ecfff !important;
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .center-bottom-container {
   display: flex;
@@ -700,5 +785,39 @@ onUnmounted(() => {
   color: #1ecfff;
   vertical-align: middle;
   flex-shrink: 0;
+}
+// 添加模版套打弹框样式
+:deep(.template-print-dialog) {
+  background-color: rgba(0, 20, 40, 0.95);
+  border: 1px solid #1ecfff;
+  box-shadow: 0 0 15px rgba(30, 207, 255, 0.5);
+  border-radius: 6px;
+  
+  :deep(.el-dialog__header) {
+    background: linear-gradient(90deg, rgba(0, 161, 255, 0.1), rgba(0, 161, 255, 0.3));
+    padding: 15px 20px;
+    margin-right: 0;
+    
+    .el-dialog__title {
+      color: #00bcd4;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .el-dialog__headerbtn {
+      top: 15px;
+      right: 20px;
+      
+      .el-dialog__close {
+        color: #00bcd4;
+      }
+    }
+  }
+  
+  
+  .el-dialog__body {
+    padding: 20px;
+    color: #fff;
+  }
 }
 </style>
