@@ -39,11 +39,8 @@
     </div>
     
     <div class="dialog-footer">
-      <div class="default-template-btn" @click="toggleDefaultTemplate">
-        <div class="checkbox" :class="{ 'checked': isDefaultTemplate }">
-          <div class="checkbox-inner" v-if="isDefaultTemplate"></div>
-        </div>
-        <span>设为默认模版</span>
+      <div class="default-template-btn">
+        <!-- <span>设为默认模版</span> -->
       </div>
       <div class="action-buttons">
         <button class="cancel-btn" @click="handleCancel">取消</button>
@@ -88,13 +85,6 @@ const staffList = [
 // 选中的模版和人员
 const selectedTemplate = ref('barcode')
 const selectedStaff = ref('chenbenhong')
-// 是否设为默认模版
-const isDefaultTemplate = ref(false)
-
-// 切换默认模版状态
-const toggleDefaultTemplate = () => {
-  isDefaultTemplate.value = !isDefaultTemplate.value
-}
 
 // 取消按钮
 const handleCancel = () => {
@@ -113,11 +103,7 @@ const handleDirectPrint = () => {
   
   ElMessage.success('开始打印...')
   // 这里添加直接打印的逻辑
-  if (isDefaultTemplate.value) {
-    // 保存默认模版设置
-    localStorage.setItem('defaultPrintTemplate', selectedTemplate.value)
-    localStorage.setItem('defaultPrintStaff', selectedStaff.value)
-  }
+
   
   emit('close')
 }
@@ -133,12 +119,7 @@ const handleConfirm = () => {
   }
   
   ElMessage.success('已确认打印设置')
-  // 这里添加确认后的逻辑
-  if (isDefaultTemplate.value) {
-    // 保存默认模版设置
-    localStorage.setItem('defaultPrintTemplate', selectedTemplate.value)
-    localStorage.setItem('defaultPrintStaff', selectedStaff.value)
-  }
+
   
   emit('close')
 }
