@@ -230,3 +230,19 @@ export const addVersionByCode = async (data: any) => {
 export const getDeviceOutput = async (params: DeviceNumberParams) => {
     return await request.get({ url: '/zy/mes/OrderInProduction/getDeviceNumber', params })
 }
+// 获取打印模板和在线的用户
+export const getPrintInfo = async (data: any) => {
+    const num = Math.floor(Math.random() * 900) + 100;
+    return await request.postMultipartOriginalPassing({
+        url: `/apps/afr/ajax/chromatography_printing/r:${num}`,
+        data,
+    })
+}
+// 打印
+export const sendPrint = async (data: any) => {
+    const num = Math.floor(Math.random() * 900) + 100;
+    return await request.postMultipartOriginalPassing({
+        url: `/apps/afr/ajax/chromatography_printing/r:${num}`,
+        data,
+    })
+}

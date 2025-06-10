@@ -424,7 +424,7 @@ const handCollectionFinish = () => {
   const arr = []
   const row =  workStore.selectedLicenseCheck
 
-  if(!row.length) return ElMessage.error('请选择一行数据')
+  if(!row.length) return ElMessage.error('请至少选择一行数据')
   row.map(item=>{
     arr.push(item.id)
   })
@@ -439,6 +439,9 @@ const handCollectionFinish = () => {
   })
 }
 const handleTemplatePrint = () => {
+  const row =  workStore.selectedLicenseCheck
+
+  if(!row.length) return ElMessage.error('请至少选择一行数据')
   templatePrintVis.value = true
 }
 // 组件挂载时添加全局点击事件监听
