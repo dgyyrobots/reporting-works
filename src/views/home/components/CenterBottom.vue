@@ -130,7 +130,7 @@
           </div>
           <div class="right-row">
             <div class="right-label">合格品数：</div>
-            <div class="right-value">{{ toInteger(previousVersionInfo?.ok_qty) || 0 }}</div>
+            <div class="right-value">{{ toInteger(previousVersionInfo?.okqty) ||toInteger(previousVersionInfo?.ok_qty) || 0 }}</div>
           </div>
           <div class="right-row">
             <div class="right-label">生产用时：</div>
