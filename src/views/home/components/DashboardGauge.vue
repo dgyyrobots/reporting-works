@@ -57,8 +57,16 @@
     </div>
     <!-- 顶部右侧：黄色圆点 + 空转 -->
     <div class="top-abs top-right">
-      <span class="dot"></span>
-      <span class="dot-label">{{ runStatus }}</span>
+      <span class="dot" :class="{
+        'dot-gray': runStatus === '未生产',
+        'dot-green': runStatus === '生产中',
+        'dot-yellow': runStatus === '空转' || runStatus === '未知'
+      }"></span>
+        <span class="dot-label" :class="{
+          'label-gray': runStatus === '未生产',
+          'label-green': runStatus === '生产中',
+          'label-yellow': runStatus === '空转' || runStatus === '未知'
+        }">{{ runStatus }}</span>
     </div>
   </div>
 </template>
@@ -748,16 +756,43 @@ onBeforeUnmount(() => {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #ffe600;
-
+  background: #ffe600; /* 默认黄色 */
   box-shadow: 0 0 8px #ffe60088;
 }
+
+.dot-gray {
+  background: #888888;
+  box-shadow: 0 0 8px #88888888;
+}
+
+.dot-green {
+  background: #22e222;
+  box-shadow: 0 0 8px #22e22288;
+}
+
+.dot-yellow {
+  background: #ffe600;
+  box-shadow: 0 0 8px #ffe60088;
+}
+
 .dot-label {
-  color: #ffe600;
   font-size: 16px;
   font-weight: 600;
   margin-left: 16px;
   letter-spacing: 1px;
   text-shadow: 0 0 4px #000;
+  color: #ffe600; /* 默认黄色 */
+}
+
+.label-gray {
+  color: #888888;
+}
+
+.label-green {
+  color: #22e222;
+}
+
+.label-yellow {
+  color: #ffe600;
 }
 </style>
