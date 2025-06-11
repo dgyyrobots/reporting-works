@@ -187,7 +187,7 @@ const handPrint = async (direct) => {
       is_print:direct,
       action: 'send_chromatography_print',
       object_key: 'bill_mes_version_number_manage',
-      to_user:selectedStaff.value.staffId,
+      to_user:selectedStaff.value,
       chromatography_printing_id:selectedTemplate.value,
     }
     
