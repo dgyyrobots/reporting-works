@@ -58,7 +58,7 @@
     <!-- 顶部右侧：黄色圆点 + 空转 -->
     <div class="top-abs top-right">
       <span class="dot"></span>
-      <span class="dot-label">空转</span>
+      <span class="dot-label">{{ runStatus }}</span>
     </div>
   </div>
 </template>
@@ -70,7 +70,7 @@ import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
 import { getCollectionQty } from '@/api/mes/wk/index.ts'
 import { getJobBillContent,getDeviceRunSpeedData} from '@/api/mes/wk/index.ts'
-
+import { useWorkStore } from '@/store/modules/work' // 添加useWorkStore
 // 添加定时器变量
 let dataRefreshTimer = null
 
@@ -85,9 +85,10 @@ const props = defineProps({
     default: () => ({})
   },
 })
-
+const workStore = useWorkStore() 
 const gaugeRef = ref(null)
 const jobbill_id = ref('')
+const runStatus = ref('')
 let chart = null
 const switchValue = ref(true)
 // 添加当版产量的响应式数据
@@ -99,6 +100,28 @@ const currentSpeed = ref(0)
 // 过版数量
 const passUqty = ref(0)
 
+
+
+const getRunStatus = () => {
+  // 获取 store 中的 licenseCheck 数据
+  const licenseCheckList = workStore.getLicenseCheck || []
+  
+  // 判断是否有采集中的版号
+  const hasCollectingLicense = licenseCheckList.some(item => 
+    item && item.status_id && item.status_id.toString() === '1' // 1表示采集中
+  )
+  
+  // 根据条件判断运行状态
+  if (currentSpeed.value > 0 && hasCollectingLicense) {
+    runStatus.value = '生产中'
+  } else if (currentSpeed.value === 0) {
+    runStatus.value = '未生产'
+  } else if (currentSpeed.value > 0 && !hasCollectingLicense) {
+    runStatus.value = '空转'
+  } else {
+    runStatus.value = '未知'
+  }
+}
 // 修改 initChart 函数，添加 forceRefresh 参数
 const initChart = (forceRefresh = false) => {
   // 即使没有数据也显示仪表盘，使用默认值0
@@ -507,10 +530,12 @@ const getDeviceSpeed = async (isBackgroundRefresh = false) => {
       // 如果列表为空且非后台刷新，速度为0
       currentSpeed.value = 0
     }
+    getRunStatus()
   } catch (error) {
     if (!isBackgroundRefresh) {
       console.error('获取设备速度数据失败:', error)
       currentSpeed.value = 0
+      getRunStatus()
     }
   }
 }
