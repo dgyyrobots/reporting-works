@@ -436,6 +436,10 @@ const fetchTypeAndStartTime = async () => {
       const overtimeMs = actualDuration - planDuration
       const overtimeHours = overtimeMs / (1000 * 60 * 60)
 
+    if (overtimeHours < 0) {
+      return '0.00'
+    }
+
       // 返回超时时间，保留2位小数
       return overtimeHours.toFixed(2)
     } catch (e) {
