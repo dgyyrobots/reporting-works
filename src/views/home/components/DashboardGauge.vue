@@ -493,12 +493,11 @@ const getDeviceSpeed = async (isBackgroundRefresh = false) => {
     
     const res = await getDeviceRunSpeedData(params)
 
-    console.log(res,'当前速度dddddddd')
     
-    if (res && res.rows && Array.isArray(res.rows) && res.rows.length > 0) {
+    if (res && res.data && res.data.rows &&  res.data.rows.length > 0) {
       // 获取列表第一行的速度数据
-      const speedData = res.rows[0]
-      const newSpeed = toInteger(speedData.speed) || 0
+      const speedData = res.data.rows[0]
+      const newSpeed = toInteger(speedData.value) || 0
       
       // 只有在速度变化时才更新，避免不必要的重渲染
       if (newSpeed !== currentSpeed.value) {
