@@ -95,7 +95,6 @@ const fetchPrintInfo = async () => {
     
     // 获取选中的行数据
     const row = workStore.selectedLicenseCheck || []
-    
     // 创建 FormData 对象用于构建请求参数
     const formData = new FormData()
     formData.append('action', params.action)
@@ -104,8 +103,8 @@ const fetchPrintInfo = async () => {
     // 添加多个 data_id[] 参数
     if (row.length > 0) {
       row.forEach(item => {
-        if (item && item.id) {
-          formData.append('data_id[]', item.id)
+        if (item && item.parentid) {
+          formData.append('data_id[]', item.parentid)
         }
       })
     } 
@@ -212,8 +211,8 @@ const handPrint = async (direct) => {
     // 添加多个 data_id[] 参数
     if (row.length > 0) {
       row.forEach(item => {
-        if (item && item.id) {
-          formData.append('data_ids[]', item.id)
+        if (item && item.parentid) {
+          formData.append('data_ids[]', item.parentid)
         }
       })
     } 

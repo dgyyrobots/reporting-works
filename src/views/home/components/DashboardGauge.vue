@@ -492,6 +492,8 @@ const getDeviceSpeed = async (isBackgroundRefresh = false) => {
     }
     
     const res = await getDeviceRunSpeedData(params)
+
+    console.log(res,'当前速度dddddddd')
     
     if (res && res.rows && Array.isArray(res.rows) && res.rows.length > 0) {
       // 获取列表第一行的速度数据
