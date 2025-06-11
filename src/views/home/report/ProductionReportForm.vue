@@ -147,7 +147,7 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 0;
+  padding: 4px 0;
   background-color: rgba(0, 21, 41, 0.95);
   cursor: pointer;
   transition: all 0.3s;
@@ -158,13 +158,13 @@ defineExpose({
   
   .expand-text {
     color: #1ecfff;
-    font-size: 14px;
+    font-size: 13px;
     margin-right: 5px;
   }
   
   .expand-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 }
 .report-form {
