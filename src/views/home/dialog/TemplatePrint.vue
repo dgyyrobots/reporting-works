@@ -234,7 +234,58 @@ onMounted(() => {
   fetchPrintInfo()
 })
 </script>
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.el-overlay-dialog {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.85);
+    border: 1px solid #1ecfff;
+    border-radius: 2px;
+    box-shadow: 0 0 20px rgba(30, 207, 255, 0.4);
+    margin-top: 8vh !important; /* 确保优先级足够高 */
 
+    .el-dialog__header {
+      height: 40px !important;
+      color: #1ecfff !important;
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      background: linear-gradient(90deg, #1573ce 0%, #0a2a50 100%);
+      padding: 12px 20px;
+      margin-right: 0;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .el-dialog__title {
+      color: #fff !important;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(30, 207, 255, 0.5);
+    }
+
+    .el-dialog__headerbtn {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      z-index: 1;
+      
+      .el-dialog__close {
+        color: #fff !important;
+
+        &:hover {
+          color: #4fdcff !important;
+        }
+      }
+    }
+
+    .el-dialog__body {
+      padding: 0 !important;
+    }
+  }
+}
+</style>
 <style lang="scss" scoped>
 .template-print-dialog {
   display: flex;
@@ -429,4 +480,6 @@ onMounted(() => {
     }
   }
 }
+
+
 </style>
