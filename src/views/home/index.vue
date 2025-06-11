@@ -14,7 +14,7 @@
         <!-- 添加切换设备按钮 -->
         <button class="switch-device-btn" @click="openDeviceDialog">
           <i class="switch-icon"></i>
-          <span v-if="currentDevice.name"> {{ currentDevice.name  }}  {{ currentDevice.number  }}</span>
+          <span v-if="currentDevice.name">{{ currentDevice.name }} {{ currentDevice.number }}</span>
           <span v-else>选择设备</span>
         </button>
         <button class="logout-btn" @click="handleLogout">
@@ -32,7 +32,7 @@
       <button class="nav-btn" @click="openTimeRegistration">计时登记</button>
       <button class="nav-btn">异常登记</button>
       <button class="nav-btn">质量管理</button>
-      <button class="nav-btn">生产日报</button>
+      <button class="nav-btn" @click="openProductionReportDialog">生产日报</button>
       <button class="nav-btn">其他操作</button>
       <button class="nav-btn">帮助</button>
     </div>
@@ -45,55 +45,56 @@
           <PayInfo />
         </div>
         <div class="left-box box-2">
-          <StaffInfo  v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <StaffInfo v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
         <div class="left-box box-3">
-          <EquipmentTime  v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <EquipmentTime v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
       </div>
 
       <!-- 中间面板 -->
       <div class="panel center-panel">
         <div class="center-box box-1">
-          <DashboardGauge  v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <DashboardGauge v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
         <div class="center-box box-2">
-          <CenterBottom  v-if="currentDevice" :currentDevice="currentDevice" />
+          <CenterBottom v-if="currentDevice" :current-device="currentDevice" />
         </div>
       </div>
 
       <!-- 右侧面板 -->
       <div class="panel right-panel">
         <div class="right-box box-1">
-          <TaskInfoBox v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <TaskInfoBox v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
         <div class="right-box box-2">
-          <EquipmentHistory  v-if="currentDevice"  :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice"/>
+          <EquipmentHistory v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
         <div class="right-box box-3">
-          <LicenseHistory v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+          <LicenseHistory v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
       </div>
     </div>
 
     <!-- 添加ProcessSelect组件 -->
-    <ProcessSelect ref="processSelectRef" v-if="currentDevice" :currentWorkcenter="currentWorkcenter"  :currentDevice="currentDevice" />
+    <ProcessSelect v-if="currentDevice" ref="processSelectRef" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
 
-    
-    <TimeRegistration v-if="currentDevice" :currentDevice="currentDevice" ref="timeRegistrationRef" />
-        
+    <TimeRegistration v-if="currentDevice" ref="timeRegistrationRef" :current-device="currentDevice" />
+
     <!-- 添加工作中心选择弹框 -->
     <el-dialog
       v-model="deviceDialogVisible"
+      class="device-dialog"
+      :close-on-click-modal="false"
+      :modal-class="'cyber-modal'"
+      :show-close="true"
       title="选择设备"
       width="80%"
-      :close-on-click-modal="false"
-      :show-close="true"
-      class="device-dialog"
-      :modal-class="'cyber-modal'"
     >
-      <DeviceSelect :currentWorkcenter="currentWorkcenter" @select="handDeviceSelect" />
+      <DeviceSelect :current-workcenter="currentWorkcenter" @select="handDeviceSelect" />
     </el-dialog>
+
+    <ProductionReportDialog ref="productionReportDialogRef" />
   </div>
 </template>
 
@@ -113,11 +114,10 @@ import DeviceSelect from './components/DeviceSelect.vue'
 import ProcessSelect from './dialog/ProcessSelect.vue'
 // import TaskOperation from './dialog/TaskOperation.vue'
 import { useUserStore } from '/@/store/modules/user'
-import { storeToRefs } from 'pinia'
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getWorkcenterList } from '@/api/mes/wk/index.ts'
+import ProductionReportDialog from './report/ProductionReportDialog.vue'
 
 // 控制工序选择弹窗
 const processSelectRef = ref(null)
@@ -134,8 +134,7 @@ const currentWeekday = ref('')
 const greeting = ref('')
 // 控制计时登记弹窗
 const timeRegistrationRef = ref(null)
-// 控制任务单操作弹窗
-const taskOperationRef = ref(null)
+// const taskOperationRef = ref(null) // 已移除未使用变量
 
 let timer = null
 
@@ -149,11 +148,13 @@ const currentDevice = ref({})
 
 const deviceDialogVisible = ref(false)
 
+const productionReportDialogRef = ref(null)
+
 // 在组件挂载时获取用户信息和工作中心信息
 onMounted(() => {
   updateDateTime() // 初始化时间
   timer = setInterval(updateDateTime, 1000) // 每秒更新一次
-  
+
   // 获取用户信息
   try {
     const userInfoStr = localStorage.getItem('userInfo')
@@ -165,7 +166,7 @@ onMounted(() => {
   } catch (error) {
     console.error('获取用户信息失败:', error)
   }
-  
+
   // 获取当前选中的工作中心
   try {
     const workcenterStr = localStorage.getItem('selectedWorkcenter')
@@ -175,7 +176,7 @@ onMounted(() => {
   } catch (error) {
     console.error('获取工作中心信息失败:', error)
   }
-  
+
   // 获取当前选中的设备
   try {
     const deviceStr = localStorage.getItem('selectedDevice')
@@ -205,7 +206,7 @@ const openDeviceDialog = () => {
 const handDeviceSelect = (device) => {
   currentDevice.value = device
   deviceDialogVisible.value = false
-  
+
   // 存储选择的工作中心信息
   localStorage.setItem('selectedDevice', JSON.stringify(device))
   console.log('当前设备:', device)
@@ -214,7 +215,7 @@ const handDeviceSelect = (device) => {
 }
 
 const userStore = useUserStore()
-const { username } = storeToRefs(userStore)
+// const { username } = storeToRefs(userStore) // 已移除未使用变量
 
 // 格式化日期为 YYYY-MM-DD 格式
 const formatDate = (date) => {
@@ -254,14 +255,14 @@ const updateDateTime = () => {
   currentWeekday.value = getWeekday(now)
   greeting.value = getGreeting(now.getHours())
 }
-const initTestData = () => {
-  const data = {
-    action: 'get_can_view_workercenter',
-  }
-  getWorkcenterList(data).then((res) => {
-    console.log('res111', res)
-  })
-}
+// const initTestData = () => { // 已移除未使用变量
+//   const data = {
+//     action: 'get_can_view_workercenter',
+//   }
+//   getWorkcenterList(data).then((res) => {
+//     console.log('res111', res)
+//   })
+// }
 onMounted(() => {
   updateDateTime() // 初始化时间
   timer = setInterval(updateDateTime, 1000) // 每秒更新一次
@@ -269,8 +270,8 @@ onMounted(() => {
   // initTestData()
 
   setTimeout(() => {
-    console.log(currentDevice.value,'device')
-  }, 400);
+    console.log(currentDevice.value, 'device')
+  }, 400)
 })
 
 onBeforeUnmount(() => {
@@ -281,7 +282,6 @@ onBeforeUnmount(() => {
   }
 })
 
-
 const openTimeRegistration = () => {
   timeRegistrationRef.value?.openDialog()
 }
@@ -290,38 +290,42 @@ const handleLogout = () => {
   ElMessageBox.confirm('确定要退出登录吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    // 清除 token
-    removeToken()
-    
-    // 清除 localStorage 中的缓存
-    const keysToRemove = [
-      'userInfo',
-      'selectedWorkcenter',
-      'selectedDevice',
-      'loginInfo',
-      'TASK_INFO' // 工作任务信息缓存
-    ]
-    
-    keysToRemove.forEach(key => {
-      localStorage.removeItem(key)
-    })
-    
-    // 重置用户状态
-    userStore.resetState()
-    
-    // 提示用户
-    ElMessage.success('已退出登录')
-    
-    // 跳转到登录页
-    router.push('/login')
-  }).catch(() => {
-    // 用户取消退出
+    type: 'warning',
   })
+    .then(() => {
+      // 清除 token
+      removeToken()
+
+      // 清除 localStorage 中的缓存
+      const keysToRemove = [
+        'userInfo',
+        'selectedWorkcenter',
+        'selectedDevice',
+        'loginInfo',
+        'TASK_INFO', // 工作任务信息缓存
+      ]
+
+      keysToRemove.forEach((key) => {
+        localStorage.removeItem(key)
+      })
+
+      // 重置用户状态
+      userStore.resetState()
+
+      // 提示用户
+      ElMessage.success('已退出登录')
+
+      // 跳转到登录页
+      router.push('/login')
+    })
+    .catch(() => {
+      // 用户取消退出
+    })
 }
 
-
+const openProductionReportDialog = () => {
+  productionReportDialogRef.value?.openDialog()
+}
 </script>
 
 <style lang="scss" scoped>
@@ -334,7 +338,7 @@ const handleLogout = () => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
+
   // 添加全局光效
   &::before {
     content: '';
@@ -371,8 +375,10 @@ const handleLogout = () => {
       font-family: 'Digital-7', monospace;
       text-shadow: 0 0 10px rgba(#40c4ff, 0.5);
       padding-left: 20px;
-      
-      .date, .weekday, .time {
+
+      .date,
+      .weekday,
+      .time {
         background: rgba(0, 21, 41, 0.5);
         padding: 4px 8px;
         border-radius: 4px;
@@ -389,7 +395,7 @@ const handleLogout = () => {
       margin: 0;
       letter-spacing: 2px;
       position: relative;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -416,7 +422,8 @@ const handleLogout = () => {
         margin-right: 8px;
       }
 
-      .switch-device-btn, .logout-btn {
+      .switch-device-btn,
+      .logout-btn {
         margin-left: 12px;
         background-color: rgba(0, 21, 41, 0.6);
         border: 1px solid #40c4ff;
@@ -436,7 +443,8 @@ const handleLogout = () => {
           transform: translateY(-2px);
         }
 
-        .switch-icon, .logout-icon {
+        .switch-icon,
+        .logout-icon {
           display: inline-block;
           width: 14px;
           height: 14px;
@@ -448,7 +456,6 @@ const handleLogout = () => {
           background-size: cover;
         }
 
-        
         .logout-icon {
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2340c4ff'%3E%3Cpath d='M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z'/%3E%3C/svg%3E");
           background-size: cover;
@@ -481,7 +488,7 @@ const handleLogout = () => {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       position: relative;
       overflow: hidden;
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -496,7 +503,7 @@ const handleLogout = () => {
       &:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-        
+
         &::before {
           left: 100%;
         }
@@ -517,7 +524,7 @@ const handleLogout = () => {
     height: calc(100% - 116px);
     display: flex;
     gap: 8px;
-    padding:0px 10px 12px 12px;
+    padding: 0px 10px 12px 12px;
     position: relative;
     z-index: 2;
 
@@ -545,7 +552,7 @@ const handleLogout = () => {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(64, 196, 255, 0.15);
         transition: all 0.3s;
-        
+
         &:hover {
           box-shadow: 0 4px 12px rgba(64, 196, 255, 0.2);
           border-color: rgba(64, 196, 255, 0.3);
@@ -576,12 +583,12 @@ const handleLogout = () => {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(64, 196, 255, 0.15);
         transition: all 0.3s;
-        
+
         &:hover {
           box-shadow: 0 4px 12px rgba(64, 196, 255, 0.2);
           border-color: rgba(64, 196, 255, 0.3);
         }
-        
+
         &.box-1 {
           height: calc((100% - 12px) * 0.7);
         }
@@ -603,7 +610,7 @@ const handleLogout = () => {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(64, 196, 255, 0.15);
         transition: all 0.3s;
-        
+
         &:hover {
           box-shadow: 0 4px 12px rgba(64, 196, 255, 0.2);
           border-color: rgba(64, 196, 255, 0.3);
@@ -655,23 +662,23 @@ const handleLogout = () => {
     border-radius: 8px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
-    
+
     .el-dialog__header {
       border-bottom: 1px solid rgba(64, 196, 255, 0.3);
       padding: 15px 20px;
       margin-right: 0;
-      
+
       .el-dialog__title {
         color: #40c4ff;
         font-size: 18px;
         font-weight: bold;
         text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
       }
-      
+
       .el-dialog__headerbtn {
         .el-dialog__close {
           color: #40c4ff;
-          
+
           &:hover {
             color: #fff;
             transform: rotate(90deg);
@@ -680,7 +687,7 @@ const handleLogout = () => {
         }
       }
     }
-    
+
     .el-dialog__body {
       padding: 20px;
       color: #fff;
@@ -692,12 +699,12 @@ const handleLogout = () => {
 .task-operation-btn {
   background: linear-gradient(to bottom, #ffd54f, #ffc107);
   border: none;
-  
+
   &:hover {
     background: linear-gradient(to bottom, #ffca28, #ffb300);
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
   }
-  
+
   .action-icon {
     color: #fff;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
@@ -733,7 +740,7 @@ const handleLogout = () => {
       border-bottom: 1px solid rgba(30, 207, 255, 0.3);
       padding: 10px 20px !important;
       margin-right: 0 !important;
-      
+
       .el-dialog__title {
         color: #1ecfff !important;
         font-size: 18px !important;
@@ -741,14 +748,14 @@ const handleLogout = () => {
         text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
         letter-spacing: 1px;
       }
-      
+
       .el-dialog__headerbtn {
         top: 15px !important;
-        
+
         .el-dialog__close {
           color: #1ecfff !important;
           transition: all 0.3s;
-          
+
           &:hover {
             color: #fff !important;
             transform: rotate(90deg);
@@ -773,7 +780,7 @@ const handleLogout = () => {
 ::-webkit-scrollbar-thumb {
   background: rgba(30, 207, 255, 0.5);
   border-radius: 4px;
-  
+
   &:hover {
     background: rgba(30, 207, 255, 0.7);
   }
@@ -796,4 +803,3 @@ const handleLogout = () => {
   color: #fff;
 }
 </style>
-
