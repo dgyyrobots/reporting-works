@@ -10,6 +10,22 @@
   >
     <div class="dialog-content">
       <ProductionReportForm ref="formRef" />
+      
+      <!-- 新增按钮组 -->
+      <div class="action-btns">
+        <button class="cyber-btn" @click="handleGetPersonnel">
+          <Icon class="btn-icon" icon="svg-icon:set" :style="{ color: '#1ecfff' }" />
+          获取人员
+        </button>
+        <button class="cyber-btn" @click="handleGetProduction">
+          <Icon class="btn-icon" icon="svg-icon:set" :style="{ color: '#1ecfff' }" />
+          获取产量
+        </button>
+        <button class="cyber-btn" @click="handleGetDeviceHours">
+          <Icon class="btn-icon" icon="svg-icon:set" :style="{ color: '#1ecfff' }" />
+          获取设备工时
+        </button>
+      </div>
     </div>
     <template #footer>
       <el-button @click="handleCancel">取消</el-button>
@@ -21,6 +37,8 @@
 <script setup>
 import { ref, defineExpose } from 'vue'
 import ProductionReportForm from './ProductionReportForm.vue'
+import { Icon } from '/@/components/Icon'
+import { ElMessage } from 'element-plus'
 
 const visible = ref(false)
 const formRef = ref(null)
@@ -45,6 +63,19 @@ function handleSubmit() {
   closeDialog()
 }
 
+// 新增按钮处理函数
+function handleGetPersonnel() {
+  ElMessage.info('获取人员功能待实现')
+}
+
+function handleGetProduction() {
+  ElMessage.info('获取产量功能待实现')
+}
+
+function handleGetDeviceHours() {
+  ElMessage.info('获取设备工时功能待实现')
+}
+
 defineExpose({ openDialog, closeDialog })
 </script>
 
@@ -60,6 +91,53 @@ defineExpose({ openDialog, closeDialog })
   min-height: 400px;
   padding: 20px;
   color: #fff;
+}
+
+// 新增按钮组样式
+.action-btns {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: flex-start;
+}
+
+.cyber-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 30, 60, 0.18);
+  border: 1.2px solid #1ecfff;
+  color: #eef1f2;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 0 16px 0 14px;
+  height: 32px;
+  min-width: 90px;
+  cursor: pointer;
+  box-shadow: 0 0 6px 0 #1ecfff55;
+  transition:
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+  outline: none;
+  justify-content: flex-start;
+}
+
+.cyber-btn:hover {
+  border-color: #4fdfff;
+  color: #fff;
+  box-shadow: 0 0 10px 2px #1ecfff99;
+  background: rgba(30, 207, 255, 0.1);
+}
+
+.btn-icon {
+  font-size: 16px;
+  margin-right: 4px;
+  color: #1ecfff;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 :deep(.el-dialog__header) {
