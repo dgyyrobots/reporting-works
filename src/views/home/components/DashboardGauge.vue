@@ -57,7 +57,7 @@
     </div>
     <!-- 顶部右侧：黄色圆点 + 空转 -->
     <div class="top-abs top-right">
-      <span class="dot" :class="{
+      <span class="dot" v-show="runStatus" :class="{
         'dot-gray': runStatus === '未生产',
         'dot-green': runStatus === '生产中',
         'dot-yellow': runStatus === '空转' || runStatus === '未知'
@@ -116,7 +116,7 @@ const getRunStatus = () => {
   
   // 判断是否有采集中的版号
   const hasCollectingLicense = licenseCheckList.some(item => 
-    item && item.status_id && item.status_id.toString() === '1' // 1表示采集中
+    item && item.status_id && item.status_id.toString() == 1 // 1表示采集中
   )
   
   // 根据条件判断运行状态

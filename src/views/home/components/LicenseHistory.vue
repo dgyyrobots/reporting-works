@@ -29,7 +29,7 @@
             <td>{{ formatVersionNo(item.version_no) }}</td>
             <td>{{ toInteger(item.collection_qty) }}</td>
             <td>
-              <span>{{ getStatusText(item.status_id) }}</span>
+              <span :class="{'status-collecting': item.status_id == 1}">{{ getStatusText(item.status_id) }}</span>
             </td>
           </tr>
         </tbody>
@@ -433,7 +433,10 @@ onUnmounted(() => {
   color: #fff;
   display: flex;
   flex-direction: column;
-
+  .status-collecting {
+    color: #22e222; /* 绿色 */
+    font-weight: 500;
+  }
   .loading-container {
     display: flex;
     flex-direction: column;

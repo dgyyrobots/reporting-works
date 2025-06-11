@@ -810,16 +810,14 @@ const confirmDelete = async (item) => {
     }
   }
 
-  .status-waiting {
-    color: #ff9800;
+    .status-collecting {
+    color: #22e222; /* 绿色 */
+    font-weight: 500;
   }
 
-  .status-collecting {
-    color: #2196f3;
-  }
-
-  .status-completed {
-    color: #4caf50;
+  .status-waiting, .status-completed {
+    /* 保持默认颜色 */
+    color: inherit;
   }
 }
 .del-span {
