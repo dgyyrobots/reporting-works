@@ -93,7 +93,7 @@
             <label>员工:</label>
             <div class="input-with-search">
             <el-input v-model="formData.employee" />
-            <el-button class="search-btn"><el-icon><Search /></el-icon></el-button>
+            <el-button class="search-btn" @click="handSearchPerson"><el-icon><Search /></el-icon></el-button>
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 50%;">
@@ -108,14 +108,17 @@
       <img v-if="isExpanded" src="@/icon/shouqi.svg" alt="收起" class="expand-icon" />
       <img v-else src="@/icon/zhankai.svg" alt="展开" class="expand-icon" />
     </div>
+    <ChoosePerson ref="choosePersonRef" @confirm="handlePersonConfirm" @close="handlePersonClose" />
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive,ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import ChoosePerson from './ChoosePerson.vue'
 
 const isExpanded = ref(true)
+const choosePersonRef = ref(null)
 const formData = reactive({
   reportDate: new Date().toISOString().split('T')[0], // 今天日期
   workCenter: '双张机组',
@@ -134,6 +137,14 @@ const formData = reactive({
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value
+}
+const handSearchPerson = () => {
+  choosePersonRef.value.open()
+}
+const handlePersonConfirm = (selectedPerson) => {
+  console.log('选中的人员:', selectedPerson)
+  formData.employee = selectedPerson.name
+  formData.employeeId = selectedPerson.id
 }
 // 暴露表单数据给父组件
 defineExpose({

@@ -26,6 +26,10 @@
           获取设备工时
         </button>
       </div>
+
+
+      <!-- 新增表格组件 -->
+      <ProductionReportTable ref="tableRef" />
     </div>
     <template #footer>
       <el-button @click="handleCancel">取消</el-button>
@@ -39,6 +43,7 @@ import { ref, defineExpose } from 'vue'
 import ProductionReportForm from './ProductionReportForm.vue'
 import { Icon } from '/@/components/Icon'
 import { ElMessage } from 'element-plus'
+import ProductionReportTable from './ProductionReportTable.vue'
 
 const visible = ref(false)
 const formRef = ref(null)
