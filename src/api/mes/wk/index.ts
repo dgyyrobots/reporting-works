@@ -246,3 +246,11 @@ export const sendPrint = async (data: any) => {
         data,
     })
 }
+// 查询picker 接口
+
+export const getPicker = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/erp/ajax/erppicker',
+        data,
+    })
+}
