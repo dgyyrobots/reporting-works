@@ -30,6 +30,9 @@
 
       <!-- 新增表格组件 -->
       <ProductionReportTable ref="tableRef" />
+      <ProductionMaterialTable/>
+      <ProcessTable/>
+      <MoldOperationTable/>
     </div>
     <template #footer>
       <el-button @click="handleCancel">取消</el-button>
@@ -44,7 +47,9 @@ import ProductionReportForm from './ProductionReportForm.vue'
 import { Icon } from '/@/components/Icon'
 import { ElMessage } from 'element-plus'
 import ProductionReportTable from './ProductionReportTable.vue'
-
+import ProductionMaterialTable from './ProductionMaterialTable.vue'
+import ProcessTable from './ProductionMaterialTable.vue'
+import MoldOperationTable from './MoldOperationTable.vue'
 const visible = ref(false)
 const formRef = ref(null)
 
