@@ -6,7 +6,7 @@
     :modal-class="'cyber-modal'"
     :show-close="true"
     title="新增生产日报表"
-    width="90%"
+    width="94vw"
   >
     <div class="dialog-content">
       <ProductionReportForm ref="formRef" />

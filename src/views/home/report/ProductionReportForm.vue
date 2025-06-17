@@ -143,8 +143,16 @@ const handSearchPerson = () => {
 }
 const handlePersonConfirm = (selectedPerson) => {
   console.log('选中的人员:', selectedPerson)
-  formData.employee = selectedPerson.name
-  formData.employeeId = selectedPerson.id
+  if(selectedPerson.length>0){
+    let nameArr = []
+    let idArr = []
+    selectedPerson.map(item=>{
+      nameArr.push(item.name)
+      idArr.push(item.id)
+    })
+    formData.employee = nameArr.join(',')
+    formData.employeeId = idArr.join(',')
+  }
 }
 // 暴露表单数据给父组件
 defineExpose({
@@ -264,9 +272,121 @@ defineExpose({
 
 :deep(.el-select) {
   width: 100%;
+  
+  .el-select-dropdown__item {
+    color: #b6eaff;
+  }
+  
+  .el-select-dropdown__item.hover, 
+  .el-select-dropdown__item:hover {
+    background-color: rgba(30, 207, 255, 0.1);
+  }
+  
+  .el-select-dropdown__item.selected {
+    color: #1ecfff;
+    background-color: rgba(30, 207, 255, 0.2);
+  }
+}
+
+// 添加下拉菜单样式
+:deep(.el-popper) {
+  background-color: rgba(0, 21, 41, 0.95) !important;
+  border: 1px solid rgba(30, 207, 255, 0.5) !important;
+  
+  .el-select-dropdown__list {
+    padding: 4px 0;
+  }
+  
+  .el-popper__arrow::before {
+    background-color: rgba(0, 21, 41, 0.95) !important;
+    border-color: rgba(30, 207, 255, 0.5) !important;
+  }
 }
 
 :deep(.el-button) {
   border-radius: 4px;
 }
+</style>
+
+<!-- 添加全局样式 -->
+<style lang="scss">
+/* 下拉菜单样式覆盖 */
+.report-form {
+  .el-select__wrapper {
+    background: #00162a !important;
+  }
+.el-popper.is-light {
+  background-color: rgba(0, 21, 41, 0.95) !important;
+  border: 1px solid rgba(30, 207, 255, 0.5) !important;
+  
+  .el-select-dropdown__item {
+    color: #b6eaff !important;
+  }
+
+  
+  .el-select-dropdown__item.hover, 
+  .el-select-dropdown__item:hover {
+    background-color: rgba(30, 207, 255, 0.1) !important;
+  }
+  
+  .el-select-dropdown__item.selected {
+    color: #1ecfff !important;
+    background-color: rgba(30, 207, 255, 0.2) !important;
+  }
+  
+  .el-select-dropdown__list {
+    padding: 4px 0;
+  }
+  
+  .el-popper__arrow::before {
+    background-color: rgba(0, 21, 41, 0.95) !important;
+    border-color: rgba(30, 207, 255, 0.5) !important;
+  }
+}
+
+/* 日期选择器下拉面板样式 */
+.el-picker__popper.el-popper.is-light {
+  background-color: rgba(0, 21, 41, 0.95) !important;
+  border: 1px solid rgba(30, 207, 255, 0.5) !important;
+  
+  .el-date-picker {
+    background-color: transparent !important;
+  }
+  
+  .el-date-table td {
+    color: #b6eaff !important;
+  }
+  
+  .el-date-table td.current:not(.disabled) .el-date-table-cell__text {
+    background-color: rgba(30, 207, 255, 0.7) !important;
+  }
+  
+  .el-date-table td.today .el-date-table-cell__text {
+    color: #1ecfff !important;
+  }
+  
+  .el-date-picker__header-label,
+  .el-picker-panel__icon-btn {
+    color: #b6eaff !important;
+  }
+  
+  .el-time-panel {
+    background-color: rgba(0, 21, 41, 0.95) !important;
+  }
+  
+  .el-time-spinner__item {
+    color: #b6eaff !important;
+  }
+  
+  .el-time-spinner__item.active:not(.disabled) {
+    color: #1ecfff !important;
+  }
+  
+  .el-popper__arrow::before {
+    background-color: rgba(0, 21, 41, 0.95) !important;
+    border-color: rgba(30, 207, 255, 0.5) !important;
+  }
+}
+}
+
 </style>
