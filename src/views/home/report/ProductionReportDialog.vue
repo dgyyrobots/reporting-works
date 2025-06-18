@@ -48,7 +48,7 @@ import { Icon } from '/@/components/Icon'
 import { ElMessage } from 'element-plus'
 import ProductionReportTable from './ProductionReportTable.vue'
 import ProductionMaterialTable from './ProductionMaterialTable.vue'
-import ProcessTable from './ProductionMaterialTable.vue'
+import ProcessTable from './ProcessTable.vue'
 import MoldOperationTable from './MoldOperationTable.vue'
 const visible = ref(false)
 const formRef = ref(null)
