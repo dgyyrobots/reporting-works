@@ -66,7 +66,6 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-checkbox v-model="selectAll" v-if="!isSingleMode">全选</el-checkbox>
         <el-button @click="resetSelection" v-if="!isSingleMode">重选</el-button>
         <el-button @click="handleClose">取消</el-button>
         <el-button type="primary" @click="handleConfirm" v-if="!isSingleMode">保存</el-button>
@@ -639,20 +638,10 @@ const filterByLetter = (letter) => {
 
 .dialog-footer {
   display: flex;
+  flex-direction: row;
+  justify-content: right;
   align-items: center;
-  
-  .el-checkbox {
-    margin-right: auto;
-    
-    :deep(.el-checkbox__label) {
-      color: #fff;
-    }
-    
-    :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-      background-color: #1ecfff;
-      border-color: #1ecfff;
-    }
-  }
+
   
   .el-button {
     margin-left: 10px;
