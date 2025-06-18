@@ -115,7 +115,7 @@
 <script setup>
 import { reactive,ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import ChoosePerson from './ChoosePerson.vue'
+import ChoosePerson from './components/ChoosePerson.vue'
 
 const isExpanded = ref(true)
 const choosePersonRef = ref(null)
