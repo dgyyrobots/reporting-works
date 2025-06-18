@@ -9,25 +9,25 @@
   >
     <div class="dialog-header">
       <div class="filter-row">
-        <el-select v-model="filterType" placeholder="全部分类" class="filter-select">
-          <el-option label="全部分类" value="all" />
-          <el-option label="原材料" value="raw" />
-          <el-option label="成品" value="finished" />
+        <el-select v-model="product_type" placeholder="全部分类" class="filter-select">
+          <el-option label="全部分类" value="" />
+          <el-option label="成品" value="7550" />
+          <el-option label="部件" value="7776" />
+          <el-option label="辅材" value="7780" />
+          <el-option label="原材" value="8100" />
         </el-select>
         
-        <el-select v-model="filterArea" placeholder="全部区域" class="filter-select">
-          <el-option label="全部区域" value="all" />
-          <el-option label="仓库A" value="warehouseA" />
-          <el-option label="仓库B" value="warehouseB" />
+        <el-select v-model="sku_brand_id" placeholder="全部品牌" class="filter-select">
+          <el-option label="全部品牌" value="" />
+          <el-option label="双喜" value="1" />
         </el-select>
         
         <div class="search-input">
-          <el-input v-model="searchKeyword" placeholder="名称/编码/条码/型号/规格/物料型号" />
-          <el-checkbox v-model="exactMatch">是否精确搜索</el-checkbox>
+          <el-input v-model="search_content" placeholder="名称/编码/条码/型号/规格/物料型号" />
+          <el-checkbox v-model="is_exact_search">是否精确搜索</el-checkbox>
         </div>
         
         <div class="action-buttons">
-          <el-button class="search-btn">筛选</el-button>
           <el-button class="reset-btn">重置</el-button>
         </div>
       </div>
@@ -82,10 +82,10 @@
 import { ref, reactive, nextTick } from 'vue'
 
 const visible = ref(false)
-const filterType = ref('all')
-const filterArea = ref('all')
-const searchKeyword = ref('')
-const exactMatch = ref(false)
+const product_type = ref('')
+const sku_brand_id = ref('')
+const search_content = ref('')
+const is_exact_search = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(50)
 const total = ref(1259)
