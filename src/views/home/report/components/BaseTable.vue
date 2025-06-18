@@ -139,6 +139,16 @@ defineExpose({
   :deep(.el-table__header) {
     border-bottom: 2px solid rgba(30, 207, 255, 0.8);
   }
+  
+  // 修改单元格内容的padding
+  :deep(.el-table .cell) {
+    padding: 2px !important;
+  }
+  
+  // 确保所有单元格都应用相同的padding
+  :deep(.el-table__cell .cell) {
+    padding: 2px !important;
+  }
 }
 
 .table-footer {

@@ -3,19 +3,19 @@
     v-model:tableData="tableData" 
     :emptyRowTemplate="emptyRowTemplate"
   >
-    <el-table-column label="员工" prop="employee" min-width="120" align="center">
+    <el-table-column label="员工" prop="employee" min-width="140" align="center">
       <template #header>
         员工 <span class="required">*</span>
       </template>
       <template #default="{ row }">
         <div class="input-with-search">
-          <el-input v-model="row.employee" placeholder="" />
-          <el-button class="search-btn"><Icon icon="svg-icon:search" /></el-button>
+          <el-input v-model="row.employee" placeholder="" readonly />
+          <el-button class="search-btn" @click="handSearchPerson(row)"><Icon icon="svg-icon:search" /></el-button>
         </div>
       </template>
     </el-table-column>
     
-    <el-table-column label="工号" prop="employeeId" min-width="80" align="center">
+    <el-table-column label="工号" prop="employeeId" min-width="100" align="center">
       <template #default="{ row }">
         <el-input v-model="row.employeeId" placeholder="" />
       </template>
@@ -105,12 +105,16 @@
       </template>
     </el-table-column>
   </BaseTable>
+  
+  <!-- 添加人员选择组件 -->
+  <ChoosePerson ref="choosePersonRef" @confirm="handlePersonConfirm" @close="handlePersonClose" />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { Icon } from '/@/components/Icon'
 import BaseTable from './components/BaseTable.vue'
+import ChoosePerson from './components/ChoosePerson.vue'
 
 // 空行模板
 const emptyRowTemplate = {
@@ -131,6 +135,31 @@ const emptyRowTemplate = {
 
 // 表格数据
 const tableData = ref([{ ...emptyRowTemplate }])
+
+// 人员选择组件引用
+const choosePersonRef = ref(null)
+// 当前正在编辑的行
+const currentEditingRow = ref(null)
+
+// 打开人员选择对话框
+const handSearchPerson = (row) => {
+  currentEditingRow.value = row
+  choosePersonRef.value.open([], true) // 传递 isSingleMode: true
+}
+
+// 处理人员选择确认
+const handlePersonConfirm = (selectedPerson) => {
+  if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
+    // 设置员工姓名和工号
+    currentEditingRow.value.employee = selectedPerson[0].name
+    currentEditingRow.value.employeeId = selectedPerson[0].id
+  }
+}
+
+// 处理人员选择关闭
+const handlePersonClose = () => {
+  currentEditingRow.value = null
+}
 
 // 计算时长
 const calculateDuration = (startTime, endTime) => {
