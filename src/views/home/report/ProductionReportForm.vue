@@ -192,10 +192,9 @@ const initProcessList = async () => {
   })
 }
 const initData = () => {
-  console.log(props.currentDevice,'currentDevice')
   const storeTaskInfo = workStore.getTaskInfo 
-  formData.wc_name = storeTaskInfo.wc_name
-  formData.wc_number = storeTaskInfo.wc_number
+  formData.wc_name =props.currentWorkcenter.name ||  storeTaskInfo.wc_name
+  formData.wc_number =props.currentWorkcenter.number ||  storeTaskInfo.wc_number
   const deviceName = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].name : ''
   formData.device_name =  deviceName  || props.currentDevice.name
   const deviceNumber = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].number : ''
@@ -281,14 +280,12 @@ const getShiftDateRange = () => {
 
 const initDevice = () => {
   // 实际API调用示例
-  console.log(props.currentWorkcenter,'props.currentWorkcenter')
   const wc_id = props.currentWorkcenter.id
   const data = {
     filter: JSON.stringify([{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
   }
   getWorkcenterDeviceList(data).then((res) => {
     deviceList.value = res.rows
-    console.log(deviceList,'deviceList-----res')
     loading.value = false 
   }).catch((error) => {
     loading.value = false 
