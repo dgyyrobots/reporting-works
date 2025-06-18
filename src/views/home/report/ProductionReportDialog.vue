@@ -9,7 +9,7 @@
     width="94vw"
   >
     <div class="dialog-content">
-      <ProductionReportForm ref="formRef" />
+      <ProductionReportForm ref="formRef"  :currentDevice="currentDevice" :currentWorkcenter="currentWorkcenter"/>
       
       <!-- 新增按钮组 -->
       <div class="action-btns">
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose } from 'vue'
+import { ref, defineExpose,defineProps } from 'vue'
 import ProductionReportForm from './ProductionReportForm.vue'
 import { Icon } from '/@/components/Icon'
 import { ElMessage } from 'element-plus'
@@ -52,7 +52,17 @@ import ProcessTable from './ProductionMaterialTable.vue'
 import MoldOperationTable from './MoldOperationTable.vue'
 const visible = ref(false)
 const formRef = ref(null)
-
+// 定义props
+const props = defineProps({
+  currentDevice: {
+    type: Object,
+    default: () => ({})
+  },
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
+})
 function openDialog() {
   visible.value = true
 }

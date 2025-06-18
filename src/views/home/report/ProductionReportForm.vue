@@ -42,7 +42,10 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>设备:</label>
             <div class="input-with-search">
-            <el-input v-model="formData.device_name" placeholder="请输入" />
+            <el-select v-model="formData.device_number" filterable  placeholder="请选择">
+                <el-option v-for="(item,i) in deviceList" :key="item.id" :label="item.name" :value="item.number" />
+            </el-select>
+            <!-- <el-input v-model="formData.device_name" placeholder="请输入" /> -->
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
@@ -114,16 +117,28 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch,defineProps } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import ChoosePerson from './components/ChoosePerson.vue'
 import {getAllProcess } from '@/api/mes/wk/index.ts'
 import { useWorkStore } from '@/store/modules/work'
-
+import { getWorkcenterDeviceList } from '@/api/mes/wk/index.ts'
+// 定义props
+const props = defineProps({
+  currentDevice: {
+    type: Object,
+    default: () => ({})
+  },
+  currentWorkcenter: {
+    type: Object,
+    default: () => ({})
+  },
+})
 const workStore = useWorkStore()
 const isExpanded = ref(true)
 const choosePersonRef = ref(null)
 const processList = ref([])
+const deviceList = ref([])
 const formData = reactive({
   reportDate: new Date().toISOString().split('T')[0], // 今天日期
   wc_name: '',
@@ -177,12 +192,14 @@ const initProcessList = async () => {
   })
 }
 const initData = () => {
+  console.log(props.currentDevice,'currentDevice')
   const storeTaskInfo = workStore.getTaskInfo 
   formData.wc_name = storeTaskInfo.wc_name
   formData.wc_number = storeTaskInfo.wc_number
-  console.log(storeTaskInfo,'4444444444444444444444')
-  formData.device_name = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0 ? storeTaskInfo.company_name[0].name : ''
-  formData.device_number = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0 ? storeTaskInfo.company_name[0].number : ''
+  const deviceName = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].name : ''
+  formData.device_name =  deviceName  || props.currentDevice.name
+  const deviceNumber = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].number : ''
+  formData.device_number = deviceNumber  || props.currentDevice.number
   
   // 获取当前班次信息
   const shiftInfo = getShiftDateRange()
@@ -261,7 +278,27 @@ const getShiftDateRange = () => {
     end: isDayShift ? today : tomorrowStr
   }
 }
+
+const initDevice = () => {
+  // 实际API调用示例
+  console.log(props.currentWorkcenter,'props.currentWorkcenter')
+  const wc_id = props.currentWorkcenter.id
+  const data = {
+    filter: JSON.stringify([{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
+  }
+  getWorkcenterDeviceList(data).then((res) => {
+    deviceList.value = res.rows
+    console.log(deviceList,'deviceList-----res')
+    loading.value = false 
+  }).catch((error) => {
+    loading.value = false 
+  }).finally(() => {
+    loading.value = false // 结束加载
+  })
+  
+}
 onMounted(() => {
+  initDevice()
   initData()
   initProcessList()
 })

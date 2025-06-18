@@ -94,7 +94,7 @@
       <DeviceSelect :current-workcenter="currentWorkcenter" @select="handDeviceSelect" />
     </el-dialog>
 
-    <ProductionReportDialog ref="productionReportDialogRef" />
+    <ProductionReportDialog  :current-workcenter="currentWorkcenter"  :current-device="currentDevice" ref="productionReportDialogRef" />
   </div>
 </template>
 
