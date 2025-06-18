@@ -11,13 +11,10 @@
       <div class="left-panel">
         <div class="panel-title">员工引用属性列表</div>
         <div class="search-box">
-          <el-input v-model="searchKeyword" placeholder="" clearable>
-            <template #append>
-              <el-button @click="handSearch">
+          <input v-model="searchKeyword" placeholder="请输入关键词搜索" class="search-input">
+          <el-button class="search-btn" @click="handSearch">
                 <Icon icon="svg-icon:search" />
-              </el-button>
-            </template>
-          </el-input>
+          </el-button>
         </div>
         <div class="alphabet-filter">
           <span 
@@ -477,7 +474,41 @@ const filterByLetter = (letter) => {
 }
 
 .search-box {
+  display: flex;
   margin-bottom: 15px;
+  align-items: center;
+  
+  .search-input {
+    flex: 1;
+    height: 32px;
+    background-color: rgba(0, 21, 41, 0.5);
+    border: 1px solid rgba(30, 207, 255, 0.5);
+    border-radius: 4px;
+    color: #fff;
+    padding: 0 10px;
+    outline: none;
+    
+    &::placeholder {
+      color: rgba(182, 234, 255, 0.5);
+    }
+    
+    &:focus {
+      border-color: #1ecfff;
+    }
+  }
+  
+  .search-btn {
+    margin-left: 8px;
+    height: 32px;
+    padding: 0 12px;
+    background-color: rgba(30, 207, 255, 0.2);
+    border: 1px solid rgba(30, 207, 255, 0.5);
+    color: #1ecfff;
+    
+    &:hover {
+      background-color: rgba(30, 207, 255, 0.3);
+    }
+  }
   
   :deep(.el-input__wrapper) {
     background-color: rgba(0, 21, 41, 0.5);
@@ -487,6 +518,7 @@ const filterByLetter = (letter) => {
   
   :deep(.el-input__inner) {
     color: #fff;
+    border: 1px solid rgba(30, 207, 255, 0.5) !important;
   }
   
   :deep(.el-input-group__append) {

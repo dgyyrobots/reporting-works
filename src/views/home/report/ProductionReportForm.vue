@@ -179,9 +179,10 @@ const initProcessList = async () => {
 const initData = () => {
   const storeTaskInfo = workStore.getTaskInfo 
   formData.wc_name = storeTaskInfo.wc_name
-  formData.wc_number = storeTaskInfo.wc_number 
-  formData.device_name = storeTaskInfo.company_name[0].name
-  formData.device_number = storeTaskInfo.company_name[0].number
+  formData.wc_number = storeTaskInfo.wc_number
+  console.log(storeTaskInfo,'4444444444444444444444')
+  formData.device_name = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0 ? storeTaskInfo.company_name[0].name : ''
+  formData.device_number = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0 ? storeTaskInfo.company_name[0].number : ''
   
   // 获取当前班次信息
   const shiftInfo = getShiftDateRange()
@@ -396,6 +397,7 @@ formData.shiftCode = '002'
   
   .el-input__inner {
     color: #fff;
+    border: none!important; // 移除边框
     height: 32px;
   }
 }
@@ -407,6 +409,7 @@ formData.shiftCode = '002'
 :deep(.el-select) {
   width: 100%;
   
+  .el-select__tags,
   .el-select-dropdown__item {
     color: #b6eaff;
   }
@@ -419,6 +422,17 @@ formData.shiftCode = '002'
   .el-select-dropdown__item.selected {
     color: #1ecfff;
     background-color: rgba(30, 207, 255, 0.2);
+  }
+  
+  // 确保select内部的输入框也没有边框
+  .el-input__wrapper {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  // 修改select显示的文字颜色
+  .el-input__inner {
+    color: #fff !important;
   }
 }
 
@@ -446,100 +460,33 @@ formData.shiftCode = '002'
 <style lang="scss">
 /* 下拉菜单样式覆盖 */
 .report-form {
-  .el-select__wrapper {
-    background: #00162a !important;
-    border: none !important; // 移除边框
+  // 确保所有输入框和选择框没有边框和阴影
+  .el-input__wrapper,
+  .el-select .el-input__wrapper,
+  .el-date-editor .el-input__wrapper {
+    box-shadow: none !important;
+    border: none !important;
+    background-color: rgba(0, 21, 41, 0.5) !important;
   }
   
-  // 添加这个样式确保选择框中的文字为白色
+  // 处理选择框的特殊样式
+  .el-select__wrapper {
+    background: #00162a !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  // 确保选择框中的文字为白色
   .el-select__selection {
     color: #fff !important;
   }
   
-  // 移除输入框的边框和阴影
-  .el-input__wrapper {
-    border: none !important;
-    box-shadow: none !important;
-    background-color: rgba(0, 21, 41, 0.5) !important;
+  // 添加这个样式确保下拉框中显示的文字为白色
+  .el-select .el-input__inner {
+    color: #fff !important;
   }
-  
-  // 移除日期选择器的边框和阴影
-  .el-date-editor .el-input__wrapper {
-    border: none !important;
-    box-shadow: none !important;
-  }
-.el-popper.is-light {
-  background-color: rgba(0, 21, 41, 0.95) !important;
-  border: 1px solid rgba(30, 207, 255, 0.5) !important;
-  
-  .el-select-dropdown__item {
-    color: #b6eaff !important;
-  }
-
-  
-  .el-select-dropdown__item.hover, 
-  .el-select-dropdown__item:hover {
-    background-color: rgba(30, 207, 255, 0.1) !important;
-  }
-  
-  .el-select-dropdown__item.selected {
-    color: #1ecfff !important;
-    background-color: rgba(30, 207, 255, 0.2) !important;
-  }
-  
-  .el-select-dropdown__list {
-    padding: 4px 0;
-  }
-  
-  .el-popper__arrow::before {
-    background-color: rgba(0, 21, 41, 0.95) !important;
-    border-color: rgba(30, 207, 255, 0.5) !important;
+  .el-select__selected-item {
+    color: #fff!important;
   }
 }
-
-/* 日期选择器下拉面板样式 */
-.el-picker__popper.el-popper.is-light {
-  background-color: rgba(0, 21, 41, 0.95) !important;
-  border: 1px solid rgba(30, 207, 255, 0.5) !important;
-  
-  .el-date-picker {
-    background-color: transparent !important;
-  }
-  
-  .el-date-table td {
-    color: #b6eaff !important;
-  }
-  
-  .el-date-table td.current:not(.disabled) .el-date-table-cell__text {
-    background-color: rgba(30, 207, 255, 0.7) !important;
-  }
-  
-  .el-date-table td.today .el-date-table-cell__text {
-    color: #1ecfff !important;
-  }
-  
-  .el-date-picker__header-label,
-  .el-picker-panel__icon-btn {
-    color: #b6eaff !important;
-  }
-  
-  .el-time-panel {
-    background-color: rgba(0, 21, 41, 0.95) !important;
-  }
-  
-  .el-time-spinner__item {
-    color: #b6eaff !important;
-  }
-  
-  .el-time-spinner__item.active:not(.disabled) {
-    color: #1ecfff !important;
-  }
-  
-  .el-popper__arrow::before {
-    background-color: rgba(0, 21, 41, 0.95) !important;
-    border-color: rgba(30, 207, 255, 0.5) !important;
-  }
-}
-}
-
 </style>
