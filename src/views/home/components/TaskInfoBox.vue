@@ -262,7 +262,8 @@ const fetchTimeAndNumber = async () => {
       page: 1,
       rows: 50,
     }
-    getJobBillTimeAndNumber(params).then((res) => {
+    if(res && res.rows && Array.isArray(res.rows)) {
+      getJobBillTimeAndNumber(params).then((res) => {
       const arr = []
       res.rows.forEach((item) => {
         if (item.wc_id == taskInfo.wc_id && item.order_no === taskInfo.order_no) {
@@ -279,6 +280,7 @@ const fetchTimeAndNumber = async () => {
 
       loading.value = false
     })
+    }
   } catch (error) {
     loading.value = false
     console.error('获取任务单信息失败:', error)
