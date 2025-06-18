@@ -93,13 +93,13 @@
         <div class="form-item" style="flex: 0 0 50%;">
             <label>员工:</label>
             <div class="input-with-search">
-            <el-input v-model="formData.employee" />
+            <el-input v-model="formData.employee"  placeholder="请选择" />
             <el-button class="search-btn" @click="handSearchPerson"><el-icon><Search /></el-icon></el-button>
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 50%;">
             <label>工号:</label>
-            <el-input v-model="formData.employeeId" />
+            <el-input v-model="formData.employeeId"  placeholder="请输入" />
         </div>
         </div>
     </div>
