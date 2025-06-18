@@ -90,10 +90,10 @@
         
         <!-- 第四行: 2个item -->
         <div class="form-row">
-        <div class="form-item" style="flex: 0 0 50%;">
+        <div class="form-item" style="flex: 0 0 50%;" @click="handSearchPerson">
             <label>员工:</label>
             <div class="input-with-search">
-            <el-input v-model="formData.employee"  placeholder="请选择" />
+            <el-input v-model="formData.employee" readonly placeholder="请选择" />
             <el-button class="search-btn" @click="handSearchPerson"><el-icon><Search /></el-icon></el-button>
             </div>
         </div>
@@ -387,11 +387,11 @@ formData.shiftCode = '002'
 :deep(.el-select),
 :deep(.el-date-editor) {
   background-color: rgba(0, 21, 41, 0.5);
-  border: 1px solid rgba(30, 207, 255, 0.5);
+  border: none !important; // 移除边框
   box-shadow: none !important;
   
   &.is-focus {
-    border-color: #1ecfff;
+    border: none !important; // 确保聚焦时也没有边框
   }
   
   .el-input__inner {
@@ -448,11 +448,26 @@ formData.shiftCode = '002'
 .report-form {
   .el-select__wrapper {
     background: #00162a !important;
+    border: none !important; // 移除边框
   }
-    // 添加这个样式确保选择框中的文字为白色
-    .el-select__selection {
-      color: #fff !important;
-    }
+  
+  // 添加这个样式确保选择框中的文字为白色
+  .el-select__selection {
+    color: #fff !important;
+  }
+  
+  // 移除输入框的边框和阴影
+  .el-input__wrapper {
+    border: none !important;
+    box-shadow: none !important;
+    background-color: rgba(0, 21, 41, 0.5) !important;
+  }
+  
+  // 移除日期选择器的边框和阴影
+  .el-date-editor .el-input__wrapper {
+    border: none !important;
+    box-shadow: none !important;
+  }
 .el-popper.is-light {
   background-color: rgba(0, 21, 41, 0.95) !important;
   border: 1px solid rgba(30, 207, 255, 0.5) !important;
