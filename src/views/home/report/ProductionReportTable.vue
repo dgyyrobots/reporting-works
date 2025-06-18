@@ -33,7 +33,7 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="上工时间" prop="startTime" min-width="150" align="center">
+    <el-table-column label="上工时间" prop="startTime" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
           v-model="row.startTime" 
@@ -45,7 +45,7 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="下工时间" prop="endTime" min-width="150" align="center">
+    <el-table-column label="下工时间" prop="endTime" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
           v-model="row.endTime" 
@@ -75,9 +75,15 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="上工操作时间" prop="operationTime" min-width="150" align="center">
+    <el-table-column label="上工操作时间" prop="operationTime" min-width="190" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.operationTime" placeholder="" />
+        <el-date-picker 
+          v-model="row.operationTime"
+          type="datetime" 
+          placeholder=""
+          format="YYYY-MM-DD HH:mm"
+          value-format="YYYY-MM-DD HH:mm"
+        />
       </template>
     </el-table-column>
     
@@ -87,9 +93,15 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="下工操作时间" prop="endOperationTime" min-width="150" align="center">
+    <el-table-column label="下工操作时间" prop="endOperationTime" min-width="190" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.endOperationTime" placeholder="" />
+        <el-date-picker 
+          v-model="row.endOperationTime"
+          type="datetime" 
+          placeholder=""
+          format="YYYY-MM-DD HH:mm"
+          value-format="YYYY-MM-DD HH:mm"
+        />
       </template>
     </el-table-column>
     
