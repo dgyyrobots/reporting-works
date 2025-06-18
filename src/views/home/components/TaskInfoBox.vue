@@ -1,10 +1,10 @@
 <template>
-  <Card class="task-info-box" title="任务单信息">
+  <Card class="task-info-box" title="任务单信息" :show-empty="!loading && (!taskInfo.bill_no || taskInfo.bill_no === '')">
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
       <span>加载中...</span>
     </div>
-    <div v-else class="info-list">
+    <div v-else-if="taskInfo.bill_no && taskInfo.bill_no !== ''" class="info-list">
       <div class="row">
         <span class="label">生产工单：</span>
         <span class="value">
@@ -13,6 +13,8 @@
         </span>
         <!-- <span  class="normal">[{{ taskInfo.billNo || '--' }}]</span> -->
       </div>
+      
+      <!-- 其他信息行保持不变 -->
       <div class="row">
         <span class="label">工&nbsp;&nbsp;&nbsp;&nbsp;序：</span>
         <span class="value">{{ taskInfo.wp_name || '--' }} / {{ taskInfo.prodesc || '--' }}</span>
@@ -40,13 +42,15 @@
         <span class="value">{{ taskInfo.over_time || '0.00' }} (小时)</span>
       </div>
     </div>
-    <div class="progress-row">
+    
+    <div v-if="taskInfo.bill_no && taskInfo.bill_no !== ''" class="progress-row">
       <div class="progress-bar-bg">
         <div class="progress-bar" :style="{ width: `${progressPercent}%` }"></div>
       </div>
       <span class="progress-percent">{{ progressPercent }}%</span>
     </div>
-    <div class="footer">
+    
+    <div v-if="taskInfo.bill_no && taskInfo.bill_no !== ''" class="footer">
       <span class="done">
         已完成：
         <span class="done-num">{{ taskInfo.exe_uqty }}</span>

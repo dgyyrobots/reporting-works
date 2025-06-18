@@ -1,6 +1,10 @@
 <template>
-  <Card class="StaffInfo" content-padding="6px 0" :title="title">
-    <div class="staff-list">
+  <Card class="StaffInfo" content-padding="6px 0" :title="title" :show-empty="!loading && (!tableData.length || tableData.length === 0)">
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <span>加载中...</span>
+    </div>
+    <div v-else-if="tableData.length > 0" class="staff-list">
       <div v-for="(row, index) in tableData" :key="index" class="staff-item">
         <div class="avatar">
           <img :src="headSvg" alt="头像" />
@@ -47,6 +51,8 @@ const tableData = ref([])
 const title = ref('员工信息')
 // 添加定时器变量
 let dataRefreshTimer = null
+// 添加加载状态
+const loading = ref(false)
 
 // 设置定时刷新数据
 const setupDataRefreshTimer = () => {
@@ -66,12 +72,16 @@ const setupDataRefreshTimer = () => {
 }
 
 const initData = () => {
+  // 显示加载状态
+  loading.value = true
+  
   const device = props.currentDevice
   const currentWorkcenter = props.currentWorkcenter
   
   // 添加有效性检查
   if (!device || !device.id || !currentWorkcenter || !currentWorkcenter.id) {
     console.warn('设备ID或工作中心ID不存在，无法获取员工信息')
+    loading.value = false
     return
   }
   
@@ -94,8 +104,11 @@ const initData = () => {
         tableData.value.push([name, number, classtype_name, status])
       })
     }
+    loading.value = false
   }).catch(error => {
     console.error('获取员工信息失败:', error)
+    tableData.value = []
+    loading.value = false
   })
 }
 
@@ -227,6 +240,31 @@ onUnmounted(() => {
     &.status-offline {
       background: rgba(153, 153, 153, 0.2);
       color: #999999;
+    }
+  }
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    color: #1ecfff;
+  }
+
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(30, 207, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #1ecfff;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
     }
   }
 }

@@ -1,6 +1,10 @@
 <template>
-  <Card class="EquipmentHistory" title="设备运行历史">
-    <div ref="chartRef" class="chart-container"></div>
+  <Card class="EquipmentHistory" title="设备运行历史" :show-empty="!loading && (!list.length || list.length === 0)">
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <span>加载中...</span>
+    </div>
+    <div v-else-if="list.length > 0" ref="chartRef" class="chart-container"></div>
   </Card>
 </template>
 
@@ -25,6 +29,7 @@ const chartRef = ref(null)
 const list = ref([])
 let chart = null
 let dataRefreshTimer = null // 添加定时器变量
+const loading = ref(false) // 添加加载状态
 
 // 处理接口返回的数据，转换为图表所需格式
 const processChartData = (data) => {
@@ -251,9 +256,13 @@ const formatDateTime = (timestamp) => {
 }
 
 const initData = () => {
+  // 显示加载状态
+  loading.value = true
+  
   // 检查 currentDevice 是否有效
   if (!props.currentDevice || !props.currentDevice.number) {
     console.warn('当前设备信息不完整，无法获取设备运行历史')
+    loading.value = false
     return
   }
   
@@ -278,20 +287,24 @@ const initData = () => {
       initChart(chartData)
     } else {
       // 没有数据时显示空图表
+      list.value = []
       initChart({
         xAxisData: [],
         quantityData: [],
         speedData: []
       })
     }
+    loading.value = false
   }).catch(error => {
     console.error('获取设备输出数据失败:', error)
     // 错误时显示空图表
+    list.value = []
     initChart({
       xAxisData: [],
       quantityData: [],
       speedData: []
     })
+    loading.value = false
   })
 }
 
@@ -366,17 +379,30 @@ onUnmounted(() => {
     height: 100%;
     position: relative;
   }
-  .no-data {
-    width: 100%;
-    height: 100%;
+  
+  .loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    color: #999;
-    gap: 10px;
+    height: 100px;
+    color: #1ecfff;
+  }
+
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(30, 207, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #1ecfff;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
-
 </style>
