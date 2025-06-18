@@ -71,8 +71,8 @@ const headerCellStyle = {
   color: '#b6eaff',
   borderColor: 'rgba(30, 207, 255, 0.5)',
   fontWeight: '500',
-  padding: '8px 6px',
-  fontSize: '14px'
+  padding: '3px 5px',
+  fontSize: '14px',
 }
 
 // 单元格样式
@@ -80,7 +80,7 @@ const cellStyle = {
   backgroundColor: 'rgba(0, 21, 41, 0.95)',
   borderColor: 'rgba(30, 207, 255, 0.5)',
   color: '#fff',
-  padding: '4px 6px'
+  padding: '3px 5px',
 }
 
 // 添加行

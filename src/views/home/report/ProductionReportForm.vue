@@ -286,11 +286,6 @@ const initDevice = () => {
   }
   getWorkcenterDeviceList(data).then((res) => {
     deviceList.value = res.rows
-    loading.value = false 
-  }).catch((error) => {
-    loading.value = false 
-  }).finally(() => {
-    loading.value = false // 结束加载
   })
   
 }

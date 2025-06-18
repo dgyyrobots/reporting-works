@@ -15,8 +15,14 @@
     </el-table-column>
     
     <el-table-column label="物料名称" prop="materialName" min-width="150" align="center">
+      <template #header>
+        <div class="column-header-with-icon">
+          <span>物料名称</span>
+          <span @click="openScanDialog"><Icon icon="svg-icon:scan" class="expand-icon" /></span>     
+        </div>
+      </template>
       <template #default="{ row }">
-        <el-input v-model="row.materialName" placeholder="" />
+        <el-input v-model="row.materialName" placeholder="输入编码/名称查询" />
       </template>
     </el-table-column>
     
@@ -106,12 +112,15 @@
       </template>
     </el-table-column>
   </BaseTable>
+    <!-- 添加扫码对话框组件 -->
+  <ScanBarcodeDialog ref="scanBarcodeDialogRef" />
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { Icon } from '/@/components/Icon'
 import BaseTable from './components/BaseTable.vue'
+import ScanBarcodeDialog from './components/ScanBarcodeDialog.vue'
 
 // 空行模板
 const emptyRowTemplate = {
@@ -152,6 +161,14 @@ const handleDeleteRow = (index) => {
   }
 }
 
+// 扫码对话框引用
+const scanBarcodeDialogRef = ref(null)
+
+// 打开扫码对话框
+const openScanDialog = () => {
+  scanBarcodeDialogRef.value.open()
+}
+
 // 暴露表格数据给父组件
 defineExpose({
   tableData
@@ -178,6 +195,25 @@ defineExpose({
     &:hover {
       background-color: rgba(30, 207, 255, 0.1);
     }
+  }
+}
+
+// 添加列标题样式
+.column-header-with-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  span {
+    display: flex;
+    align-items: center;
+  }
+  
+  .expand-icon {
+    margin-left: 5px;
+    color: #1ecfff;
+    font-size: 16px;
+    cursor: pointer;
   }
 }
 
@@ -210,3 +246,4 @@ defineExpose({
   }
 }
 </style>
+

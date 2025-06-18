@@ -1,0 +1,436 @@
+<template>
+  <el-dialog
+    v-model="visible"
+    title="所有"
+    width="1200px"
+    :close-on-click-modal="false"
+    class="material-select-dialog"
+    :before-close="handleClose"
+  >
+    <div class="dialog-header">
+      <div class="filter-row">
+        <el-select v-model="filterType" placeholder="全部分类" class="filter-select">
+          <el-option label="全部分类" value="all" />
+          <el-option label="原材料" value="raw" />
+          <el-option label="成品" value="finished" />
+        </el-select>
+        
+        <el-select v-model="filterArea" placeholder="全部区域" class="filter-select">
+          <el-option label="全部区域" value="all" />
+          <el-option label="仓库A" value="warehouseA" />
+          <el-option label="仓库B" value="warehouseB" />
+        </el-select>
+        
+        <div class="search-input">
+          <el-input v-model="searchKeyword" placeholder="名称/编码/条码/型号/规格/物料型号" />
+          <el-checkbox v-model="exactMatch">是否精确搜索</el-checkbox>
+        </div>
+        
+        <div class="action-buttons">
+          <el-button class="search-btn">筛选</el-button>
+          <el-button class="reset-btn">重置</el-button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="table-container">
+      <el-table
+        ref="tableRef"
+        :data="tableData"
+        border
+        style="width: 100%"
+        height="400"
+        class="cyber-table"
+        @selection-change="handleSelectionChange"
+        @row-click="handleRowClick"
+      >
+        <el-table-column type="selection" width="50" align="center" :reserve-selection="false" />
+        <el-table-column label="图片" width="80" align="center">
+          <template #default>
+            <div class="image-placeholder"></div>
+          </template>
+        </el-table-column>
+        <el-table-column label="名称" min-width="250" align="left" prop="name" show-overflow-tooltip />
+        <el-table-column label="规格型号" min-width="120" align="center" prop="spec" show-overflow-tooltip />
+        <el-table-column label="单价" width="100" align="center" prop="price" />
+        <el-table-column label="单位" width="80" align="center" prop="unit" />
+      </el-table>
+      
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[50, 100, 200]"
+          layout="sizes, prev, pager, next, jumper, total"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+    </div>
+    
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleConfirm">保存</el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+
+<script setup>
+import { ref, reactive, nextTick } from 'vue'
+
+const visible = ref(false)
+const filterType = ref('all')
+const filterArea = ref('all')
+const searchKeyword = ref('')
+const exactMatch = ref(false)
+const currentPage = ref(1)
+const pageSize = ref(50)
+const total = ref(1259)
+const selectedRows = ref([])
+const tableRef = ref(null)
+const currentSelectedRow = ref(null)
+
+// 模拟表格数据
+const tableData = reactive([
+  {
+    id: '101A001010T0001',
+    name: '白沙（崇新标品二代）茶盒包装纸',
+    spec: '373.5*295mm',
+    price: '0.00',
+    unit: '张'
+  },
+  {
+    id: '101A001010X0001',
+    name: '白沙（崇新标品二代）盒包装纸',
+    spec: '249*98mm',
+    price: '0.00',
+    unit: '张'
+  },
+  {
+    id: '101A001020T0001',
+    name: '宝岛条盒（2016版）',
+    spec: '372.5*293mm',
+    price: '0.00',
+    unit: '张'
+  },
+  {
+    id: '101A001020X0001',
+    name: '宝岛细标（2016版）',
+    spec: '244.03*98mm',
+    price: '0.00',
+    unit: '张'
+  },
+  {
+    id: '101A001030T0001',
+    name: '多山香烟（和谐）条盒',
+    spec: '273*330mm',
+    price: '0.00',
+    unit: '张'
+  },
+  {
+    id: '101A001030X0001',
+    name: '多山香烟（和谐）小盒',
+    spec: '260.3*77mm',
+    price: '0.00',
+    unit: '张'
+  },
+  {
+    id: '101A001040T0001',
+    name: '风格（蓝色印象）条包装纸',
+    spec: '373.5*292.9mm',
+    price: '0.00',
+    unit: '张'
+  }
+])
+
+// 打开对话框
+const open = () => {
+  visible.value = true
+  // 清空选择
+  clearSelection()
+}
+
+// 关闭对话框
+const handleClose = () => {
+  visible.value = false
+  // 清空选择
+  clearSelection()
+}
+
+// 取消选择
+const handleCancel = () => {
+  handleClose()
+}
+
+// 确认选择
+const handleConfirm = () => {
+  if (selectedRows.value.length > 0) {
+    // 这里可以添加确认逻辑，例如将选中的数据传递给父组件
+    console.log('选中的数据:', selectedRows.value[0])
+  }
+  handleClose()
+}
+
+// 清空选择
+const clearSelection = () => {
+  selectedRows.value = []
+  currentSelectedRow.value = null
+  nextTick(() => {
+    if (tableRef.value) {
+      tableRef.value.clearSelection()
+    }
+  })
+}
+
+// 选择变更
+const handleSelectionChange = (selection) => {
+  if (selection.length > 1) {
+    // 如果选择了多行，只保留最后一个选择的行
+    const lastSelected = selection[selection.length - 1]
+    
+    // 清除之前的选择，只保留当前选择的行
+    nextTick(() => {
+      tableRef.value.clearSelection()
+      tableRef.value.toggleRowSelection(lastSelected, true)
+      selectedRows.value = [lastSelected]
+      currentSelectedRow.value = lastSelected
+    })
+  } else {
+    selectedRows.value = selection
+    currentSelectedRow.value = selection.length > 0 ? selection[0] : null
+  }
+}
+
+// 行点击事件
+const handleRowClick = (row, column, event) => {
+  // 如果点击的是选择框列，不做处理（让选择框自己处理）
+  if (column.type === 'selection') {
+    return
+  }
+  
+  // 如果当前行已选中，则取消选择
+  if (currentSelectedRow.value === row) {
+    tableRef.value.toggleRowSelection(row, false)
+    currentSelectedRow.value = null
+    selectedRows.value = []
+  } else {
+    // 如果有其他行已选中，先清除所有选择
+    tableRef.value.clearSelection()
+    // 然后选中当前行
+    tableRef.value.toggleRowSelection(row, true)
+    currentSelectedRow.value = row
+    selectedRows.value = [row]
+  }
+}
+
+// 页码变更
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+  // 切换页面时清除选择
+  clearSelection()
+}
+
+// 每页数量变更
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  // 切换页面大小时清除选择
+  clearSelection()
+}
+
+// 暴露方法给父组件
+defineExpose({
+  open,
+  getSelectedRow: () => selectedRows.value[0] || null
+})
+</script>
+
+<style lang="scss" scoped>
+.material-select-dialog {
+  :deep(.el-dialog__header) {
+    background-color: rgba(30, 207, 255, 0.1);
+    margin: 0;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(30, 207, 255, 0.5);
+    
+    .el-dialog__title {
+      color: #b6eaff;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .el-dialog__headerbtn {
+      top: 15px;
+      
+      .el-dialog__close {
+        color: #b6eaff;
+      }
+    }
+  }
+  
+  :deep(.el-dialog__body) {
+    background-color: rgba(0, 21, 41, 0.95);
+    padding: 0;
+    color: #fff;
+  }
+  
+  :deep(.el-dialog__footer) {
+    background-color: rgba(0, 21, 41, 0.95);
+    padding: 10px 20px;
+    border-top: 1px solid rgba(30, 207, 255, 0.3);
+  }
+}
+
+.dialog-header {
+  padding: 15px;
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  .filter-select {
+    width: 150px;
+  }
+  
+  .search-input {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    
+    .el-input {
+      flex: 1;
+      margin-right: 10px;
+    }
+    
+    .el-checkbox {
+      margin-left: 10px;
+      color: #b6eaff;
+    }
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    
+    .search-btn {
+      background-color: #1ecfff;
+      border-color: #1ecfff;
+      color: #001529;
+      
+      &:hover {
+        background-color: #33d4ff;
+        border-color: #33d4ff;
+      }
+    }
+    
+    .reset-btn {
+      background-color: transparent;
+      border-color: #1ecfff;
+      color: #1ecfff;
+      
+      &:hover {
+        background-color: rgba(30, 207, 255, 0.1);
+      }
+    }
+  }
+}
+
+.table-container {
+  padding: 15px;
+}
+
+.cyber-table {
+  --el-table-border-color: rgba(30, 207, 255, 0.5);
+  --el-table-header-bg-color: rgba(30, 207, 255, 0.1);
+  --el-table-bg-color: rgba(0, 21, 41, 0.95);
+  --el-table-tr-bg-color: rgba(0, 21, 41, 0.95);
+  --el-table-row-hover-bg-color: rgba(30, 207, 255, 0.05);
+  --el-table-header-text-color: #b6eaff;
+  --el-table-text-color: #fff;
+  
+  :deep(.el-table__inner-wrapper) {
+    border: 1px solid rgba(30, 207, 255, 0.5);
+  }
+  
+  :deep(.el-checkbox__inner) {
+    background-color: transparent;
+    border-color: rgba(30, 207, 255, 0.7);
+  }
+  
+  :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+    background-color: #1ecfff;
+    border-color: #1ecfff;
+  }
+}
+
+.image-placeholder {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 0 auto;
+}
+
+.pagination-container {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  
+  :deep(.el-pagination) {
+    --el-pagination-bg-color: transparent;
+    --el-pagination-text-color: #b6eaff;
+    --el-pagination-button-color: #b6eaff;
+    --el-pagination-button-bg-color: transparent;
+    --el-pagination-button-disabled-color: rgba(182, 234, 255, 0.5);
+    --el-pagination-button-disabled-bg-color: transparent;
+    --el-pagination-hover-color: #1ecfff;
+    
+    .el-pagination__sizes .el-select .el-input {
+      --el-select-input-color: #b6eaff;
+      --el-select-input-focus-border-color: #1ecfff;
+    }
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  
+  .el-button {
+    padding: 8px 20px;
+  }
+}
+
+:deep(.el-select) {
+  --el-select-input-color: #b6eaff;
+  --el-select-input-focus-border-color: #1ecfff;
+  
+  .el-input__wrapper {
+    background-color: rgba(0, 21, 41, 0.5);
+    box-shadow: 0 0 0 1px rgba(30, 207, 255, 0.5) inset;
+    
+    &.is-focus {
+      box-shadow: 0 0 0 1px #1ecfff inset;
+    }
+  }
+}
+
+:deep(.el-input__wrapper) {
+  background-color: rgba(0, 21, 41, 0.5);
+  box-shadow: 0 0 0 1px rgba(30, 207, 255, 0.5) inset;
+  
+  &.is-focus {
+    box-shadow: 0 0 0 1px #1ecfff inset;
+  }
+  
+  .el-input__inner {
+    color: #b6eaff;
+  }
+}
+</style>
