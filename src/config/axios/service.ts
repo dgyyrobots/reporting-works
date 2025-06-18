@@ -103,6 +103,25 @@ service.interceptors.response.use(
       // 返回“[HTTP]请求没有返回值”；
       throw new Error()
     }
+    if (data.ret && data.ret === 9999) {
+      resetRouter(); // 重置静态路由表
+      removeToken(); // 移除token
+      const { wsCache } = useCache();
+
+      // 清除相关缓存
+      const keysToRemove = [
+        CACHE_KEY.USER,
+        CACHE_KEY.ROLE_ROUTERS,
+        'ACCESS_TOKEN',
+        'REFRESH_TOKEN',
+        'TENANT_ID'
+      ];
+      keysToRemove.forEach(key => wsCache.delete(key));
+
+      // 跳转到登录页面
+      window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+      return Promise.reject('登录已过期，请重新登录');
+    }
     const { t } = useI18n()
     // 未设置状态码则默认成功状态
     const code = data.code || result_code

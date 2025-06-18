@@ -254,3 +254,12 @@ export const getPicker = async (data: any) => {
         data,
     })
 }
+
+// 查询所有工序的接口
+export const getAllProcess = async (params: any) => {
+    return await request.get({
+        url: '/mes/ajax/mes_jobbill/action:mes_get_wp_info',
+        params,
+    })
+}
+

@@ -262,25 +262,26 @@ const fetchTimeAndNumber = async () => {
       page: 1,
       rows: 50,
     }
-    if(res && res.rows && Array.isArray(res.rows)) {
-      getJobBillTimeAndNumber(params).then((res) => {
-      const arr = []
-      res.rows.forEach((item) => {
-        if (item.wc_id == taskInfo.wc_id && item.order_no === taskInfo.order_no) {
-          arr.push(item)
-        }
-      })
-      if (arr.length > 0) {
-        taskInfo.act_start_time = formatDateTime(arr[0].act_start_time)
-        taskInfo.act_end_time = formatDateTime(arr[0].act_end_time)
-        taskInfo.uqty = toInteger(arr[0].uqty)
-        taskInfo.exe_uqty = toInteger(arr[0].exe_uqty)
-        taskInfo.remainQty = (arr[0].uqty || 0) - (arr[0].exe_uqty || 0)
-      }
 
+      getJobBillTimeAndNumber(params).then((res) => {
+      if(res && res.rows && Array.isArray(res.rows)) {
+        const arr = []
+        res.rows.forEach((item) => {
+          if (item.wc_id == taskInfo.wc_id && item.order_no === taskInfo.order_no) {
+            arr.push(item)
+          }
+        })
+        if (arr.length > 0) {
+          taskInfo.act_start_time = formatDateTime(arr[0].act_start_time)
+          taskInfo.act_end_time = formatDateTime(arr[0].act_end_time)
+          taskInfo.uqty = toInteger(arr[0].uqty)
+          taskInfo.exe_uqty = toInteger(arr[0].exe_uqty)
+          taskInfo.remainQty = (arr[0].uqty || 0) - (arr[0].exe_uqty || 0)
+        }
+      }
       loading.value = false
     })
-    }
+ 
   } catch (error) {
     loading.value = false
     console.error('获取任务单信息失败:', error)

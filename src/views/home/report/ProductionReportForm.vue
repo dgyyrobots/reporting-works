@@ -16,12 +16,12 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>工作中心: <span class="required">*</span></label>
             <div class="input-with-search">
-            <el-input v-model="formData.workCenter" placeholder="双张机组" />
+            <el-input v-model="formData.wc_name" placeholder="请输入" />
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>工作中心编码:</label>
-            <el-input v-model="formData.workCenterCode" placeholder="15" />
+            <el-input v-model="formData.wc_number" placeholder="请输入" />
         </div>
         </div>
         
@@ -30,24 +30,24 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>工序: <span class="required">*</span></label>
             <div class="input-with-search">
-            <el-select v-model="formData.process" placeholder="请选择">
-                <el-option label="昆明" value="昆明" />
+            <el-select v-model="formData.wp_name" filterable  placeholder="请选择">
+                <el-option v-for="(item,i) in processList" :key="item.id" :label="item.name" :value="item.name" />
             </el-select>
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>工序编码:</label>
-            <el-input v-model="formData.processCode" placeholder="012" />
+            <el-input v-model="formData.wp_number" placeholder="请输入" />
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>设备:</label>
             <div class="input-with-search">
-            <el-input v-model="formData.equipment" placeholder="BOBST自动烫金机" />
+            <el-input v-model="formData.device_name" placeholder="请输入" />
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>设备编码:</label>
-            <el-input v-model="formData.equipmentCode" placeholder="TD1#" />
+            <el-input v-model="formData.device_number" placeholder="请输入" />
         </div>
         </div>
         
@@ -56,14 +56,15 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>班次: <span class="required">*</span></label>
             <div class="input-with-search">
-            <el-select v-model="formData.shift" placeholder="请选择">
-                <el-option label="晚班" value="晚班" />
+            <el-select v-model="formData.shiftCode" placeholder="请选择">
+                <el-option label="白班" value="001" />
+                <el-option label="晚班" value="002" />
             </el-select>
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>班次编码:</label>
-            <el-input v-model="formData.shiftCode" placeholder="002" />
+            <el-input v-model="formData.shiftCode" placeholder="请输入" />
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>开始时间:</label>
@@ -113,24 +114,28 @@
 </template>
 
 <script setup>
-import { reactive,ref } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import ChoosePerson from './components/ChoosePerson.vue'
+import {getAllProcess } from '@/api/mes/wk/index.ts'
+import { useWorkStore } from '@/store/modules/work'
 
+const workStore = useWorkStore()
 const isExpanded = ref(true)
 const choosePersonRef = ref(null)
+const processList = ref([])
 const formData = reactive({
   reportDate: new Date().toISOString().split('T')[0], // 今天日期
-  workCenter: '双张机组',
-  workCenterCode: '15',
-  process: '昆明',
-  processCode: '012',
-  equipment: 'BOBST自动烫金机',
-  equipmentCode: 'TD1#',
-  shift: '晚班',
-  shiftCode: '002',
-  startTime: '2025-06-10 19:30',
-  endTime: '2025-06-11 11:52',
+  wc_name: '',
+  wc_number: '',
+  wp_name: '',
+  wp_number: '',
+  device_name: '',
+  device_number: '',
+  shiftName: '',
+  shiftCode: '',
+  startTime: '',
+  endTime: '',
   employee: '',
   employeeId: ''
 })
@@ -154,9 +159,138 @@ const handlePersonConfirm = (selectedPerson) => {
     formData.employeeId = idArr.join(',')
   }
 }
+const initProcessList = async () => {
+  const params = {
+    _: Date.now()
+  }
+  const res = await getAllProcess(params)
+  console.log(res,'11111111111')
+  processList.value = res
+  console.log(processList.value,'222222222222')
+  const storeTaskInfo = workStore.getTaskInfo
+  console.log(storeTaskInfo,'3333333333333333333333')
+  processList.value.map(item=>{
+    if(item.name == storeTaskInfo.wp_name){
+      formData.wp_name = item.name 
+      formData.wp_number = item.number
+    }
+  })
+}
+const initData = () => {
+  const storeTaskInfo = workStore.getTaskInfo 
+  formData.wc_name = storeTaskInfo.wc_name
+  formData.wc_number = storeTaskInfo.wc_number 
+  formData.device_name = storeTaskInfo.company_name[0].name
+  formData.device_number = storeTaskInfo.company_name[0].number
+  
+  // 获取当前班次信息
+  const shiftInfo = getShiftDateRange()
+  formData.shiftName = shiftInfo.shiftName
+  formData.shiftCode = shiftInfo.shiftName === '白班' ? '001' : '002'
+  
+  // 获取当前时间
+  const now = new Date()
+  const currentTime = formatDateTime(now)
+  
+  // 根据班次设置开始和结束时间
+  if (shiftInfo.shiftName === '白班') {
+    // 白班: 当天 7:30 到当前时间
+    const today = formatDate(now)
+    formData.startTime = `${today} 07:30`
+    formData.endTime = currentTime
+  } else {
+    // 晚班: 昨天 19:30 到当前时间
+    const yesterday = new Date(now)
+    yesterday.setDate(now.getDate() - 1)
+    const yesterdayStr = formatDate(yesterday)
+    formData.startTime = `${yesterdayStr} 19:30`
+    formData.endTime = currentTime
+  }
+
+  console.log(shiftInfo, 'getShiftDateRange()')
+}
+
+// 格式化日期为 YYYY-MM-DD
+const formatDate = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// 格式化日期时间为 YYYY-MM-DD HH:mm
+const formatDateTime = (date) => {
+  const dateStr = formatDate(date)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${dateStr} ${hours}:${minutes}`
+}
+
+// 判断班次并返回日期范围
+const getShiftDateRange = () => {
+  const now = new Date()
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+  
+  // 判断是否是白班（7:30 - 19:30）
+  const isDayShift = (currentHour > 7 || (currentHour === 7 && currentMinute >= 30)) && 
+                     (currentHour < 19 || (currentHour === 19 && currentMinute < 30))
+  
+  // 获取当前日期的年月日字符串
+  const formatDate = (date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  
+  const today = formatDate(now)
+  
+  // 获取明天的日期
+  const tomorrow = new Date(now)
+  tomorrow.setDate(now.getDate() + 1)
+  const tomorrowStr = formatDate(tomorrow)
+  
+  // 如果是白班，返回今天的开始和结束日期
+  // 如果是晚班，返回今天的开始日期和明天的结束日期
+  return {
+    isDay: isDayShift,
+    shiftName: isDayShift ? '白班' : '晚班',
+    start: today,
+    end: isDayShift ? today : tomorrowStr
+  }
+}
+onMounted(() => {
+  initData()
+  initProcessList()
+})
+
 // 暴露表单数据给父组件
 defineExpose({
   formData
+})
+// 添加对班次变化的监听
+watch(() => formData.shiftCode, (newShiftCode) => {
+// 获取当前时间
+const now = new Date()
+const currentTime = formatDateTime(now)
+
+// 根据班次设置开始和结束时间
+if (newShiftCode === '001') {
+// 白班: 当天 7:30 到当前时间
+const today = formatDate(now)
+formData.startTime = `${today} 07:30`
+formData.endTime = currentTime
+formData.shiftCode = '001'
+} else {
+// 晚班: 昨天 19:30 到当前时间
+const yesterday = new Date(now)
+yesterday.setDate(now.getDate() - 1)
+const yesterdayStr = formatDate(yesterday)
+formData.startTime = `${yesterdayStr} 19:30`
+formData.endTime = currentTime
+formData.shiftCode = '002'
+}
 })
 </script>
 
@@ -315,6 +449,10 @@ defineExpose({
   .el-select__wrapper {
     background: #00162a !important;
   }
+    // 添加这个样式确保选择框中的文字为白色
+    .el-select__selection {
+      color: #fff !important;
+    }
 .el-popper.is-light {
   background-color: rgba(0, 21, 41, 0.95) !important;
   border: 1px solid rgba(30, 207, 255, 0.5) !important;
