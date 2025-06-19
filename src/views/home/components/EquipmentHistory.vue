@@ -277,7 +277,6 @@ const initData = () => {
   
   getDeviceOutput(params).then((res) => {
     if (res && Array.isArray(res) && res.length > 0) {
-      console.log('获取设备输出数据成功:', res)
       // 处理时间格式
       res.forEach(item => {
         if (item.createTime) {
@@ -322,7 +321,6 @@ const setupDataRefreshTimer = () => {
   
   // 设置新的定时器，每30分钟执行一次
   dataRefreshTimer = setInterval(() => {
-    console.log('定时刷新设备运行历史数据')
     if (props.currentDevice && props.currentDevice.number) {
       initData()
     }

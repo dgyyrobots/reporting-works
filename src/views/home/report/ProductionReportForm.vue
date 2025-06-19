@@ -162,7 +162,6 @@ const handSearchPerson = () => {
   choosePersonRef.value.open()
 }
 const handlePersonConfirm = (selectedPerson) => {
-  console.log('选中的人员:', selectedPerson)
   if(selectedPerson.length>0){
     let nameArr = []
     let idArr = []
@@ -179,11 +178,11 @@ const initProcessList = async () => {
     _: Date.now()
   }
   const res = await getAllProcess(params)
-  console.log(res,'11111111111')
+
   processList.value = res
-  console.log(processList.value,'222222222222')
+
   const storeTaskInfo = workStore.getTaskInfo
-  console.log(storeTaskInfo,'3333333333333333333333')
+
   processList.value.map(item=>{
     if(item.name == storeTaskInfo.wp_name){
       formData.wp_name = item.name 
@@ -224,7 +223,7 @@ const initData = () => {
     formData.endTime = currentTime
   }
 
-  console.log(shiftInfo, 'getShiftDateRange()')
+
 }
 
 // 格式化日期为 YYYY-MM-DD
