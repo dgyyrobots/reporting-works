@@ -7,11 +7,7 @@
   >
     <el-table-column label="类型" prop="type" min-width="100" align="center">
       <template #default="{ row }">
-        <el-select v-model="row.type" placeholder="请选择类型">
-          <el-option label="生产" value="production" />
-          <el-option label="维修" value="maintenance" />
-          <el-option label="调试" value="debugging" />
-        </el-select>
+        <el-input v-model="row.type" placeholder="" />
       </template>
     </el-table-column>
     

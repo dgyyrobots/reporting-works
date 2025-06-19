@@ -268,3 +268,11 @@ export const getSkuList = async (params: any) => {
         params,
     })
 }
+
+// 搜索上下工人员
+export const getPagePicker = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/ajax/userpicker/page_userpicker',
+        data,
+    })
+}

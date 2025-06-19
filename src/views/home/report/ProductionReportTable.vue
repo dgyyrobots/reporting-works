@@ -168,7 +168,7 @@ const currentOperationType = ref('')
 const handSearchPerson = (row) => {
   currentEditingRow.value = row
   currentOperationType.value = 'emp_name'
-  choosePersonRef.value.open([], true) // 传递 isSingleMode: true
+  choosePersonRef.value.open([], false) // 传递 isSingleMode: true
 }
 
 // 处理人员选择确认
@@ -177,9 +177,18 @@ const handlePersonConfirm = (selectedPerson) => {
   if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
     switch (currentOperationType.value) {
       case 'emp_name':
-        currentEditingRow.value.emp_name = selectedPerson[0].name
-        currentEditingRow.value.emp_number = selectedPerson[0].number
-        currentEditingRow.value.emp_id = selectedPerson[0].id
+        
+      const nameArr=[]
+      const numberArr=[]
+      const idArr=[]
+      selectedPerson.map(item=>{
+        nameArr.push(item.name)
+        numberArr.push(item.number)
+        idArr.push(item.id)
+      })
+        currentEditingRow.value.emp_name = nameArr.join(',')
+        currentEditingRow.value.emp_number = numberArr.join(',')
+        currentEditingRow.value.emp_id = idArr.join(',')
         break
       case 'start_operator_name':
         currentEditingRow.value.start_operator_name = selectedPerson[0].name
