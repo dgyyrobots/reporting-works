@@ -196,9 +196,9 @@ const initData = () => {
   formData.wc_name =props.currentWorkcenter.name ||  storeTaskInfo.wc_name
   formData.wc_number =props.currentWorkcenter.number ||  storeTaskInfo.wc_number
   const deviceName = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].name : ''
-  formData.device_name =  deviceName  || props.currentDevice.name
+  formData.device_name = props.currentDevice.name || deviceName 
   const deviceNumber = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].number : ''
-  formData.device_number = deviceNumber  || props.currentDevice.number
+  formData.device_number = props.currentDevice.number ||deviceNumber
   
   // 获取当前班次信息
   const shiftInfo = getShiftDateRange()
@@ -289,16 +289,25 @@ const initDevice = () => {
   })
   
 }
-onMounted(() => {
+const refreshAllData = () => {
   initDevice()
   initData()
-  initProcessList()
-})
+  initProcessList() 
+}
+// 监听 workStore.getTaskInfo 的变化
 
-// 暴露表单数据给父组件
-defineExpose({
-  formData
-})
+watch(() => workStore.getTaskInfo, (newTaskInfo, oldTaskInfo) => {
+  if (newTaskInfo && JSON.stringify(newTaskInfo) !== JSON.stringify(oldTaskInfo)) {
+    refreshAllData()
+  }
+}, { deep: true })
+
+watch(() => props.currentDevice, (newDevice, oldDevice) => {
+  // 检查设备是否变化且有效
+  if (newDevice) {
+    initData()
+  }
+}, { deep: true })
 // 添加对班次变化的监听
 watch(() => formData.shiftCode, (newShiftCode) => {
 // 获取当前时间
@@ -308,20 +317,29 @@ const currentTime = formatDateTime(now)
 // 根据班次设置开始和结束时间
 if (newShiftCode === '001') {
 // 白班: 当天 7:30 到当前时间
-const today = formatDate(now)
-formData.startTime = `${today} 07:30`
-formData.endTime = currentTime
-formData.shiftCode = '001'
-} else {
-// 晚班: 昨天 19:30 到当前时间
-const yesterday = new Date(now)
-yesterday.setDate(now.getDate() - 1)
-const yesterdayStr = formatDate(yesterday)
-formData.startTime = `${yesterdayStr} 19:30`
-formData.endTime = currentTime
-formData.shiftCode = '002'
-}
+  const today = formatDate(now)
+  formData.startTime = `${today} 07:30`
+  formData.endTime = currentTime
+  formData.shiftCode = '001'
+  } else {
+  // 晚班: 昨天 19:30 到当前时间
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+  const yesterdayStr = formatDate(yesterday)
+  formData.startTime = `${yesterdayStr} 19:30`
+  formData.endTime = currentTime
+  formData.shiftCode = '002'
+  }
 })
+onMounted(() => {
+  refreshAllData()
+})
+
+// 暴露表单数据给父组件
+defineExpose({
+  formData
+})
+
 </script>
 
 <style lang="scss" scoped>

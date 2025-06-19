@@ -262,4 +262,9 @@ export const getAllProcess = async (params: any) => {
         params,
     })
 }
-
+export const getSkuList = async (params: any) => {
+    return await request.get({
+        url: '/erp/api/erp_product/action:get_sku_list',
+        params,
+    })
+}

@@ -28,7 +28,8 @@
         </div>
         
         <div class="action-buttons">
-          <el-button class="reset-btn">重置</el-button>
+          <el-button class="reset-btn" @click="handReset">重置</el-button>
+          <el-button class="search-btn" @click="handSearch">搜索</el-button>
         </div>
       </div>
     </div>
@@ -50,8 +51,9 @@
             <div class="image-placeholder"></div>
           </template>
         </el-table-column>
+        <el-table-column label="编码" width="150" align="center" prop="number" show-overflow-tooltip />
         <el-table-column label="名称" min-width="250" align="left" prop="name" show-overflow-tooltip />
-        <el-table-column label="规格型号" min-width="120" align="center" prop="spec" show-overflow-tooltip />
+        <el-table-column label="规格型号" min-width="120" align="center" prop="product_detail" show-overflow-tooltip />
         <el-table-column label="单价" width="100" align="center" prop="price" />
         <el-table-column label="单位" width="80" align="center" prop="unit" />
       </el-table>
@@ -79,7 +81,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, nextTick } from 'vue'
+import { ref, reactive, nextTick, onMounted } from 'vue'
+import { getSkuList } from '@/api/mes/wk/index.ts'
 
 const visible = ref(false)
 const product_type = ref('')
@@ -88,69 +91,21 @@ const search_content = ref('')
 const is_exact_search = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(50)
-const total = ref(1259)
+const total = ref(0)
 const selectedRows = ref([])
 const tableRef = ref(null)
 const currentSelectedRow = ref(null)
 
-// 模拟表格数据
-const tableData = reactive([
-  {
-    id: '101A001010T0001',
-    name: '白沙（崇新标品二代）茶盒包装纸',
-    spec: '373.5*295mm',
-    price: '0.00',
-    unit: '张'
-  },
-  {
-    id: '101A001010X0001',
-    name: '白沙（崇新标品二代）盒包装纸',
-    spec: '249*98mm',
-    price: '0.00',
-    unit: '张'
-  },
-  {
-    id: '101A001020T0001',
-    name: '宝岛条盒（2016版）',
-    spec: '372.5*293mm',
-    price: '0.00',
-    unit: '张'
-  },
-  {
-    id: '101A001020X0001',
-    name: '宝岛细标（2016版）',
-    spec: '244.03*98mm',
-    price: '0.00',
-    unit: '张'
-  },
-  {
-    id: '101A001030T0001',
-    name: '多山香烟（和谐）条盒',
-    spec: '273*330mm',
-    price: '0.00',
-    unit: '张'
-  },
-  {
-    id: '101A001030X0001',
-    name: '多山香烟（和谐）小盒',
-    spec: '260.3*77mm',
-    price: '0.00',
-    unit: '张'
-  },
-  {
-    id: '101A001040T0001',
-    name: '风格（蓝色印象）条包装纸',
-    spec: '373.5*292.9mm',
-    price: '0.00',
-    unit: '张'
-  }
-])
+// 表格数据
+const tableData = ref([])
 
 // 打开对话框
 const open = () => {
   visible.value = true
   // 清空选择
   clearSelection()
+  // 加载数据
+  initData()
 }
 
 // 关闭对话框
@@ -168,8 +123,10 @@ const handleCancel = () => {
 // 确认选择
 const handleConfirm = () => {
   if (selectedRows.value.length > 0) {
-    // 这里可以添加确认逻辑，例如将选中的数据传递给父组件
-    console.log('选中的数据:', selectedRows.value[0])
+    // 返回选中行的完整数据
+    const selectedData = selectedRows.value[0]
+    console.log('选中的数据:', selectedData)
+    // 这里可以添加向父组件传递数据的逻辑
   }
   handleClose()
 }
@@ -231,6 +188,8 @@ const handleCurrentChange = (val) => {
   currentPage.value = val
   // 切换页面时清除选择
   clearSelection()
+  // 加载新页数据
+  initData()
 }
 
 // 每页数量变更
@@ -238,7 +197,84 @@ const handleSizeChange = (val) => {
   pageSize.value = val
   // 切换页面大小时清除选择
   clearSelection()
+  // 重新加载数据
+  initData()
 }
+
+// 重置筛选条件
+const handReset = () => {
+  product_type.value = ''
+  sku_brand_id.value = ''
+  search_content.value = ''
+  is_exact_search.value = false
+  // 重置后重新搜索
+  handSearch()
+}
+
+// 搜索
+const handSearch = () => {
+  currentPage.value = 1 
+  initData()
+}
+
+// 初始化数据
+const initData = () => {
+  try {
+    const loginInfo = JSON.parse(localStorage.getItem('loginInfo'))
+    console.log('登录信息:111111111111111111', loginInfo)
+    if (!loginInfo || !loginInfo.stored_company) {
+      console.error('未找到登录信息或公司ID')
+      return
+    }
+    
+    const params = {
+      org_id: loginInfo.stored_company,
+      list_type: 'common',
+      search_content: search_content.value,
+      is_exact_search: is_exact_search.value ? 1 : 0,
+      stock_num: 1,
+      product_type: product_type.value, 
+      page: currentPage.value,
+      rows: pageSize.value,
+      sku_brand_id: sku_brand_id.value,
+      multi_filter: '',
+      _: Date.now()
+    }
+    
+    getSkuList(params).then(res => {
+      console.log(res, 'API返回数据')
+      if (res && res.rows) {
+        // 处理返回的数据
+        tableData.value = res.rows.map(item => ({
+          id: item.id,
+          number: item.number,
+          name: item.name,
+          product_detail: item.product_detail,
+          price: item.price,
+          unit: item.unit,
+          // 保存原始数据
+          ...item
+        }))
+        currentPage.value = Number(res.page)
+        total.value = Number(res.total)
+      } else {
+        tableData.value = []
+        total.value = 0
+      }
+    }).catch(err => {
+      console.error('获取数据失败:', err)
+      tableData.value = []
+      total.value = 0
+    })
+  } catch (error) {
+    console.error('初始化数据出错:', error)
+  }
+}
+
+// 组件挂载时加载数据
+onMounted(() => {
+  initData()
+})
 
 // 暴露方法给父组件
 defineExpose({
@@ -330,8 +366,8 @@ defineExpose({
     
     .reset-btn {
       background-color: transparent;
-      border-color: #1ecfff;
-      color: #1ecfff;
+      border-color: #44baee;
+      color: #44baee;
       
       &:hover {
         background-color: rgba(30, 207, 255, 0.1);
@@ -417,6 +453,10 @@ defineExpose({
     
     &.is-focus {
       box-shadow: 0 0 0 1px #1ecfff inset;
+    }
+    
+    .el-input__inner {
+      color: #b6eaff;
     }
   }
 }

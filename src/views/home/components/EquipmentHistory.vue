@@ -1,10 +1,14 @@
 <template>
-  <Card class="EquipmentHistory" title="设备运行历史" :show-empty="!loading && (!list.length || list.length === 0)">
+  <Card class="EquipmentHistory" title="设备运行历史" >
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
       <span>加载中...</span>
     </div>
-    <div v-else-if="list.length > 0" ref="chartRef" class="chart-container"></div>
+    <div v-if="!list.length && !loading" class="no-data">
+        <Icon icon="svg-icon:empty-box" />
+        暂无数据
+      </div>
+    <div ref="chartRef" class="chart-container"></div>
   </Card>
 </template>
 
@@ -12,6 +16,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import * as echarts from 'echarts'
 import Card from './Card.vue'
+import { Icon } from '/@/components/Icon'
 import { getDeviceOutput } from '@/api/mes/wk/index.ts'
 
 const props = defineProps({
@@ -374,6 +379,21 @@ onUnmounted(() => {
   color: #fff;
   display: flex;
   flex-direction: column;
+  position: relative;
+  .no-data {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #999;
+    gap: 10px;
+  }
   .chart-container {
     width: 100%;
     height: 100%;
@@ -385,7 +405,9 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100px;
+    width: 100%;
+    height: calc(100% + 40px);
+    background:#091326;
     color: #1ecfff;
   }
 
@@ -405,4 +427,5 @@ onUnmounted(() => {
     }
   }
 }
+
 </style>

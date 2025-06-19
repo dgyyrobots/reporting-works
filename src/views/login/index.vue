@@ -143,7 +143,7 @@ const handleLogin = async () => {
           console.log(tokenData, 'tokenData')
 
           // 存储登录信息到本地存储
-          localStorage.setItem('loginInfo', JSON.stringify(res))
+        await localStorage.setItem('loginInfo', JSON.stringify(res))
           
           // 获取用户信息
           try {
@@ -160,7 +160,7 @@ const handleLogin = async () => {
           // 登录成功后显示工作中心选择弹框
           setTimeout(() => {
             workcenterDialogVisible.value = true
-          }, 200);
+          }, 300);
           
           if (elLoading) {
             elLoading.close()
