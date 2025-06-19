@@ -3,21 +3,21 @@
     v-model:tableData="tableData" 
     :emptyRowTemplate="emptyRowTemplate"
   >
-    <el-table-column label="员工" prop="employee" min-width="140" align="center">
+    <el-table-column label="员工" prop="emp_name" min-width="140" align="center">
       <template #header>
         员工 <span class="required">*</span>
       </template>
       <template #default="{ row }">
         <div class="input-with-search">
-          <el-input v-model="row.employee" placeholder="" readonly />
+          <el-input v-model="row.emp_name" placeholder="" readonly />
           <el-button class="search-btn" @click="handSearchPerson(row)"><Icon icon="svg-icon:search" /></el-button>
         </div>
       </template>
     </el-table-column>
     
-    <el-table-column label="工号" prop="employeeId" min-width="100" align="center">
+    <el-table-column label="工号" prop="emp_number" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.employeeId" placeholder="" />
+        <el-input v-model="row.emp_number" placeholder="" />
       </template>
     </el-table-column>
     
@@ -69,11 +69,15 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="上工操作人" prop="start_operator_name" min-width="100" align="center">
+    <el-table-column label="上工操作人" prop="start_operator_name" min-width="140" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.start_operator_name" placeholder="" />
+        <div class="input-with-search">
+          <el-input v-model="row.start_operator_name" placeholder="" readonly />
+          <el-button class="search-btn" @click="handleSearchStartOperator(row)"><Icon icon="svg-icon:search" /></el-button>
+        </div>
       </template>
     </el-table-column>
+    
     
     <el-table-column label="上工操作时间" prop="start_operate_date" min-width="190" align="center">
       <template #default="{ row }">
@@ -87,9 +91,12 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="下工操作人" prop="end_operator_name" min-width="100" align="center">
+    <el-table-column label="下工操作人" prop="end_operator_name" min-width="140" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.end_operator_name" placeholder="" />
+        <div class="input-with-search">
+          <el-input v-model="row.end_operator_name" placeholder="" readonly />
+          <el-button class="search-btn" @click="handleSearchEndOperator(row)"><Icon icon="svg-icon:search" /></el-button>
+        </div>
       </template>
     </el-table-column>
     
@@ -130,16 +137,19 @@ import ChoosePerson from './components/ChoosePerson.vue'
 
 // 空行模板
 const emptyRowTemplate = {
-  employee: '',
-  employeeId: '',
+  emp_name: '',
+  emp_number: '',
+  emp_id: '',
   allocation: '',
   pieceRate: '',
   startTime: '',
   endTime: '',
   releaseTime: '',
   start_operator_name: '',
+  start_operator_id:'',
   start_operate_date: '',
   end_operator_name: '',
+  end_operator_id:'',
   end_operate_date: '',
   overtimeHours: '',
   deviceHours: ''
@@ -152,22 +162,50 @@ const tableData = ref([{ ...emptyRowTemplate }])
 const choosePersonRef = ref(null)
 // 当前正在编辑的行
 const currentEditingRow = ref(null)
+const currentOperationType = ref('')
 
 // 打开人员选择对话框
 const handSearchPerson = (row) => {
   currentEditingRow.value = row
+  currentOperationType.value = 'emp_name'
   choosePersonRef.value.open([], true) // 传递 isSingleMode: true
 }
 
 // 处理人员选择确认
 const handlePersonConfirm = (selectedPerson) => {
+  console.log('selectedPerson', selectedPerson)
   if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
-    // 设置员工姓名和工号
-    currentEditingRow.value.employee = selectedPerson[0].name
-    currentEditingRow.value.employeeId = selectedPerson[0].id
+    switch (currentOperationType.value) {
+      case 'emp_name':
+        currentEditingRow.value.emp_name = selectedPerson[0].name
+        currentEditingRow.value.emp_number = selectedPerson[0].number
+        currentEditingRow.value.emp_id = selectedPerson[0].id
+        break
+      case 'start_operator_name':
+        currentEditingRow.value.start_operator_name = selectedPerson[0].name
+        currentEditingRow.value.start_operator_id = selectedPerson[0].id
+        break
+      case 'end_operator_name':
+        currentEditingRow.value.end_operator_name = selectedPerson[0].name
+        currentEditingRow.value.end_operator_id = selectedPerson[0].id
+        break
+    }
+
   }
 }
+// 打开上工操作人选择对话框
+const handleSearchStartOperator = (row) => {
+  currentEditingRow.value = row
+  currentOperationType.value = 'start_operator_name'
+  choosePersonRef.value.open([], true) // 传递 isSingleMode: true
+}
 
+// 打开下工操作人选择对话框
+const handleSearchEndOperator = (row) => {
+  currentEditingRow.value = row
+  currentOperationType.value = 'end_operator_name'
+  choosePersonRef.value.open([], true) // 传递 isSingleMode: true
+}
 // 处理人员选择关闭
 const handlePersonClose = () => {
   currentEditingRow.value = null
