@@ -11,8 +11,14 @@
       <div class="form-item">
         <div class="label">条码编号：</div>
         <div class="input-with-search">
-          <el-input v-model="barcodeInput" placeholder="输入条形码查询" />
-          <el-button class="search-btn" @click="openMaterialSelect"><Icon icon="svg-icon:search" /></el-button>
+          <!-- <el-input v-model="barcodeInput" placeholder="输入条形码查询" />
+          <el-button class="search-btn" @click="openMaterialSelect"><Icon icon="svg-icon:search" /></el-button> -->
+          <SearchSelectInput 
+          v-model="selectedMaterial"
+          placeholder="请输入物料名称或编码搜索"
+          :showText="false"
+          @select="handleMaterialSelect"
+        />
         </div>
       </div>
       
@@ -43,6 +49,10 @@
 import { ref } from 'vue'
 import { Icon } from '/@/components/Icon'
 import MaterialSelectDialog from './MaterialSelectDialog.vue'
+import SearchSelectInput from '../components/SearchSelectInput.vue'
+
+
+const emit = defineEmits(['addMaterialName'])
 
 const visible = ref(false)
 const barcodeInput = ref('')
@@ -59,14 +69,22 @@ const open = () => {
   materialName.value = ''
 }
 
+
+
+const handleMaterialSelect = (row) => {
+  // 这里可以进行其他操作
+  materialName.value = row.name
+  rowData.value = row
+}
 // 关闭对话框
 const handleClose = () => {
   visible.value = false
 }
 
 // 确认选择
-const handleConfirm = () => {
+const handleConfirm = async() => {
   // 这里可以添加确认逻辑
+ await  emit('addMaterialName', rowData.value)
   handleClose()
 }
 

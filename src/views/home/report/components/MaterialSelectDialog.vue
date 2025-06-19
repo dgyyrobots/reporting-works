@@ -6,6 +6,8 @@
     :close-on-click-modal="false"
     class="material-select-dialog"
     :before-close="handleClose"
+    :modal-class="'material-select-modal'"
+    :style="{backgroundColor: 'rgba(0, 21, 41, 1)'}"
   >
     <div class="dialog-header">
       <div class="filter-row">
@@ -329,7 +331,38 @@ defineExpose({
     padding: 10px 20px;
     border-top: 1px solid rgba(30, 207, 255, 0.3);
   }
+  
+  // 增加以下样式来提高弹框的层级
+  :deep(.el-overlay) {
+    z-index: 3000 !important; // 提高遮罩层级
+    background-color: rgba(0, 0, 0, 1) !important; // 增加遮罩不透明度
+  }
+  
+  :deep(.el-dialog) {
+    z-index: 3001 !important; // 提高对话框层级
+    margin-top: 5vh !important; // 调整对话框位置，避免被顶部元素遮挡
+    max-height: 90vh; // 限制最大高度
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(0, 21, 41, 1) !important; // 增加背景不透明度为100%
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8) !important; // 增加阴影效果
+    border: 1px solid rgba(30, 207, 255, 0.8) !important; // 增加边框
+    
+    .el-dialog__body {
+      overflow-y: auto; // 内容过多时允许滚动
+      background-color: rgba(0, 21, 41, 1) !important; // 确保内容区域也是不透明的
+    }
+    
+    .el-dialog__header {
+      background-color: rgba(30, 207, 255, 0.2) !important; // 加深头部背景色
+    }
+    
+    .el-dialog__footer {
+      background-color: rgba(0, 21, 41, 1) !important; // 确保底部也是不透明的
+    }
+  }
 }
+
 
 .dialog-header {
   padding: 15px;

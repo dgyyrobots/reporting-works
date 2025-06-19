@@ -21,8 +21,11 @@
           <span @click="openScanDialog"><Icon icon="svg-icon:scan" class="expand-icon" /></span>     
         </div>
       </template>
-      <template #default="{ row }">
-        <el-input v-model="row.materialName" placeholder="输入编码/名称查询" />
+      <template #default="{ row ,$index}">
+        <div class="input-with-search">
+          <el-input v-model="row.materialName" placeholder="请输入物料名称或编码" />
+          <el-button class="search-btn" @click="handMore($index)"> <el-icon><More /></el-icon></el-button>
+        </div>
       </template>
     </el-table-column>
     
@@ -113,14 +116,17 @@
     </el-table-column>
   </BaseTable>
     <!-- 添加扫码对话框组件 -->
-  <ScanBarcodeDialog ref="scanBarcodeDialogRef" />
+  <ScanBarcodeDialog ref="scanBarcodeDialogRef" @addMaterialName="addMaterialName" />
+  <MaterialSelectDialog ref="materialSelectDialogRef" @chooseRow="handleChooseMaterial" />
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { Icon } from '/@/components/Icon'
+import { More, Close } from '@element-plus/icons-vue'
 import BaseTable from './components/BaseTable.vue'
 import ScanBarcodeDialog from './components/ScanBarcodeDialog.vue'
+import MaterialSelectDialog from './components/MaterialSelectDialog.vue'
 
 // 空行模板
 const emptyRowTemplate = {
@@ -141,24 +147,21 @@ const emptyRowTemplate = {
   oldVersionCount: '',
   knifeGrindingCount: ''
 }
-
+const materialSelectDialogRef = ref(null)
+const materialSelectDialogChooseIndex = ref(null)
 // 表格数据
 const tableData = ref([{ ...emptyRowTemplate }])
 
 // 添加行处理函数
 const handleAddRow = (index) => {
-  const newData = [...tableData.value]
-  newData.splice(index, 0, { ...emptyRowTemplate })
-  tableData.value = newData
+  // 这里可以添加其他逻辑，但不要再操作tableData
+  console.log('行已添加，索引:', index)
 }
 
 // 删除行处理函数
 const handleDeleteRow = (index) => {
-  if (tableData.value.length > 1) {
-    const newData = [...tableData.value]
-    newData.splice(index, 1)
-    tableData.value = newData
-  }
+ // 这里可以添加其他逻辑，但不要再操作tableData
+ console.log('行已删除，索引:', index)
 }
 
 // 扫码对话框引用
@@ -167,6 +170,23 @@ const scanBarcodeDialogRef = ref(null)
 // 打开扫码对话框
 const openScanDialog = () => {
   scanBarcodeDialogRef.value.open()
+}
+
+const addMaterialName = (data) => {
+  tableData.value.push({materialName:data.name,materialCode:data.number})
+}
+
+const handMore = (index) => {
+  materialSelectDialogChooseIndex.value = index
+  materialSelectDialogRef.value.open()
+}
+
+// 处理选择物料
+const handleChooseMaterial = (material) => {
+  if (material) {
+      tableData.value[materialSelectDialogChooseIndex.value].materialName = material.name || ''
+      tableData.value[materialSelectDialogChooseIndex.value].materialCode = material.number || ''
+  }
 }
 
 // 暴露表格数据给父组件
