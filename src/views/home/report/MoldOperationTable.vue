@@ -33,10 +33,12 @@
     <el-table-column label="模具操作类型" prop="operationType" min-width="120" align="center">
       <template #default="{ row }">
         <el-select v-model="row.operationType" placeholder="请选择">
-          <el-option label="维修" value="repair" />
-          <el-option label="保养" value="maintenance" />
-          <el-option label="调试" value="debug" />
-          <el-option label="更换" value="replace" />
+          <el-option label="领用" value="1" />
+          <el-option label="归还" value="2" />
+          <el-option label="维修" value="3" />
+          <el-option label="上模" value="4" />
+          <el-option label="下模" value="5" />
+          <el-option label="报废" value="6" />
         </el-select>
       </template>
     </el-table-column>

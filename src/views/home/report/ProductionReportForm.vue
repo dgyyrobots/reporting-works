@@ -30,8 +30,8 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>工序: <span class="required">*</span></label>
             <div class="input-with-search">
-            <el-select v-model="formData.wp_name" filterable  placeholder="请选择">
-                <el-option v-for="(item,i) in processList" :key="item.id" :label="item.name" :value="item.name" />
+            <el-select v-model="formData.wp_number" filterable  placeholder="请选择">
+                <el-option v-for="(item,i) in processList" :key="item.id" :label="item.name" :value="item.number" />
             </el-select>
             </div>
         </div>
@@ -59,7 +59,7 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>班次: <span class="required">*</span></label>
             <div class="input-with-search">
-            <el-select v-model="formData.shiftCode" placeholder="请选择">
+            <el-select v-model="formData.wp_class_number" placeholder="请选择">
                 <el-option label="白班" value="001" />
                 <el-option label="晚班" value="002" />
             </el-select>
@@ -67,12 +67,12 @@
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>班次编码:</label>
-            <el-input v-model="formData.shiftCode" placeholder="请输入" />
+            <el-input v-model="formData.wp_class_number" placeholder="请输入" />
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
             <label>开始时间:</label>
             <el-date-picker 
-            v-model="formData.startTime" 
+            v-model="formData.start_date" 
             type="datetime" 
             placeholder="选择日期时间"
             format="YYYY-MM-DD HH:mm"
@@ -82,7 +82,7 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>结束时间:</label>
             <el-date-picker 
-            v-model="formData.endTime" 
+            v-model="formData.end_date" 
             type="datetime" 
             placeholder="选择日期时间"
             format="YYYY-MM-DD HH:mm"
@@ -96,13 +96,13 @@
         <div class="form-item" style="flex: 0 0 50%;" @click="handSearchPerson">
             <label>员工:</label>
             <div class="input-with-search">
-            <el-input v-model="formData.employee" readonly placeholder="请选择" />
+            <el-input v-model="formData.emp_name" readonly placeholder="请选择" />
             <el-button class="search-btn" @click="handSearchPerson"><el-icon><Search /></el-icon></el-button>
             </div>
         </div>
         <div class="form-item" style="flex: 0 0 50%;">
             <label>工号:</label>
-            <el-input v-model="formData.employeeId"  placeholder="请输入" />
+            <el-input v-model="formData.emp_number"  placeholder="请输入" />
         </div>
         </div>
     </div>
@@ -147,12 +147,13 @@ const formData = reactive({
   wp_number: '',
   device_name: '',
   device_number: '',
-  shiftName: '',
-  shiftCode: '',
-  startTime: '',
-  endTime: '',
-  employee: '',
-  employeeId: ''
+  wp_class_name: '',
+  wp_class_number: '',
+  start_date: '',
+  end_date: '',
+  emp_name: '',
+  emp_number: '',
+  emp_id:''
 })
 
 const toggleExpand = () => {
@@ -164,13 +165,16 @@ const handSearchPerson = () => {
 const handlePersonConfirm = (selectedPerson) => {
   if(selectedPerson.length>0){
     let nameArr = []
+    let numberArr = []
     let idArr = []
     selectedPerson.map(item=>{
       nameArr.push(item.name)
       idArr.push(item.id)
+      numberArr.push(item.number)
     })
-    formData.employee = nameArr.join(',')
-    formData.employeeId = idArr.join(',')
+    formData.emp_name = nameArr.join(',')
+    formData.emp_id = idArr.join(',')
+    formData.emp_number = numberArr.join(',')
   }
 }
 const initProcessList = async () => {
@@ -201,26 +205,26 @@ const initData = () => {
   
   // 获取当前班次信息
   const shiftInfo = getShiftDateRange()
-  formData.shiftName = shiftInfo.shiftName
-  formData.shiftCode = shiftInfo.shiftName === '白班' ? '001' : '002'
+  formData.wp_class_name = shiftInfo.wp_class_name
+  formData.wp_class_number = shiftInfo.wp_class_name === '白班' ? '001' : '002'
   
   // 获取当前时间
   const now = new Date()
   const currentTime = formatDateTime(now)
   
   // 根据班次设置开始和结束时间
-  if (shiftInfo.shiftName === '白班') {
+  if (shiftInfo.wp_class_name === '白班') {
     // 白班: 当天 7:30 到当前时间
     const today = formatDate(now)
-    formData.startTime = `${today} 07:30`
-    formData.endTime = currentTime
+    formData.start_date = `${today} 07:30`
+    formData.end_date = currentTime
   } else {
     // 晚班: 昨天 19:30 到当前时间
     const yesterday = new Date(now)
     yesterday.setDate(now.getDate() - 1)
     const yesterdayStr = formatDate(yesterday)
-    formData.startTime = `${yesterdayStr} 19:30`
-    formData.endTime = currentTime
+    formData.start_date = `${yesterdayStr} 19:30`
+    formData.end_date = currentTime
   }
 
 
@@ -271,7 +275,7 @@ const getShiftDateRange = () => {
   // 如果是晚班，返回今天的开始日期和明天的结束日期
   return {
     isDay: isDayShift,
-    shiftName: isDayShift ? '白班' : '晚班',
+    wp_class_name: isDayShift ? '白班' : '晚班',
     start: today,
     end: isDayShift ? today : tomorrowStr
   }
@@ -308,7 +312,7 @@ watch(() => props.currentDevice, (newDevice, oldDevice) => {
   }
 }, { deep: true })
 // 添加对班次变化的监听
-watch(() => formData.shiftCode, (newShiftCode) => {
+watch(() => formData.wp_class_number, (newShiftCode) => {
 // 获取当前时间
 const now = new Date()
 const currentTime = formatDateTime(now)
@@ -317,17 +321,17 @@ const currentTime = formatDateTime(now)
 if (newShiftCode === '001') {
 // 白班: 当天 7:30 到当前时间
   const today = formatDate(now)
-  formData.startTime = `${today} 07:30`
-  formData.endTime = currentTime
-  formData.shiftCode = '001'
+  formData.start_date = `${today} 07:30`
+  formData.end_date = currentTime
+  formData.wp_class_number = '001'
   } else {
   // 晚班: 昨天 19:30 到当前时间
   const yesterday = new Date(now)
   yesterday.setDate(now.getDate() - 1)
   const yesterdayStr = formatDate(yesterday)
-  formData.startTime = `${yesterdayStr} 19:30`
-  formData.endTime = currentTime
-  formData.shiftCode = '002'
+  formData.start_date = `${yesterdayStr} 19:30`
+  formData.end_date = currentTime
+  formData.wp_class_number = '002'
   }
 })
 onMounted(() => {
