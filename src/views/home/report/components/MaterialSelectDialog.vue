@@ -95,6 +95,7 @@
 import { ref, reactive, nextTick, onMounted } from 'vue'
 import { getSkuList } from '@/api/mes/wk/index.ts'
 
+const emit = defineEmits(['chooseRow'])
 const visible = ref(false)
 const product_type = ref('')
 const sku_brand_id = ref('')
@@ -136,10 +137,11 @@ const handleConfirm = () => {
   if (selectedRows.value.length > 0) {
     // 返回选中行的完整数据
     const selectedData = selectedRows.value[0]
-    console.log('选中的数据:', selectedData)
-    // 这里可以添加向父组件传递数据的逻辑
+    emit('chooseRow', selectedData)
+    handleClose()
+
   }
-  handleClose()
+
 }
 
 // 清空选择

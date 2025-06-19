@@ -36,7 +36,7 @@
   </el-dialog>
   
   <!-- 添加物料选择对话框 -->
-  <MaterialSelectDialog ref="materialSelectDialogRef" />
+  <MaterialSelectDialog ref="materialSelectDialogRef" @chooseRow="chooseRow" />
 </template>
 
 <script setup>
@@ -49,6 +49,7 @@ const barcodeInput = ref('')
 const quantity = ref('1')
 const materialName = ref('')
 const materialSelectDialogRef = ref(null)
+const rowData = ref(null)
 
 // 打开对话框
 const open = () => {
@@ -72,6 +73,11 @@ const handleConfirm = () => {
 // 打开物料选择对话框
 const openMaterialSelect = () => {
   materialSelectDialogRef.value.open()
+}
+const chooseRow = (row) => {
+  rowData.value = row
+  materialName.value = row.name
+  
 }
 
 // 暴露方法给父组件
