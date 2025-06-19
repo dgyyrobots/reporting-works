@@ -69,16 +69,16 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="上工操作人" prop="operation" min-width="100" align="center">
+    <el-table-column label="上工操作人" prop="start_operator_name" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.operation" placeholder="" />
+        <el-input v-model="row.start_operator_name" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="上工操作时间" prop="operationTime" min-width="190" align="center">
+    <el-table-column label="上工操作时间" prop="start_operate_date" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
-          v-model="row.operationTime"
+          v-model="row.start_operate_date"
           type="datetime" 
           placeholder=""
           format="YYYY-MM-DD HH:mm"
@@ -87,16 +87,16 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="下工操作人" prop="endOperation" min-width="100" align="center">
+    <el-table-column label="下工操作人" prop="end_operator_name" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.endOperation" placeholder="" />
+        <el-input v-model="row.end_operator_name" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="下工操作时间" prop="endOperationTime" min-width="190" align="center">
+    <el-table-column label="下工操作时间" prop="end_operate_date" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
-          v-model="row.endOperationTime"
+          v-model="row.end_operate_date"
           type="datetime" 
           placeholder=""
           format="YYYY-MM-DD HH:mm"
@@ -137,10 +137,10 @@ const emptyRowTemplate = {
   startTime: '',
   endTime: '',
   releaseTime: '',
-  operation: '',
-  operationTime: '',
-  endOperation: '',
-  endOperationTime: '',
+  start_operator_name: '',
+  start_operate_date: '',
+  end_operator_name: '',
+  end_operate_date: '',
   overtimeHours: '',
   deviceHours: ''
 }
