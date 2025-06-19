@@ -45,17 +45,28 @@
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
       >
-        <el-table-column type="selection" width="50" align="center" :reserve-selection="false" />
-        <el-table-column label="图片" width="80" align="center">
+        <el-table-column type="selection" width="60" align="center" :reserve-selection="false" />
+        <el-table-column label="图片" width="100" align="center">
           <template #default>
             <div class="image-placeholder"></div>
           </template>
         </el-table-column>
-        <el-table-column label="编码" width="150" align="center" prop="number" show-overflow-tooltip />
-        <el-table-column label="名称" min-width="250" align="left" prop="name" show-overflow-tooltip />
-        <el-table-column label="规格型号" min-width="120" align="center" prop="product_detail" show-overflow-tooltip />
-        <el-table-column label="单价" width="100" align="center" prop="price" />
-        <el-table-column label="单位" width="80" align="center" prop="unit" />
+
+        <el-table-column label="名称" align="left">
+          <template #default="scope">
+            <p>
+              <span>编码:</span>
+              <span>{{ scope.row.number}}</span>
+            </p>
+            <p>
+              <span>{{ scope.row.name }}</span>
+            </p>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="规格型号" width="190" align="center" prop="product_detail" show-overflow-tooltip />
+        <el-table-column label="单价" width="170" align="center" prop="price" />
+        <el-table-column label="单位" width="100" align="center" prop="unit" />
       </el-table>
       
       <div class="pagination-container">
@@ -221,7 +232,6 @@ const handSearch = () => {
 const initData = () => {
   try {
     const loginInfo = JSON.parse(localStorage.getItem('loginInfo'))
-    console.log('登录信息:111111111111111111', loginInfo)
     if (!loginInfo || !loginInfo.stored_company) {
       console.error('未找到登录信息或公司ID')
       return
