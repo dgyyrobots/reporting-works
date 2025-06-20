@@ -11,10 +11,10 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="开始时间" prop="startTime" min-width="150" align="center">
+    <el-table-column label="开始时间" prop="start_date" min-width="150" align="center">
       <template #default="{ row }">
         <el-date-picker 
-          v-model="row.startTime" 
+          v-model="row.start_date" 
           type="datetime" 
           placeholder=""
           format="YYYY-MM-DD HH:mm"
@@ -23,10 +23,10 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="结束时间" prop="endTime" min-width="150" align="center">
+    <el-table-column label="结束时间" prop="end_date" min-width="150" align="center">
       <template #default="{ row }">
         <el-date-picker 
-          v-model="row.endTime" 
+          v-model="row.end_date" 
           type="datetime" 
           placeholder=""
           format="YYYY-MM-DD HH:mm"
@@ -37,14 +37,14 @@
     
     <el-table-column label="时长(小时)" min-width="100" align="center">
       <template #default="{ row }">
-        {{ calculateDuration(row.startTime, row.endTime) }}
+        {{ calculateDuration(row.start_date, row.end_date) }}
       </template>
     </el-table-column>
     
-    <el-table-column label="工单号" prop="workOrderNo" min-width="120" align="center">
+    <el-table-column label="工单号" prop="work_no" min-width="120" align="center">
       <template #default="{ row }">
         <div class="input-with-search">
-          <el-input v-model="row.workOrderNo" placeholder="" />
+          <el-input v-model="row.work_no" placeholder="" />
           <el-button class="search-btn"><Icon icon="svg-icon:search" /></el-button>
         </div>
       </template>
@@ -89,9 +89,9 @@ import BaseTable from './components/BaseTable.vue'
 // 空行模板
 const emptyRowTemplate = {
   type: '',
-  startTime: '',
-  endTime: '',
-  workOrderNo: '',
+  start_date: '',
+  end_date: '',
+  work_no: '',
   workOrderCode: '',
   materialName: '',
   materialCode: '',
@@ -118,12 +118,12 @@ const handleDeleteRow = (index) => {
 }
 
 // 计算时长（小时）
-const calculateDuration = (startTime, endTime) => {
-  if (!startTime || !endTime) return ''
+const calculateDuration = (start_date, end_date) => {
+  if (!start_date || !end_date) return ''
   
   try {
-    const start = new Date(startTime)
-    const end = new Date(endTime)
+    const start = new Date(start_date)
+    const end = new Date(end_date)
     const diff = end - start
     
     if (diff < 0) return ''

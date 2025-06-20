@@ -35,31 +35,36 @@
     
     <el-table-column label="汇报数量" prop="reportQuantity" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.reportQuantity" placeholder="" />
+        <!-- <el-input v-model="row.reportQuantity" placeholder="" /> -->
+        <span> {{ row.reportQuantity }}</span>
       </template>
     </el-table-column>
     
     <el-table-column label="合格数量" prop="qualifiedQuantity" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.qualifiedQuantity" placeholder="" />
+        <!-- <el-input v-model="row.qualifiedQuantity" placeholder="" /> -->
+        <span> {{ row.qualifiedQuantity }}</span>
       </template>
     </el-table-column>
     
     <el-table-column label="制程废品" prop="processWaste" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.processWaste" placeholder="" />
+        <!-- <el-input v-model="row.processWaste" placeholder="" /> -->
+        <span> {{ row.processWaste }}</span>
       </template>
     </el-table-column>
     
     <el-table-column label="过版纸数量" prop="paperQuantity" min-width="120" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.paperQuantity" placeholder="" />
+        <!-- <el-input v-model="row.paperQuantity" placeholder="" /> -->
+        <span> {{ row.paperQuantity }}</span>
       </template>
     </el-table-column>
     
     <el-table-column label="无形损耗数量" prop="invisibleLoss" min-width="120" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.invisibleLoss" placeholder="" />
+        <!-- <el-input v-model="row.invisibleLoss" placeholder="" /> -->
+        <span> {{row.invisibleLoss }}</span>
       </template>
     </el-table-column>
     

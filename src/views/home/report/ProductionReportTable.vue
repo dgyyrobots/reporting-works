@@ -21,51 +21,53 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="员工分配比例" prop="allocation" min-width="100" align="center">
+    <el-table-column label="员工分配比例" prop="employee_ratio" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.allocation" placeholder="" />
+        <el-input v-model="row.employee_ratio" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="计件比例" prop="pieceRate" min-width="100" align="center">
+    <el-table-column label="计件比例" prop="ratio_value" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.pieceRate" placeholder="" />
+        <el-input v-model="row.ratio_value" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="上工时间" prop="startTime" min-width="190" align="center">
+    <el-table-column label="上工时间" prop="start_date" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
-          v-model="row.startTime" 
+          v-model="row.start_date" 
           type="datetime" 
           placeholder=""
           format="YYYY-MM-DD HH:mm"
           value-format="YYYY-MM-DD HH:mm"
+          @change="() => handleTimeChange(row)"
         />
       </template>
     </el-table-column>
     
-    <el-table-column label="下工时间" prop="endTime" min-width="190" align="center">
+    <el-table-column label="下工时间" prop="end_date" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
-          v-model="row.endTime" 
+          v-model="row.end_date" 
           type="datetime" 
           placeholder=""
           format="YYYY-MM-DD HH:mm"
           value-format="YYYY-MM-DD HH:mm"
+          @change="() => handleTimeChange(row)"    
         />
       </template>
     </el-table-column>
     
-    <el-table-column label="时长" min-width="100" align="center">
+    <el-table-column label="时长" prop="total_time"  min-width="100" align="center">
       <template #default="{ row }">
-        {{ calculateDuration(row.startTime, row.endTime) }}
+        <el-input v-model="row.total_time" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="放行时间" prop="releaseTime" min-width="100" align="center">
+    <el-table-column label="放行时间" prop="release_time" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.releaseTime" placeholder="" />
+        <el-input v-model="row.release_time" placeholder="" />
       </template>
     </el-table-column>
     
@@ -112,15 +114,15 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="加班时间" prop="overtimeHours" min-width="100" align="center">
+    <el-table-column label="加班时间" prop="overtime" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.overtimeHours" placeholder="" />
+        <el-input v-model="row.overtime" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="设备时间" prop="deviceHours" min-width="100" align="center">
+    <el-table-column label="设备时间" prop="device_time" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.deviceHours" placeholder="" />
+        <el-input v-model="row.device_time" placeholder="" />
       </template>
     </el-table-column>
   </BaseTable>
@@ -141,19 +143,19 @@ const emptyRowTemplate = {
   emp_name: '',
   emp_number: '',
   emp_id: '',
-  allocation: '',
-  pieceRate: '',
-  startTime: '',
-  endTime: '',
-  releaseTime: '',
+  employee_ratio: '',
+  ratio_value: '',
+  start_date: '',
+  end_date: '',
+  release_time: '',
   start_operator_name: '',
   start_operator_id:'',
   start_operate_date: '',
   end_operator_name: '',
   end_operator_id:'',
   end_operate_date: '',
-  overtimeHours: '',
-  deviceHours: ''
+  overtime: '',
+  device_time: ''
 }
 
 // 表格数据
@@ -229,25 +231,33 @@ const handleOperatorClose = () => {
   currentEditingRow.value = null
   currentOperationType.value = ''
 }
-// 计算时长
-const calculateDuration = (startTime, endTime) => {
-  if (!startTime || !endTime) return ''
-  
-  try {
-    const start = new Date(startTime)
-    const end = new Date(endTime)
-    const diff = end - start
-    
-    if (diff < 0) return ''
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-    
-    return `${hours}小时${minutes}分钟`
-  } catch (e) {
-    return ''
+
+// 处理时间变化，自动计算时长
+const handleTimeChange = (row) => {
+  if (row.start_date && row.end_date) {
+    try {
+      const start = new Date(row.start_date)
+      const end = new Date(row.end_date)
+      const diffMs = end - start
+      
+      if (diffMs < 0) {
+        row.total_time = ''
+        return
+      }
+      
+      // 计算小时数，保留两位小数
+      const hours = (diffMs / (1000 * 60 * 60)).toFixed(2)
+      row.total_time = hours
+    } catch (e) {
+      console.error('计算时长出错:', e)
+      row.total_time = ''
+    }
+  } else {
+    row.total_time = ''
   }
 }
+
+
 
 // 暴露表格数据给父组件
 defineExpose({
