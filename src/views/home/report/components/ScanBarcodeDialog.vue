@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="输入条码查询"
+    title="请扫描条码"
     width="600px"
     :close-on-click-modal="false"
     class="scan-barcode-dialog"

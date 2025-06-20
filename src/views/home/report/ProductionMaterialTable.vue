@@ -169,8 +169,20 @@ const openScanDialog = () => {
 }
 
 const addMaterialName = (data) => {
-  tableData.value.push({materialName:data.name,materialCode:data.number})
+  if (tableData.value.length === 1 && 
+      !tableData.value[0].materialName && 
+      !tableData.value[0].materialCode) {
+    tableData.value[0].materialName = data.name
+    tableData.value[0].materialCode = data.number
+  } else {
+    tableData.value.push({
+      ...emptyRowTemplate,
+      materialName: data.name,
+      materialCode: data.number
+    })
+  }
 }
+
 
 const handMore = (index) => {
   materialSelectDialogChooseIndex.value = index
