@@ -126,8 +126,8 @@
   </BaseTable>
   
   <!-- 添加人员选择组件 -->
-  <ChoosePerson ref="choosePersonRef" @confirm="handlePersonConfirm" @close="handlePersonClose" />
-  <ChoosePersonWithCompany ref="choosePersonWithCompanyRef" @confirm="handleOperatorConfirm" @close="handleOperatorClose" />
+  <ChoosePerson ref="choosePersonRef" :isSingle="true" @confirm="handlePersonConfirm" @close="handlePersonClose" />
+  <ChoosePersonWithCompany ref="choosePersonWithCompanyRef"  :isSingle="true" @confirm="handleOperatorConfirm" @close="handleOperatorClose" />
 </template>
 
 <script setup>
@@ -176,6 +176,9 @@ const handSearchPerson = (row) => {
 // 处理人员选择确认
 const handlePersonConfirm = (selectedPerson) => {
   if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
+    const nameArr = []
+    const numberArr = []
+    const idArr = []
      selectedPerson.map(item=>{
         nameArr.push(item.name)
         numberArr.push(item.number)

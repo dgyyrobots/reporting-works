@@ -112,7 +112,7 @@
       <img v-if="isExpanded" src="@/icon/shouqi.svg" alt="收起" class="expand-icon" />
       <img v-else src="@/icon/zhankai.svg" alt="展开" class="expand-icon" />
     </div>
-    <ChoosePerson ref="choosePersonRef" @confirm="handlePersonConfirm" @close="handlePersonClose" />
+    <ChoosePerson :isSingle="false" ref="choosePersonRef" @confirm="handlePersonConfirm" @close="handlePersonClose" />
   </div>
 </template>
 

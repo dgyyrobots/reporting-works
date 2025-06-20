@@ -15,7 +15,7 @@
           <el-button class="search-btn" @click="openMaterialSelect"><Icon icon="svg-icon:search" /></el-button> -->
           <SearchSelectInput 
           v-model="selectedMaterial"
-          placeholder="请输入物料名称或编码搜索"
+          placeholder=""
           :showText="false"
           @select="handleMaterialSelect"
         />

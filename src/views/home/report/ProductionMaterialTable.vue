@@ -27,15 +27,18 @@
         </div>
       </template>
     </el-table-column>
+    <el-table-column label="物料编号" prop="materialCode" min-width="120" align="center">
+      <template #default="{ row }">
+        <el-input v-model="row.materialCode" placeholder="" />
+      </template>
+    </el-table-column>
     
-    <!-- 其他列保持不变 -->
     <el-table-column label="汇报数量" prop="reportQuantity" min-width="100" align="center">
       <template #default="{ row }">
         <el-input v-model="row.reportQuantity" placeholder="" />
       </template>
     </el-table-column>
     
-    <!-- ... 其他列 ... -->
     <el-table-column label="合格数量" prop="qualifiedQuantity" min-width="100" align="center">
       <template #default="{ row }">
         <el-input v-model="row.qualifiedQuantity" placeholder="" />
@@ -84,12 +87,7 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="物料编号" prop="materialCode" min-width="120" align="center">
-      <template #default="{ row }">
-        <el-input v-model="row.materialCode" placeholder="" />
-      </template>
-    </el-table-column>
-    
+
     <el-table-column label="工序序号" prop="processSequence" min-width="100" align="center">
       <template #default="{ row }">
         <el-input v-model="row.processSequence" placeholder="" />
@@ -114,7 +112,6 @@
       </template>
     </el-table-column>
   </BaseTable>
-    <!-- 添加扫码对话框组件 -->
   <ScanBarcodeDialog ref="scanBarcodeDialogRef" @addMaterialName="addMaterialName" />
   <MaterialSelectDialog ref="materialSelectDialogRef" @chooseRow="handleChooseMaterial" />
 </template>

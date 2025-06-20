@@ -79,7 +79,7 @@ import { ref,onMounted, computed, defineEmits, defineExpose, defineProps } from 
 import { Icon } from '/@/components/Icon'
 import { getPicker } from '@/api/mes/wk/index.ts'
 const props = defineProps({
-  isSingleMode: {
+  isSingle: {
     type: Boolean,
     default: false
   }
@@ -228,27 +228,26 @@ const handSearch = () => {
 }
 
 // 打开对话框
+
 const open = (preSelectedPersons = [], singleMode = null) => {
-  // 修改这里：不要直接修改props
-  // 如果明确传入了singleMode参数，则使用一个本地变量来存储模式
-  if (singleMode !== null) {
-    isSingleMode.value = singleMode
-  }
-  
+
   if (preSelectedPersons.length > 0) {
     selectedPersons.value = [...preSelectedPersons]
   } else {
     selectedPersons.value = []
   }
+  
   visible.value = true
+  
+  // 初始加载数据
+  initData()
 }
 
-// 添加一个本地响应式变量来存储单选/多选模式
-const isSingleMode = ref(props.isSingle)
+const isSingleMode = computed(() => props.isSingle)
 
 // 处理人员点击
 const handlePersonClick = (person) => {
-  if (isSingleMode.value) {
+  if (props.isSingle) {
     // 单选模式：直接选中并关闭
     emit('confirm', [person])
     visible.value = false

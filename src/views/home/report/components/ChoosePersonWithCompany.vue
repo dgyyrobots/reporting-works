@@ -87,7 +87,7 @@ import { Icon } from '/@/components/Icon'
 import { getPagePicker } from '@/api/mes/wk/index.ts'
 
 const props = defineProps({
-  isSingleMode: {
+  isSingle: {
     type: Boolean,
     default: false
   }
@@ -183,15 +183,12 @@ const handSearch = () => {
   currentPage.value = 1
   
   // 调用接口获取数据
-  fetchData()
+  initData()
 }
 
 // 打开对话框
 const open = (preSelectedPersons = [], singleMode = null) => {
-  // 如果明确传入了singleMode参数，则使用本地变量存储模式
-  if (singleMode !== null) {
-    isSingleMode.value = singleMode
-  }
+  // 不再需要更新isSingleMode，因为它现在是计算属性
   
   if (preSelectedPersons.length > 0) {
     selectedPersons.value = [...preSelectedPersons]
@@ -202,15 +199,16 @@ const open = (preSelectedPersons = [], singleMode = null) => {
   visible.value = true
   
   // 初始加载数据
-  fetchData()
+  initData()
 }
 
+
 // 本地响应式变量存储单选/多选模式
-const isSingleMode = ref(props.isSingleMode)
+const isSingleMode = computed(() => props.isSingle)
 
 // 处理人员点击
 const handlePersonClick = (person) => {
-  if (isSingleMode.value) {
+  if (props.isSingle) {
     // 单选模式：直接选中并关闭
     emit('confirm', [person])
     visible.value = false
@@ -247,7 +245,7 @@ const handleConfirm = () => {
 
 // 获取人员数据
 // 获取人员数据
-const fetchData = () => {
+const initData = () => {
   const loginInfo = JSON.parse(localStorage.getItem('loginInfo'))
   const data = {
     page: currentPage.value,
@@ -294,7 +292,7 @@ const fetchData = () => {
 const handPageBtn = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
-    fetchData()
+    initData()
   }
 }
 
@@ -302,7 +300,7 @@ const handPageBtn = (page) => {
 const filterByLetter = (letter) => {
   currentLetter.value = letter
   currentPage.value = 1
-  fetchData()
+  initData()
 }
 
 // 暴露方法
