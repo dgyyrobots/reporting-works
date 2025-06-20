@@ -140,6 +140,7 @@ const choosePersonRef = ref(null)
 const processList = ref([])
 const deviceList = ref([])
 const formData = reactive({
+  company_id: "",
   bill_date: new Date().toISOString().split('T')[0], // 今天日期
   wc_name: '',
   wc_number: '',
@@ -195,6 +196,10 @@ const initProcessList = async () => {
   })
 }
 const initData = () => {
+
+
+  formData.company_id = props.currentWorkcenter.company_id
+
   const storeTaskInfo = workStore.getTaskInfo 
   formData.wc_name =props.currentWorkcenter.name ||  storeTaskInfo.wc_name
   formData.wc_number =props.currentWorkcenter.number ||  storeTaskInfo.wc_number

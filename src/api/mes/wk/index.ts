@@ -276,3 +276,11 @@ export const getPagePicker = async (data: any) => {
         data,
     })
 }
+
+// 提交日报
+export const sendReport = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/erp/api/erp_tools/action:handler_new_commit_data',
+        data,
+    })
+}

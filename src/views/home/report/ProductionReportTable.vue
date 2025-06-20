@@ -140,22 +140,32 @@ import ChoosePerson from './components/ChoosePerson.vue'
 import ChoosePersonWithCompany from './components/ChoosePersonWithCompany.vue'
 // 空行模板
 const emptyRowTemplate = {
-  emp_name: '',
-  emp_number: '',
-  emp_id: '',
-  employee_ratio: '',
-  ratio_value: '',
-  start_date: '',
-  end_date: '',
-  release_time: '',
-  start_operator_name: '',
-  start_operator_id:'',
-  start_operate_date: '',
-  end_operator_name: '',
-  end_operator_id:'',
-  end_operate_date: '',
-  overtime: '',
-  device_time: ''
+    total_time: "",
+		release_time: "",
+		start_operator_name: "",
+		start_operate_date: '',
+		end_operator_name: "",
+		end_operate_date: '',
+		device_name: "",
+		device_number: "",
+		wp_class_id: "",
+		wp_class_name: "",
+		device_id: "",
+		wp_class_number: "",
+		wp_id: "",
+		wp_number: "",
+		wp_name: "",
+		user_id: "",
+		user_name: "",
+		emp_id: "",
+		wc_name: "",
+		wc_number: "",
+		wc_id: "",
+		end_operator_id: "",
+		start_operator_id: "",
+		source_ids: "",
+		overtime: "",
+		device_time: ''
 }
 
 // 表格数据

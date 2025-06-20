@@ -29,10 +29,11 @@
 
 
       <!-- 新增表格组件 -->
-      <ProductionReportTable ref="tableRef" />
-      <ProductionMaterialTable/>
-      <ProcessTable/>
-      <MoldOperationTable/>
+      <ProductionReportTable ref="ProductionReportTableRef" />
+      <ProductionMaterialTable ref="ProductionMaterialTableRef"/>
+      <ProcessTable ref="ProcessTableRef"/>
+      <MoldOperationTable ref="MoldOperationTableRef"/>
+
     </div>
     <template #footer>
       <el-button @click="handleCancel">取消</el-button>
@@ -51,9 +52,15 @@ import ProductionMaterialTable from './ProductionMaterialTable.vue'
 import ProcessTable from './ProcessTable.vue'
 import MoldOperationTable from './MoldOperationTable.vue'
 import confetti from 'canvas-confetti'
+import { sendReport } from '@/api/mes/wk/index.ts'
 
 const visible = ref(false)
 const formRef = ref(null)
+const ProductionReportTableRef=ref(null)
+const ProductionMaterialTableRef =ref(null)
+const ProcessTableRef = ref(null)
+const MoldOperationTableRef = ref(null)
+
 // 定义props
 const props = defineProps({
   currentDevice: {
@@ -111,21 +118,132 @@ function celebrateSuccess() {
   }, 250);
 }
 
+const generateLowercase32 = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyz'; // 仅小写字母
+    let result = '';
+    for (let i = 0; i < 32; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        result += chars[randomIndex];
+    }
+    return result;
+}
+
 function handleSubmit() {
   // 获取表单数据
+  const loginInfo = JSON.parse(localStorage.getItem('loginInfo'))
   const formData = formRef.value?.formData
+  // 校验表单必填项
+  if (!formData.wc_name) {
+    ElMessage.error('工作中心为必录项, 请录入内容!');
+    return;
+  }
+  
+  if (!formData.wp_number) {
+    ElMessage.error('工序为必录项, 请录入内容!');
+    return;
+  }
+  
+  if (!formData.wp_class_number) {
+    ElMessage.error('班次为必录项, 请录入内容!');
+    return;
+  }
+  // 转换日期为时间戳
+  if (formData.reportDate) {
+    formData.reportDate = new Date(formData.reportDate).getTime();
+  }
+
+  if (formData.bill_date) {
+    formData.bill_date = new Date(formData.bill_date).getTime();
+  }
+  
+  // 转换其他可能的日期字段
+  if (formData.start_date) {
+    formData.start_date = new Date(formData.start_date).getTime();
+  }
+  
+  if (formData.end_date) {
+    formData.end_date = new Date(formData.end_date).getTime();
+  }
+
+  const entry3 =  ProductionReportTableRef.value?.tableData
+  const entry1 =  ProductionMaterialTableRef.value?.tableData
+  const entry4 =  ProcessTableRef.value?.tableData
+  const entry2 =  MoldOperationTableRef.value?.tableData
+
+    // 验证员工是否填写
+  if (entry3 && entry3.length > 0) {
+    for (let i = 0; i < entry3.length; i++) {
+      if (!entry3[i].emp_name) {
+        ElMessage.error('员工为必录项, 请录入内容!');
+        return;
+      }
+    }
+  }
+  
+  // 处理表格中的日期字段
+  if (entry3 && entry3.length > 0) {
+    entry3.forEach(item => {
+      if (item.start_date) item.start_date = new Date(item.start_date).getTime();
+      if (item.end_date) item.end_date = new Date(item.end_date).getTime();
+      if (item.start_operate_date) item.start_operate_date = new Date(item.start_operate_date).getTime();
+      if (item.end_operate_date) item.end_operate_date = new Date(item.end_operate_date).getTime();
+    });
+  }
+
+
+const save_data = [{
+	"data": {
+    ...formData,
+	},
+	"object_data_key": "bill_mes_daily_report_header",
+	"structure": "header"
+}, {
+	"data": entry3,
+	"object_data_key": "bill_mes_daily_report_entry3",
+	"structure": "entry3"
+}, {
+	"data": entry1,
+	"object_data_key": "bill_mes_daily_report_entry1",
+	"structure": "entry1"
+}, {
+	"data": entry4,
+	"object_data_key": "bill_mes_daily_report_entry4",
+	"structure": "entry4"
+}, {
+	"data": entry2,
+	"object_data_key": "bill_mes_daily_report_entry2",
+	"structure": "entry2"
+}]
+// 转化时间格式
+const data = {
+  delete_data:JSON.stringify({}),
+  view_key:"xgocykfl",
+  root_view_key:"xgocykfl",
+  object_key:"bill_mes_daily_report",
+  context_company_id: loginInfo.stored_company,
+  model_name:'',
+  scene_name:'',
+  post_token: generateLowercase32(),
+  save_data: JSON.stringify(save_data),
+}
+
   // 提交逻辑后续补充
+  sendReport(data).then((res) => {
+    if(res.ret===0) {
+      ElMessage.success('提交成功！');
+      celebrateSuccess();
+      // 延迟关闭对话框，让用户能看到撒花效果
+      setTimeout(() => {
+        closeDialog();
+      }, 1500);
+    }else {
+      ElMessage.error(res.msg);
+    }
+  }).catch((error) => {
+    console.error('提交失败', error);
+  });
   
-  // 模拟提交成功
-  ElMessage.success('提交成功！');
-  
-  // 触发撒花庆祝效果
-  celebrateSuccess();
-  
-  // 延迟关闭对话框，让用户能看到撒花效果
-  setTimeout(() => {
-    closeDialog();
-  }, 1500);
+
 }
 
 // 新增按钮处理函数
