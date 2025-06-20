@@ -175,7 +175,6 @@ const handSearchPerson = (row) => {
 
 // 处理人员选择确认
 const handlePersonConfirm = (selectedPerson) => {
-  console.log('selectedPerson', selectedPerson)
   if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
      selectedPerson.map(item=>{
         nameArr.push(item.name)
@@ -193,7 +192,6 @@ const handlePersonConfirm = (selectedPerson) => {
 
 // 处理操作人选择确认
 const handleOperatorConfirm = (selectedPerson) => {
-  console.log('selectedPerson', selectedPerson)
   if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
     // 根据当前操作类型设置不同的字段
     if (currentOperationType.value === 'startOperator') {

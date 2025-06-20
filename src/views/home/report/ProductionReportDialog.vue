@@ -78,7 +78,6 @@ function handleCancel() {
 function handleSubmit() {
   // 获取表单数据
   const formData = formRef.value?.formData
-  console.log('提交的表单数据:', formData)
   // 提交逻辑后续补充
   closeDialog()
 }
