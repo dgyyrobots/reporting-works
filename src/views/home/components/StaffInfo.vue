@@ -35,7 +35,7 @@ import Card from './Card.vue'
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { getCurrentWorker } from '@/api/mes/wk/index.ts'
 import headSvg from '@/assets/bigscreen/head.svg'
-
+import { useWorkStore } from '@/store/modules/work' // 导入store
 // 定义props
 const props = defineProps({
   currentWorkcenter: {
@@ -47,6 +47,7 @@ const props = defineProps({
     default: () => ({})
   },
 })
+const workStore = useWorkStore() // 使用store
 const tableData = ref([])
 const title = ref('员工信息')
 // 添加定时器变量
@@ -95,6 +96,7 @@ const initData = () => {
   
   getCurrentWorker(data).then((res) => {
     tableData.value = []
+    const staffList = []
     if (res && Array.isArray(res)) {
       res.map((item) => {
         const name = item.emp_name || '--'
@@ -102,12 +104,22 @@ const initData = () => {
         const status = item.status_name || '--'
         const classtype_name = item.classtype_name || '--'
         tableData.value.push([name, number, classtype_name, status])
+        staffList.push({
+          emp_name: item.emp_name,
+          emp_number: item.emp_number,
+          status_name: item.status_name,
+          classtype_name: item.classtype_name,
+          // 保存其他可能需要的字段
+          ...item
+        })
       })
     }
+    workStore.setStaffList(staffList)
     loading.value = false
   }).catch(error => {
     console.error('获取员工信息失败:', error)
     tableData.value = []
+    workStore.setStaffList([])
     loading.value = false
   })
 }

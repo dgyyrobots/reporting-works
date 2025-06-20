@@ -37,7 +37,14 @@ export interface LicenseCheckItem {
     selected: boolean
     [key: string]: any
 }
-
+// 定义员工信息接口
+export interface StaffInfoItem {
+    emp_name: string
+    emp_number: string
+    status_name: string
+    classtype_name: string
+    [key: string]: any
+}
 const TASK_INFO_KEY = 'TASK_INFO'
 const { wsCache } = useCache('localStorage')
 
@@ -49,6 +56,7 @@ export const useWorkStore = defineStore('work', {
         licenseCheck: LicenseCheckItem[], // 所有版号数据
         licenseCheckSortByCollectDate: LicenseCheckItem[], // 这个数组存的是按collect_date排序后的数据
         selectedLicenseCheck: LicenseCheckItem[] // 新增：存储选中的版号数据
+        staffList: StaffInfoItem[] // 新
     } => ({
         taskInfo: wsCache.get(TASK_INFO_KEY) || {
             rc_no: '',
@@ -75,19 +83,24 @@ export const useWorkStore = defineStore('work', {
         fleshLicenseIndex: 0, // 默认值为0，不从缓存读取 // 刷新版本
         licenseCheck: [], // 不需要缓存，初始为空数组
         licenseCheckSortByCollectDate: [], // 这个数组存的是按collect_date排序后的数据, 不需要缓存，初始为空数组
-        selectedLicenseCheck: [] // 新增：存储选中的版号数据，初始为空数组
+        selectedLicenseCheck: [], // 新增：存储选中的版号数据，初始为空数组
+        staffList: [] // 初始化为空数组
     }),
     getters: {
         getTaskInfo: (state) => state.taskInfo,
         getFleshTaskIndex: (state) => state.fleshTaskIndex,
         getFleshLicenseIndex: (state) => state.fleshLicenseIndex, // 新增getter
         getLicenseCheck: (state) => state.licenseCheck, // 新增getter
-        getSelectedLicenseCheck: (state) => state.selectedLicenseCheck // 新增：获取选中的版号数据
+        getSelectedLicenseCheck: (state) => state.selectedLicenseCheck, // 新增：获取选中的版号数据
+        getStaffList: (state) => state.staffList // 新增：获取员工列表
     },
     actions: {
         setTaskInfo(info: Partial<TaskInfoType>) {
             this.taskInfo = { ...this.taskInfo, ...info }
             wsCache.set(TASK_INFO_KEY, this.taskInfo)
+        },
+        setStaffList(staffList: StaffInfoItem[]) {
+            this.staffList = staffList
         },
         // 清空 taskInfo 并删除缓存
         resetTaskInfo() {
