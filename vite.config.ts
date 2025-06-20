@@ -68,6 +68,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,
           // rewrite: (path) => path.replace(/^\/erp/, '')
         },
+        '/ajax': {
+          target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
+          changeOrigin: true,
+          // rewrite: (path) => path.replace(/^\/erp/, '')
+        },
         '/apps': {
           target: 'http://192.168.127.17/', // 替换为实际的目标服务器地址
           changeOrigin: true,

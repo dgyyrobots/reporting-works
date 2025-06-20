@@ -127,6 +127,7 @@
   
   <!-- 添加人员选择组件 -->
   <ChoosePerson ref="choosePersonRef" @confirm="handlePersonConfirm" @close="handlePersonClose" />
+  <ChoosePersonWithCompany ref="choosePersonWithCompanyRef" @confirm="handleOperatorConfirm" @close="handleOperatorClose" />
 </template>
 
 <script setup>
@@ -134,7 +135,7 @@ import { ref, computed } from 'vue'
 import { Icon } from '/@/components/Icon'
 import BaseTable from './components/BaseTable.vue'
 import ChoosePerson from './components/ChoosePerson.vue'
-
+import ChoosePersonWithCompany from './components/ChoosePersonWithCompany.vue'
 // 空行模板
 const emptyRowTemplate = {
   emp_name: '',
@@ -160,6 +161,7 @@ const tableData = ref([{ ...emptyRowTemplate }])
 
 // 人员选择组件引用
 const choosePersonRef = ref(null)
+const choosePersonWithCompanyRef = ref(null)
 // 当前正在编辑的行
 const currentEditingRow = ref(null)
 const currentOperationType = ref('')
@@ -175,13 +177,7 @@ const handSearchPerson = (row) => {
 const handlePersonConfirm = (selectedPerson) => {
   console.log('selectedPerson', selectedPerson)
   if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
-    switch (currentOperationType.value) {
-      case 'emp_name':
-        
-      const nameArr=[]
-      const numberArr=[]
-      const idArr=[]
-      selectedPerson.map(item=>{
+     selectedPerson.map(item=>{
         nameArr.push(item.name)
         numberArr.push(item.number)
         idArr.push(item.id)
@@ -189,37 +185,49 @@ const handlePersonConfirm = (selectedPerson) => {
         currentEditingRow.value.emp_name = nameArr.join(',')
         currentEditingRow.value.emp_number = numberArr.join(',')
         currentEditingRow.value.emp_id = idArr.join(',')
-        break
-      case 'start_operator_name':
-        currentEditingRow.value.start_operator_name = selectedPerson[0].name
-        currentEditingRow.value.start_operator_id = selectedPerson[0].id
-        break
-      case 'end_operator_name':
-        currentEditingRow.value.end_operator_name = selectedPerson[0].name
-        currentEditingRow.value.end_operator_id = selectedPerson[0].id
-        break
-    }
-
   }
 }
+
+
+
+
+// 处理操作人选择确认
+const handleOperatorConfirm = (selectedPerson) => {
+  console.log('selectedPerson', selectedPerson)
+  if (selectedPerson && selectedPerson.length > 0 && currentEditingRow.value) {
+    // 根据当前操作类型设置不同的字段
+    if (currentOperationType.value === 'startOperator') {
+      currentEditingRow.value.start_operator_name = selectedPerson[0].fullname
+      currentEditingRow.value.start_operator_id = selectedPerson[0].id
+    } else if (currentOperationType.value === 'endOperator') {
+      currentEditingRow.value.end_operator_name = selectedPerson[0].fullname
+      currentEditingRow.value.end_operator_id = selectedPerson[0].id
+    }
+  }
+}
+
 // 打开上工操作人选择对话框
 const handleSearchStartOperator = (row) => {
   currentEditingRow.value = row
-  currentOperationType.value = 'start_operator_name'
-  choosePersonRef.value.open([], true) // 传递 isSingleMode: true
+  currentOperationType.value = 'startOperator'
+  choosePersonWithCompanyRef.value.open([], true) // 传递 isSingleMode: true
 }
 
 // 打开下工操作人选择对话框
 const handleSearchEndOperator = (row) => {
   currentEditingRow.value = row
-  currentOperationType.value = 'end_operator_name'
-  choosePersonRef.value.open([], true) // 传递 isSingleMode: true
+  currentOperationType.value = 'endOperator'
+  choosePersonWithCompanyRef.value.open([], true) // 传递 isSingleMode: true
 }
 // 处理人员选择关闭
 const handlePersonClose = () => {
   currentEditingRow.value = null
 }
-
+// 处理操作人选择关闭
+const handleOperatorClose = () => {
+  currentEditingRow.value = null
+  currentOperationType.value = ''
+}
 // 计算时长
 const calculateDuration = (startTime, endTime) => {
   if (!startTime || !endTime) return ''
