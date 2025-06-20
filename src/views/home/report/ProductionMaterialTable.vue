@@ -5,15 +5,15 @@
     @add-row="handleAddRow"
     @delete-row="handleDeleteRow"
   >
-    <el-table-column label="流转卡编码" prop="cardCode" min-width="120" align="center">
+    <el-table-column label="流转卡编码" prop="rc_no" min-width="120" align="center">
       <template #default="{ row }">
         <div class="input-with-search">
-          <el-input v-model="row.cardCode" placeholder="" />
+          <el-input v-model="row.rc_no" placeholder="" />
         </div>
       </template>
     </el-table-column>
     
-    <el-table-column label="物料名称" prop="materialName" min-width="150" align="center">
+    <el-table-column label="物料名称" prop="sku_name" min-width="150" align="center">
       <template #header>
         <div class="column-header-with-icon">
           <span>物料名称</span>
@@ -22,98 +22,98 @@
       </template>
       <template #default="{ row ,$index}">
         <div class="input-with-search">
-          <el-input v-model="row.materialName" placeholder="请输入物料名称或编码" />
+          <el-input v-model="row.sku_name" placeholder="请输入物料名称或编码" />
           <el-button class="search-btn" @click="handMore($index)"> <el-icon><More /></el-icon></el-button>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="物料编号" prop="materialCode" min-width="120" align="center">
+    <el-table-column label="物料编号" prop="sku_no" min-width="120" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.materialCode" placeholder="" />
+        <el-input v-model="row.sku_no" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="汇报数量" prop="reportQuantity" min-width="100" align="center">
+    <el-table-column label="汇报数量" prop="report_qty" min-width="100" align="center">
       <template #default="{ row }">
-        <!-- <el-input v-model="row.reportQuantity" placeholder="" /> -->
-        <span> {{ row.reportQuantity }}</span>
+        <!-- <el-input v-model="row.report_qty" placeholder="" /> -->
+        <span> {{ row.report_qty }}</span>
       </template>
     </el-table-column>
     
-    <el-table-column label="合格数量" prop="qualifiedQuantity" min-width="100" align="center">
+    <el-table-column label="合格数量" prop="ok_qty" min-width="100" align="center">
       <template #default="{ row }">
-        <!-- <el-input v-model="row.qualifiedQuantity" placeholder="" /> -->
-        <span> {{ row.qualifiedQuantity }}</span>
+        <!-- <el-input v-model="row.ok_qty" placeholder="" /> -->
+        <span> {{ row.ok_qty }}</span>
       </template>
     </el-table-column>
     
-    <el-table-column label="制程废品" prop="processWaste" min-width="100" align="center">
+    <el-table-column label="制程废品" prop="no_okqty" min-width="100" align="center">
       <template #default="{ row }">
-        <!-- <el-input v-model="row.processWaste" placeholder="" /> -->
-        <span> {{ row.processWaste }}</span>
+        <!-- <el-input v-model="row.no_okqty" placeholder="" /> -->
+        <span> {{ row.no_okqty }}</span>
       </template>
     </el-table-column>
     
-    <el-table-column label="过版纸数量" prop="paperQuantity" min-width="120" align="center">
+    <el-table-column label="过版纸数量" prop="pass_qty" min-width="120" align="center">
       <template #default="{ row }">
-        <!-- <el-input v-model="row.paperQuantity" placeholder="" /> -->
-        <span> {{ row.paperQuantity }}</span>
+        <!-- <el-input v-model="row.pass_qty" placeholder="" /> -->
+        <span> {{ row.pass_qty }}</span>
       </template>
     </el-table-column>
     
-    <el-table-column label="无形损耗数量" prop="invisibleLoss" min-width="120" align="center">
+    <el-table-column label="无形损耗数量" prop="loss_qty" min-width="120" align="center">
       <template #default="{ row }">
-        <!-- <el-input v-model="row.invisibleLoss" placeholder="" /> -->
-        <span> {{row.invisibleLoss }}</span>
+        <!-- <el-input v-model="row.loss_qty" placeholder="" /> -->
+        <span> {{row.loss_qty }}</span>
       </template>
     </el-table-column>
     
-    <el-table-column label="定额数量" prop="quotaQuantity" min-width="100" align="center">
+    <el-table-column label="定额产量" prop="quota_capacity" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.quotaQuantity" placeholder="" />
+        <el-input v-model="row.quota_capacity" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="计件定额" prop="pieceQuota" min-width="100" align="center">
+    <el-table-column label="计件定额" prop="peice_quota" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.pieceQuota" placeholder="" />
+        <el-input v-model="row.peice_quota" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="计件系数" prop="pieceCoefficient" min-width="100" align="center">
+    <el-table-column label="计件系数" prop="piece_ratio" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.pieceCoefficient" placeholder="" />
+        <el-input v-model="row.piece_ratio" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="机台系数" prop="machineCoefficient" min-width="100" align="center">
+    <el-table-column label="机台系数" prop="device_ratio" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.machineCoefficient" placeholder="" />
+        <el-input v-model="row.device_ratio" placeholder="" />
       </template>
     </el-table-column>
     
 
-    <el-table-column label="工序序号" prop="processSequence" min-width="100" align="center">
+    <el-table-column label="工序序号" prop="order_no" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.processSequence" placeholder="" />
+        <el-input v-model="row.order_no" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="新版次数" prop="newVersionCount" min-width="100" align="center">
+    <el-table-column label="新版次数" prop="ud_102869_xinban" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.newVersionCount" placeholder="" />
+        <el-input v-model="row.ud_102869_xinban" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="旧版次数" prop="oldVersionCount" min-width="100" align="center">
+    <el-table-column label="旧版次数" prop="ud_102869_jiuban" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.oldVersionCount" placeholder="" />
+        <el-input v-model="row.ud_102869_jiuban" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="磨刀次数" prop="knifeGrindingCount" min-width="100" align="center">
+    <el-table-column label="磨刀次数" prop="ud_102869_modao" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.knifeGrindingCount" placeholder="" />
+        <el-input v-model="row.ud_102869_modao" placeholder="" />
       </template>
     </el-table-column>
   </BaseTable>
@@ -131,22 +131,22 @@ import MaterialSelectDialog from './components/MaterialSelectDialog.vue'
 
 // 空行模板
 const emptyRowTemplate = {
-  cardCode: '',
-  materialName: '',
-  reportQuantity: '',
-  qualifiedQuantity: '',
-  processWaste: '',
-  paperQuantity: '',
-  invisibleLoss: '',
-  quotaQuantity: '',
-  pieceQuota: '',
-  pieceCoefficient: '',
-  machineCoefficient: '',
-  materialCode: '',
-  processSequence: '',
-  newVersionCount: '',
-  oldVersionCount: '',
-  knifeGrindingCount: ''
+  rc_no: '',
+  sku_name: '',
+  report_qty: '',
+  ok_qty: '',
+  no_okqty: '',
+  pass_qty: '',
+  loss_qty: '',
+  quota_capacity: '',
+  peice_quota: '',
+  piece_ratio: '',
+  device_ratio: '',
+  sku_no: '',
+  order_no: '',
+  ud_102869_xinban: '',
+  ud_102869_jiuban: '',
+  ud_102869_modao: ''
 }
 const materialSelectDialogRef = ref(null)
 const materialSelectDialogChooseIndex = ref(null)
@@ -175,15 +175,15 @@ const openScanDialog = () => {
 
 const addMaterialName = (data) => {
   if (tableData.value.length === 1 && 
-      !tableData.value[0].materialName && 
-      !tableData.value[0].materialCode) {
-    tableData.value[0].materialName = data.name
-    tableData.value[0].materialCode = data.number
+      !tableData.value[0].sku_name && 
+      !tableData.value[0].sku_no) {
+    tableData.value[0].sku_name = data.name
+    tableData.value[0].sku_no = data.number
   } else {
     tableData.value.push({
       ...emptyRowTemplate,
-      materialName: data.name,
-      materialCode: data.number
+      sku_name: data.name,
+      sku_no: data.number
     })
   }
 }
@@ -197,8 +197,8 @@ const handMore = (index) => {
 // 处理选择物料
 const handleChooseMaterial = (material) => {
   if (material) {
-      tableData.value[materialSelectDialogChooseIndex.value].materialName = material.name || ''
-      tableData.value[materialSelectDialogChooseIndex.value].materialCode = material.number || ''
+      tableData.value[materialSelectDialogChooseIndex.value].sku_name = material.name || ''
+      tableData.value[materialSelectDialogChooseIndex.value].sku_no = material.number || ''
   }
 }
 
