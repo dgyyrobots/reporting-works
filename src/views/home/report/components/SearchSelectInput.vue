@@ -3,7 +3,7 @@
     <div class="input-wrapper">
       <el-input 
         v-model="searchText" 
-        :placeholder="'请输入编码/名称查询'" 
+        :placeholder="'请扫描或输入条码'" 
         @input="handleInput"
         @focus="handleFocus"
         @blur="handleBlurDelayed"
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, nextTick } from 'vue'
+import { ref, watch, defineProps, defineEmits, nextTick ,onMounted,onUnmounted} from 'vue'
 import { More, Close } from '@element-plus/icons-vue'
 import { getSkuList } from '@/api/mes/wk/index.ts'
 import { ElMessage } from 'element-plus'
@@ -201,8 +201,26 @@ const chooseRow = (row) => {
   emit('update:modelValue', row)
   emit('select', row)
 }
+const handleKeyDown = (e) => {
+  const keyCode = e.keyCode
 
+  if (keyCode === 13) {
+    if (!e.target.value) return
+    searchText.value = e.target.value
+  }
+}
+// 组件挂载时添加全局点击事件监听
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
 
+const remove_keydownlistener = () => {
+  window.removeEventListener('keydown', handleKeyDown, false)
+}
+// 组件卸载时移除全局点击事件监听
+onUnmounted(() => {
+  remove_keydownlistener()
+})
 // 组件卸载时清除定时器
 onBeforeUnmount(() => {
   if (blurTimer) {
