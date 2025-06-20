@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose,defineProps } from 'vue'
+import { ref, defineExpose, defineProps } from 'vue'
 import ProductionReportForm from './ProductionReportForm.vue'
 import { Icon } from '/@/components/Icon'
 import { ElMessage } from 'element-plus'
@@ -50,6 +50,8 @@ import ProductionReportTable from './ProductionReportTable.vue'
 import ProductionMaterialTable from './ProductionMaterialTable.vue'
 import ProcessTable from './ProcessTable.vue'
 import MoldOperationTable from './MoldOperationTable.vue'
+import confetti from 'canvas-confetti'
+
 const visible = ref(false)
 const formRef = ref(null)
 // 定义props
@@ -75,11 +77,55 @@ function handleCancel() {
   closeDialog()
 }
 
+// 撒花庆祝效果
+function celebrateSuccess() {
+  const duration = 3000;
+  const animationEnd = Date.now() + duration;
+  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  const interval = setInterval(function() {
+    const timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    const particleCount = 50 * (timeLeft / duration);
+    
+    // 从左边和右边发射彩花
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+    });
+    
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+    });
+  }, 250);
+}
+
 function handleSubmit() {
   // 获取表单数据
   const formData = formRef.value?.formData
   // 提交逻辑后续补充
-  closeDialog()
+  
+  // 模拟提交成功
+  ElMessage.success('提交成功！');
+  
+  // 触发撒花庆祝效果
+  celebrateSuccess();
+  
+  // 延迟关闭对话框，让用户能看到撒花效果
+  setTimeout(() => {
+    closeDialog();
+  }, 1500);
 }
 
 // 新增按钮处理函数
