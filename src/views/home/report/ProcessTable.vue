@@ -171,4 +171,17 @@ defineExpose({
     }
   }
 }
+
+:deep(.el-textarea) {
+  .el-textarea__inner {
+    background-color: transparent;
+    border-color: #1ecfff;
+    color: #fff;
+    box-shadow: 0 0 0 1px #0f7294 inset;
+    
+    &:focus { 
+      box-shadow: 0 0 0 1px #1ecfff inset;
+    }
+  }
+}
 </style>
