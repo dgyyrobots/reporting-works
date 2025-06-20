@@ -5,9 +5,9 @@
     @add-row="handleAddRow"
     @delete-row="handleDeleteRow"
   >
-    <el-table-column label="类型" prop="type" min-width="100" align="center">
+    <el-table-column label="类型" prop="type_name" min-width="100" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.type" placeholder="" />
+        <el-input v-model="row.type_name" placeholder="" />
       </template>
     </el-table-column>
     
@@ -19,6 +19,7 @@
           placeholder=""
           format="YYYY-MM-DD HH:mm"
           value-format="YYYY-MM-DD HH:mm"
+          @change="() => handleTimeChange(row)"
         />
       </template>
     </el-table-column>
@@ -31,47 +32,48 @@
           placeholder=""
           format="YYYY-MM-DD HH:mm"
           value-format="YYYY-MM-DD HH:mm"
+          @change="() => handleTimeChange(row)"
         />
       </template>
     </el-table-column>
     
     <el-table-column label="时长(小时)" min-width="100" align="center">
       <template #default="{ row }">
-        {{ calculateDuration(row.start_date, row.end_date) }}
+        <el-input v-model="row.total_time" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="工单号" prop="work_no" min-width="120" align="center">
+    <el-table-column label="工单号" prop="note" min-width="120" align="center">
       <template #default="{ row }">
         <div class="input-with-search">
-          <el-input v-model="row.work_no" placeholder="" />
+          <el-input v-model="row.note" placeholder="" />
           <el-button class="search-btn"><Icon icon="svg-icon:search" /></el-button>
         </div>
       </template>
     </el-table-column>
     
-    <el-table-column label="工单编码" prop="workOrderCode" min-width="120" align="center">
+    <el-table-column label="工单编码" prop="work_no" min-width="120" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.workOrderCode" placeholder="" />
+        <el-input v-model="row.work_no" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="物料名称" prop="materialName" min-width="150" align="center">
+    <el-table-column label="物料名称" prop="sku_name" min-width="150" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.materialName" placeholder="" />
+        <el-input v-model="row.sku_name" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="物料编码" prop="materialCode" min-width="120" align="center">
+    <el-table-column label="物料编码" prop="sku_no" min-width="120" align="center">
       <template #default="{ row }">
-        <el-input v-model="row.materialCode" placeholder="" />
+        <el-input v-model="row.sku_no" placeholder="" />
       </template>
     </el-table-column>
     
-    <el-table-column label="工艺描述" prop="processDescription" min-width="200" align="center">
+    <el-table-column label="工艺描述" prop="prodesc" min-width="200" align="center">
       <template #default="{ row }">
         <el-input 
-          v-model="row.processDescription" 
+          v-model="row.prodesc" 
           type="textarea" 
           :rows="2"
           placeholder="" 
@@ -88,14 +90,14 @@ import BaseTable from './components/BaseTable.vue'
 
 // 空行模板
 const emptyRowTemplate = {
-  type: '',
+  type_name: '',
   start_date: '',
   end_date: '',
+  note: '',
   work_no: '',
-  workOrderCode: '',
-  materialName: '',
-  materialCode: '',
-  processDescription: ''
+  sku_name: '',
+  sku_no: '',
+  prodesc: ''
 }
 
 // 表格数据
@@ -117,26 +119,30 @@ const handleDeleteRow = (index) => {
   }
 }
 
-// 计算时长（小时）
-const calculateDuration = (start_date, end_date) => {
-  if (!start_date || !end_date) return ''
-  
-  try {
-    const start = new Date(start_date)
-    const end = new Date(end_date)
-    const diff = end - start
-    
-    if (diff < 0) return ''
-    
-    // 转换为小时，保留两位小数
-    const hours = (diff / (1000 * 60 * 60)).toFixed(2)
-    
-    return hours
-  } catch (e) {
-    return ''
+// 处理时间变化，自动计算时长
+const handleTimeChange = (row) => {
+  if (row.start_date && row.end_date) {
+    try {
+      const start = new Date(row.start_date)
+      const end = new Date(row.end_date)
+      const diffMs = end - start
+      
+      if (diffMs < 0) {
+        row.total_time = ''
+        return
+      }
+      
+      // 计算小时数，保留两位小数
+      const hours = (diffMs / (1000 * 60 * 60)).toFixed(2)
+      row.total_time = hours
+    } catch (e) {
+      console.error('计算时长出错:', e)
+      row.total_time = ''
+    }
+  } else {
+    row.total_time = ''
   }
 }
-
 // 暴露表格数据给父组件
 defineExpose({
   tableData
