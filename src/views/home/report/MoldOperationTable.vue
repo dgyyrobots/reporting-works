@@ -31,17 +31,18 @@
     </el-table-column>
     
     <el-table-column label="模具操作类型" prop="io_type_name" min-width="120" align="center">
-      <template #default="{ row }">
-        <el-select v-model="row.io_type_name" placeholder="请选择">
-          <el-option label="领用" value="领用" />
-          <el-option label="归还" value="归还" />
-          <el-option label="维修" value="维修" />
-          <el-option label="上模" value="上模" />
-          <el-option label="下模" value="下模" />
-          <el-option label="报废" value="报废" />
-        </el-select>
-      </template>
-    </el-table-column>
+    <template #default="{ row }">
+      <select v-model="row.io_type_name" class="custom-select">
+        <option value="">请选择</option>
+        <option value="领用">领用</option>
+        <option value="归还">归还</option>
+        <option value="维修">维修</option>
+        <option value="上模">上模</option>
+        <option value="下模">下模</option>
+        <option value="报废">报废</option>
+      </select>
+    </template>
+  </el-table-column>
     
     <el-table-column label="数量" prop="uqty" min-width="100" align="center">
       <template #default="{ row }">
@@ -120,5 +121,30 @@ defineExpose({
       box-shadow: 0 0 0 1px #1ecfff inset;
     }
   }
+}
+/* 添加普通select的样式 */
+.custom-select {
+  width: 100%;
+  height: 32px;
+  background-color: transparent;
+  border: 1px solid #1ecfff;
+  border-radius: 4px;
+  color: #fff;
+  padding: 0 8px;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231ecfff' d='M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  cursor: pointer;
+}
+
+.custom-select:focus {
+  box-shadow: 0 0 0 1px #1ecfff;
+}
+
+.custom-select option {
+  background-color: rgba(0, 21, 41, 0.95);
+  color: #fff;
 }
 </style>
