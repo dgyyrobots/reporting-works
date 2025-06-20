@@ -45,7 +45,7 @@
           <PayInfo />
         </div>
         <div class="left-box box-2">
-          <StaffInfo v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
+          <StaffInfo ref="StaffInfoRef" v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
         <div class="left-box box-3">
           <EquipmentTime v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
@@ -96,6 +96,33 @@
 
     <ProductionReportDialog  :current-workcenter="currentWorkcenter"  :current-device="currentDevice" ref="productionReportDialogRef" />
   </div>
+
+
+      
+    <!-- 添加员工选择弹框 -->
+    <el-dialog
+      v-model="staffSelectDialogVisible"
+      class="staff-select-dialog"
+      :close-on-click-modal="false"
+      :modal-class="'cyber-modal'"
+      :show-close="true"
+      title="是否将设备上工人员下工?"
+      width="400px"
+    >
+      <div class="staff-select-content">
+        <div class="shift-info">
+          <el-radio v-model="selectedStaff" :label="selectedStaff">{{selectedStaff}}</el-radio>
+        </div>
+        <div class="staff-name" v-for="item in workStore.staffList" :key="item.id">{{ item.emp_name }}</div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="cancelStaffSelect">取消</el-button>
+          <el-button type="primary" @click="handleStaffSelect">确认</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
 </template>
 
 <script setup>
@@ -114,14 +141,16 @@ import DeviceSelect from './components/DeviceSelect.vue'
 import ProcessSelect from './dialog/ProcessSelect.vue'
 // import TaskOperation from './dialog/TaskOperation.vue'
 import { useUserStore } from '/@/store/modules/user'
+import { useWorkStore } from '/@/store/modules/work' // 引入 work store
 import { removeToken } from '/@/utils/auth'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ProductionReportDialog from './report/ProductionReportDialog.vue'
+import { sendEndWork } from '@/api/mes/wk/index.ts'
 
 // 控制工序选择弹窗
 const processSelectRef = ref(null)
-
+const StaffInfoRef = ref(null)
 // 打开工序选择弹窗
 const openProcessSelectDialog = () => {
   processSelectRef.value?.openDialog()
@@ -132,12 +161,13 @@ const currentDate = ref('')
 const currentTime = ref('')
 const currentWeekday = ref('')
 const greeting = ref('')
+const selectedStaff = ref('')
 // 控制计时登记弹窗
 const timeRegistrationRef = ref(null)
 // const taskOperationRef = ref(null) // 已移除未使用变量
 
 let timer = null
-
+const workStore = useWorkStore()
 // 修改用户名变量
 const userName = ref('用户')
 // 添加工作中心相关变量
@@ -147,6 +177,8 @@ const currentWorkcenter = ref({})
 const currentDevice = ref({})
 
 const deviceDialogVisible = ref(false)
+
+const staffSelectDialogVisible = ref(false)
 
 const productionReportDialogRef = ref(null)
 
@@ -325,8 +357,45 @@ const handleLogout = () => {
 
 // 打开生产日报对话框
 const openProductionReportDialog = () => {
-  productionReportDialogRef.value?.openDialog()
+  // 获取员工列表
+  const staffList = workStore.getStaffList
+
+
+
+  
+  // 如果员工列表为空，直接打开生产日报对话框
+  if (!staffList || staffList.length === 0) {
+    productionReportDialogRef.value?.openDialog()
+  } else {
+    // 否则打开员工选择弹框
+    selectedStaff.value =staffList[0].classtype_name
+    staffSelectDialogVisible.value = true
+  }
 }
+
+const cancelStaffSelect =  () => {
+ staffSelectDialogVisible.value = false
+ productionReportDialogRef.value?.openDialog()
+}
+const handleStaffSelect = () => {
+  const staffList = workStore.getStaffList
+
+const params = {
+  data: JSON.stringify(staffList),
+}
+  sendEndWork(params).then((res) => {
+    if(res.ret===0){
+      ElMessage.success(res.msg)
+      // 刷新员工列表的数据
+      StaffInfoRef.value?.initData()
+      staffSelectDialogVisible.value = false
+      productionReportDialogRef.value?.openDialog()
+    }
+  })
+
+  
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -802,5 +871,38 @@ const openProductionReportDialog = () => {
 .card-content {
   padding: 12px;
   color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 </style>

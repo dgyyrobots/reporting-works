@@ -284,3 +284,10 @@ export const sendReport = async (data: any) => {
         data,
     })
 }
+// 上工员工下工的接口
+export const sendEndWork = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/mes/ajax/mes_jobbill/action:save_wc_emp_end_data',
+        data,
+    })
+}
