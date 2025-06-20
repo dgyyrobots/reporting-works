@@ -8,7 +8,7 @@
     title="新增生产日报表"
     width="94vw"
   >
-    <div class="dialog-content">
+    <div class="dialog-content" v-if="visible">
       <ProductionReportForm ref="formRef"  :currentDevice="currentDevice" :currentWorkcenter="currentWorkcenter"/>
       
       <!-- 新增按钮组 -->

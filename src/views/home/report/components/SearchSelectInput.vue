@@ -3,7 +3,7 @@
     <div class="input-wrapper">
       <el-input 
         v-model="searchText" 
-        :placeholder="placeholder" 
+        :placeholder="'请输入编码/名称查询'" 
         @input="handleInput"
         @focus="handleFocus"
         @blur="handleBlurDelayed"

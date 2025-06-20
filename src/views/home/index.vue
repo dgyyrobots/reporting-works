@@ -323,6 +323,7 @@ const handleLogout = () => {
     })
 }
 
+// 打开生产日报对话框
 const openProductionReportDialog = () => {
   productionReportDialogRef.value?.openDialog()
 }
