@@ -6,7 +6,7 @@
         <div class="form-item" style="flex: 0 0 50%;">
             <label>单据日期:</label>
             <el-date-picker 
-            v-model="formData.reportDate" 
+            v-model="formData.bill_date" 
             type="date" 
             placeholder="选择日期"
             format="YYYY-MM-DD"
@@ -140,7 +140,7 @@ const choosePersonRef = ref(null)
 const processList = ref([])
 const deviceList = ref([])
 const formData = reactive({
-  reportDate: new Date().toISOString().split('T')[0], // 今天日期
+  bill_date: new Date().toISOString().split('T')[0], // 今天日期
   wc_name: '',
   wc_number: '',
   wp_name: '',
