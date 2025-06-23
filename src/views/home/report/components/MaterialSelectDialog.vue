@@ -252,7 +252,7 @@ const initData = () => {
       rows: pageSize.value,
       sku_brand_id: sku_brand_id.value,
       multi_filter: '',
-      _: Date.now()
+      _: Math.floor(Date.now() / 1000)
     }
     
     getSkuList(params).then(res => {

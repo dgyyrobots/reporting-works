@@ -52,8 +52,7 @@ import ProductionMaterialTable from './ProductionMaterialTable.vue'
 import ProcessTable from './ProcessTable.vue'
 import MoldOperationTable from './MoldOperationTable.vue'
 import confetti from 'canvas-confetti'
-import { sendReport } from '@/api/mes/wk/index.ts'
-
+import { sendReport ,getEntry1,getEntry3 ,getEntry4} from '@/api/mes/wk/index.ts'
 const visible = ref(false)
 const formRef = ref(null)
 const ProductionReportTableRef=ref(null)
@@ -147,22 +146,28 @@ function handleSubmit() {
     ElMessage.error('班次为必录项, 请录入内容!');
     return;
   }
+  if (!formData.device_number) {
+    ElMessage.error('设备为必录项, 请录入内容!');
+    return;
+  }
+  
   // 转换日期为时间戳
-  if (formData.reportDate) {
-    formData.reportDate = new Date(formData.reportDate).getTime();
+// 转换日期为秒级时间戳
+if (formData.reportDate) {
+    formData.reportDate = Math.floor(new Date(formData.reportDate).getTime() / 1000);
   }
 
   if (formData.bill_date) {
-    formData.bill_date = new Date(formData.bill_date).getTime();
+    formData.bill_date = Math.floor(new Date(formData.bill_date).getTime() / 1000);
   }
   
-  // 转换其他可能的日期字段
+  // 转换其他可能的日期字段为秒级时间戳
   if (formData.start_date) {
-    formData.start_date = new Date(formData.start_date).getTime();
+    formData.start_date = Math.floor(new Date(formData.start_date).getTime() / 1000);
   }
   
   if (formData.end_date) {
-    formData.end_date = new Date(formData.end_date).getTime();
+    formData.end_date = Math.floor(new Date(formData.end_date).getTime() / 1000);
   }
 
   const entry3 =  ProductionReportTableRef.value?.tableData
@@ -180,13 +185,41 @@ function handleSubmit() {
     }
   }
   
-  // 处理表格中的日期字段
   if (entry3 && entry3.length > 0) {
     entry3.forEach(item => {
-      if (item.start_date) item.start_date = new Date(item.start_date).getTime();
-      if (item.end_date) item.end_date = new Date(item.end_date).getTime();
-      if (item.start_operate_date) item.start_operate_date = new Date(item.start_operate_date).getTime();
-      if (item.end_operate_date) item.end_operate_date = new Date(item.end_operate_date).getTime();
+      if (item.start_date) {
+        // 如果已经是Date对象，则转换为秒级时间戳
+        if (item.start_date instanceof Date) {
+          item.start_date = Math.floor(item.start_date.getTime() / 1000);
+        } else {
+          // 否则先转为Date对象再转为秒级时间戳
+          item.start_date = Math.floor(new Date(item.start_date).getTime() / 1000);
+        }
+      }
+      
+      if (item.end_date) {
+        if (item.end_date instanceof Date) {
+          item.end_date = Math.floor(item.end_date.getTime() / 1000);
+        } else {
+          item.end_date = Math.floor(new Date(item.end_date).getTime() / 1000);
+        }
+      }
+      
+      if (item.start_operate_date) {
+        if (item.start_operate_date instanceof Date) {
+          item.start_operate_date = Math.floor(item.start_operate_date.getTime() / 1000);
+        } else {
+          item.start_operate_date = Math.floor(new Date(item.start_operate_date).getTime() / 1000);
+        }
+      }
+      
+      if (item.end_operate_date) {
+        if (item.end_operate_date instanceof Date) {
+          item.end_operate_date = Math.floor(item.end_operate_date.getTime() / 1000);
+        } else {
+          item.end_operate_date = Math.floor(new Date(item.end_operate_date).getTime() / 1000);
+        }
+      }
     });
   }
 
@@ -245,20 +278,223 @@ const data = {
   
 
 }
-
+// 提取的可复用函数：根据班次计算开始和结束时间
+const calculateTimeRange = (shiftName) => {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  
+  let startTime
+  
+  // 判断班次类型
+  if (shiftName && shiftName.includes('白班')) {
+    // 白班：当天 07:30:00
+    startTime = new Date(today)
+    startTime.setHours(7, 30, 0)
+  } else {
+    // 晚班：昨天 19:30:00
+    startTime = new Date(yesterday)
+    startTime.setHours(19, 30, 0)
+  }
+  
+  // 转为秒级时间戳
+  const startTimestamp = Math.floor(startTime.getTime() / 1000)
+  // 结束时间为当前时间
+  const endTimestamp = Math.floor(Date.now() / 1000)
+  
+  return {
+    startDate: startTimestamp,
+    endDate: endTimestamp
+  }
+}
 // 新增按钮处理函数
 function handleGetPersonnel() {
-  ElMessage.info('获取人员功能待实现')
+  // 获取表单数据
+  const formData = formRef.value?.formData
+  
+  // 校验必要参数
+  if (!formData.wc_id) {
+    ElMessage.warning('请先选择工作中心')
+    return
+  }
+  if (!formData.device_number) {
+    ElMessage.error('设备为必录项, 请录入内容!');
+    return;
+  }
+  // 使用提取的函数计算时间范围
+  const timeRange = calculateTimeRange(formData.wp_class_name)
+  
+  // 构建请求参数
+  const params = {
+    start_date: timeRange.startDate,
+    end_date: timeRange.endDate,
+    params: JSON.stringify({
+      device_id: formData.device_id,
+      wc_id: formData.wc_id,
+      classtype_id: "5"
+    })
+  }
+  
+  // 调用接口
+  getEntry3(params).then(res => {
+    if (res && Array.isArray(res)) {
+      // 将获取到的数据填充到人员表格中
+      if (ProductionReportTableRef.value) {
+        ProductionReportTableRef.value.tableData = res.map(item => {
+          // 处理时间戳转换为日期格式
+          const processedItem = { ...item };
+          
+          // 转换开始时间
+          if (processedItem.start_date && typeof processedItem.start_date === 'number') {
+            processedItem.start_date = new Date(processedItem.start_date * 1000);
+          }
+          
+          // 转换结束时间
+          if (processedItem.end_date && typeof processedItem.end_date === 'number') {
+            processedItem.end_date = new Date(processedItem.end_date * 1000);
+          }
+          
+          // 转换开始操作时间
+          if (processedItem.start_operate_date && typeof processedItem.start_operate_date === 'number') {
+            processedItem.start_operate_date = new Date(processedItem.start_operate_date * 1000);
+          }
+          
+          // 转换结束操作时间
+          if (processedItem.end_operate_date && typeof processedItem.end_operate_date === 'number') {
+            processedItem.end_operate_date = new Date(processedItem.end_operate_date * 1000);
+          }
+          
+          return processedItem;
+        });
+        
+        ElMessage.success(`成功获取人员数据`);
+      }
+    } else {
+      ElMessage.warning('未获取到人员数据');
+    }
+  }).catch(error => {
+    console.error('获取人员失败:', error);
+    ElMessage.error('获取人员失败');
+  });
 }
 
 function handleGetProduction() {
-  ElMessage.info('获取产量功能待实现')
+  // 获取表单数据
+  const formData = formRef.value?.formData
+  
+  // 校验必要参数
+  if ( !formData.wp_id) {
+    ElMessage.warning('请先选择工序')
+    return
+  }
+  if (!formData.wc_id) {
+    ElMessage.warning('请先选择工作中心')
+    return
+  }
+  if ( !props.currentDevice.id) {
+    ElMessage.warning('请先选择设备')
+    return
+  }
+  
+  // 使用提取的函数计算时间范围
+  const timeRange = calculateTimeRange(formData.wp_class_name)
+  
+  
+  // 构建请求参数
+  const params = {
+    start_date: timeRange.startDate,
+    end_date: timeRange.endDate,
+    params: JSON.stringify({
+      wp_id: formData.wp_id,
+      wc_id: formData.wc_id,
+      device_id: formData.device_id
+    })
+  }
+  
+  
+  // 调用接口
+  getEntry1(params).then(res => {
+    if (res && Array.isArray(res)) {
+      // 将获取到的数据填充到产品物料表格中
+      if (ProductionMaterialTableRef.value) {
+        ProductionMaterialTableRef.value.tableData = res.map(item => {
+          // 根据接口返回的数据结构进行处理
+          return {
+            ...item,
+            // 可以在这里添加额外的字段处理
+          }
+        })
+        ElMessage.success(`成功获取${res.length}条产量数据`)
+      }
+    } else {
+      ElMessage.warning('未获取到产量数据')
+    }
+  }).catch(error => {
+    console.error('获取产量失败:', error)
+    ElMessage.error('获取产量失败')
+  })
 }
 
 function handleGetDeviceHours() {
-  ElMessage.info('获取设备工时功能待实现')
+  // 获取表单数据
+  const formData = formRef.value?.formData
+  
+  // 校验必要参数
+  if (!formData.wc_id) {
+    ElMessage.warning('请先选择工作中心')
+    return
+  }
+  if (!formData.device_number) {
+    ElMessage.error('设备为必录项, 请录入内容!')
+    return
+  }
+  
+  // 使用提取的函数计算时间范围
+  const timeRange = calculateTimeRange(formData.wp_class_name)
+  
+  // 构建请求参数
+  const params = {
+    start_date: timeRange.startDate,
+    end_date: timeRange.endDate,
+    params: JSON.stringify({
+      device_id: formData.device_id,
+      wc_id: formData.wc_id,
+      wp_id: formData.wp_id,
+    })
+  }
+  
+  // 调用接口
+  getEntry4(params).then(res => {
+    if (res && Array.isArray(res)) {
+      // 将获取到的数据填充到工序表格中
+      if (ProcessTableRef.value) {
+        ProcessTableRef.value.tableData = res.map(item => {
+          // 处理时间戳转换为日期格式
+          const processedItem = { ...item }
+          
+          // 转换可能存在的时间戳字段为日期格式
+          if (processedItem.start_date && typeof processedItem.start_date === 'number') {
+            processedItem.start_date = new Date(processedItem.start_date * 1000)
+          }
+          
+          if (processedItem.end_date && typeof processedItem.end_date === 'number') {
+            processedItem.end_date = new Date(processedItem.end_date * 1000)
+          }
+          
+          return processedItem
+        })
+        
+        ElMessage.success(`成功获取设备工时数据`)
+      }
+    } else {
+      ElMessage.warning('未获取到设备工时数据')
+    }
+  }).catch(error => {
+    console.error('获取设备工时失败:', error)
+    ElMessage.error('获取设备工时失败')
+  })
 }
-
 defineExpose({ openDialog, closeDialog })
 </script>
 

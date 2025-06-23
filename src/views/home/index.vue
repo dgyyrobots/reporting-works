@@ -360,9 +360,6 @@ const openProductionReportDialog = () => {
   // 获取员工列表
   const staffList = workStore.getStaffList
 
-
-
-  
   // 如果员工列表为空，直接打开生产日报对话框
   if (!staffList || staffList.length === 0) {
     productionReportDialogRef.value?.openDialog()

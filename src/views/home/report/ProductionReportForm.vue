@@ -30,7 +30,7 @@
         <div class="form-item" style="flex: 0 0 25%;">
             <label>工序: <span class="required">*</span></label>
             <div class="input-with-search">
-            <el-select v-model="formData.wp_number" filterable  placeholder="请选择">
+            <el-select v-model="formData.wp_number" filterable  placeholder="请选择" @change="wpNumberChange">
                 <el-option v-for="(item,i) in processList" :key="item.id" :label="item.name" :value="item.number" />
             </el-select>
             </div>
@@ -40,9 +40,9 @@
             <el-input v-model="formData.wp_number" placeholder="请输入" />
         </div>
         <div class="form-item" style="flex: 0 0 25%;">
-            <label>设备:</label>
+            <label>设备:<span class="required">*</span></label>
             <div class="input-with-search">
-            <el-select v-model="formData.device_number" filterable  placeholder="请选择">
+            <el-select v-model="formData.device_number" filterable  placeholder="请选择" @change="deviceNumberChange">
                 <el-option v-for="(item,i) in deviceList" :key="item.id" :label="item.name" :value="item.number" />
             </el-select>
             <!-- <el-input v-model="formData.device_name" placeholder="请输入" /> -->
@@ -144,10 +144,13 @@ const formData = reactive({
   bill_date: new Date().toISOString().split('T')[0], // 今天日期
   wc_name: '',
   wc_number: '',
+  wc_id: '',
   wp_name: '',
   wp_number: '',
+  wp_id: '',
   device_name: '',
   device_number: '',
+  device_id: '',
   wp_class_name: '',
   wp_class_number: '',
   start_date: '',
@@ -180,7 +183,7 @@ const handlePersonConfirm = (selectedPerson) => {
 }
 const initProcessList = async () => {
   const params = {
-    _: Date.now()
+    _: Math.floor(Date.now() / 1000)
   }
   const res = await getAllProcess(params)
 
@@ -192,6 +195,7 @@ const initProcessList = async () => {
     if(item.name == storeTaskInfo.wp_name){
       formData.wp_name = item.name 
       formData.wp_number = item.number
+      formData.wp_id = item.id
     }
   })
 }
@@ -201,13 +205,15 @@ const initData = () => {
   formData.company_id = props.currentWorkcenter.company_id
 
   const storeTaskInfo = workStore.getTaskInfo 
-  formData.wc_name =props.currentWorkcenter.name ||  storeTaskInfo.wc_name
-  formData.wc_number =props.currentWorkcenter.number ||  storeTaskInfo.wc_number
+  formData.wc_name =props.currentWorkcenter.name
+  formData.wc_number =props.currentWorkcenter.number
+  formData.wc_id =props.currentWorkcenter.id
   const deviceName = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].name : ''
   formData.device_name = props.currentDevice.name || deviceName 
   const deviceNumber = storeTaskInfo.company_name && storeTaskInfo.company_name.length > 0? storeTaskInfo.company_name[0].number : ''
   formData.device_number = props.currentDevice.number ||deviceNumber
-  
+  formData.device_id = props.currentDevice.id ||deviceNumber
+
   // 获取当前班次信息
   const shiftInfo = getShiftDateRange()
   formData.wp_class_name = shiftInfo.wp_class_name
@@ -234,7 +240,6 @@ const initData = () => {
 
 
 }
-
 // 格式化日期为 YYYY-MM-DD
 const formatDate = (date) => {
   const year = date.getFullYear()
@@ -301,6 +306,22 @@ const refreshAllData = () => {
   initDevice()
   initData()
   initProcessList() 
+}
+const wpNumberChange = (value) => {
+  processList.value.map(item=>{
+    if(item.number == value){
+      formData.wp_name = item.name
+      formData.wp_id = item.id
+    }
+  })
+}
+const deviceNumberChange = (value) => {
+  deviceList.value.map(item=>{
+    if(item.number == value){
+      formData.device_name = item.name
+      formData.device_id= item.id
+    }
+  })
 }
 // 监听 workStore.getTaskInfo 的变化
 

@@ -291,3 +291,25 @@ export const sendEndWork = async (data: any) => {
         data,
     })
 }
+// 获取日报产量的详情
+
+export const getEntry1 = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/mes/ajax/mes_daily_report/action:get_entry1',
+        data,
+    })
+}
+// 获取日报人员的详情
+export const getEntry3 = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/mes/ajax/mes_daily_report/action:get_entry3',
+        data,
+    })
+}
+// 获取日报的设备工时
+export const getEntry4 = async (data: any) => {
+    return await request.postMultipartOriginal({
+        url: '/mes/ajax/mes_daily_report/action:get_entry4',
+        data,
+    })
+}
