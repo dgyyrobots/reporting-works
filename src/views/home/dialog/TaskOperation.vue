@@ -442,7 +442,7 @@ const handleStartTask = () => {
     const data = {
       id: selectedRow.value.id,
       action_id:1,
-      device_list: [device],
+      device_list: JSON.stringify([device]),
       type:0
     }
     getChangeDeviceBillData(data).then(res => {
