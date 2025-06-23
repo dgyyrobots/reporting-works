@@ -272,7 +272,7 @@ defineExpose({ openDialog, closeDialog })
 
 .dialog-content {
   min-height: 400px;
-  padding: 20px;
+  padding: 14px 0;
   color: #fff;
 }
 

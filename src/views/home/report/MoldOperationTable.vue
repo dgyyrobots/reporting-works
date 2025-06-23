@@ -13,7 +13,6 @@
       <template #default="{ row }">
         <div class="input-with-search">
           <el-input v-model="row.mould_name" placeholder="" />
-          <el-button class="search-btn"><Icon icon="svg-icon:search" /></el-button>
         </div>
       </template>
     </el-table-column>

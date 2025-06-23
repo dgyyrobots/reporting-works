@@ -11,7 +11,7 @@
     >
       <el-table-column type="index" label="序号" width="60" align="center" />
       
-      <el-table-column v-if="showConfigColumn" label="配置" width="100" align="center">
+      <el-table-column v-if="showConfigColumn" label="配置" width="80" align="center">
         <template #header>
           <el-tooltip content="配置" placement="top">
             <span> <Icon icon="svg-icon:set" :style="{ color: '#1ecfff' }" /><span style="margin-left: 4px;">配置</span></span>

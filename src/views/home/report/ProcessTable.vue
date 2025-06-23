@@ -45,10 +45,7 @@
     
     <el-table-column label="工单号" prop="note" min-width="120" align="center">
       <template #default="{ row }">
-        <div class="input-with-search">
-          <el-input v-model="row.note" placeholder="" />
-          <el-button class="search-btn"><Icon icon="svg-icon:search" /></el-button>
-        </div>
+        <el-input v-model="row.note" placeholder="" />
       </template>
     </el-table-column>
     
