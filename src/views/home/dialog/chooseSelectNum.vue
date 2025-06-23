@@ -75,7 +75,6 @@ const cancel = () => {
 
 // 确认操作
 const confirm = async () => {
-  console.log(props.currentDevice,'dddddddd')
   try {
     // 从workStore获取taskInfo
     const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
@@ -96,7 +95,6 @@ const confirm = async () => {
     if(processedTaskInfo.company_name) {
       processedTaskInfo.company_name = JSON.stringify(processedTaskInfo.company_name)
     }
-    console.log(processedTaskInfo,'processedTaskInfo')
     // 构建请求参数，合并taskInfo、props.params和formData
     const requestParams = {
       // 从taskInfo中获取必要参数
@@ -110,10 +108,9 @@ const confirm = async () => {
       device_name: props.currentDevice.name,
       device_number: props.currentDevice.number,
     }
-    console.log(JSON.stringify(requestParams),'requestParams')
 
     // 调用接口
-    const res = await updateVersionNumberManageEntryData(requestParams)
+    const res = await updateVersionNumberManageEntryData({data:JSON.stringify(requestParams)})
 
     if (res && res.ret === 0) {
       ElMessage.success('操作成功')
