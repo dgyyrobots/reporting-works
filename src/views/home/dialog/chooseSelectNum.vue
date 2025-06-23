@@ -40,6 +40,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+    currentDevice: {
+      type: Object,
+      default: () => ({})
+    },
 })
 
 
@@ -71,21 +75,42 @@ const cancel = () => {
 
 // 确认操作
 const confirm = async () => {
+  console.log(props.currentDevice,'dddddddd')
   try {
     // 从workStore获取taskInfo
     const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
 
-    
+        // 处理taskInfo，将对象类型的值转换为JSON字符串
+    const processedTaskInfo = {}
+    for (const key in taskInfo) {
+      if (Object.prototype.hasOwnProperty.call(taskInfo, key)) {
+        const value = taskInfo[key]
+        // 如果值是对象且不是数组，则转换为JSON字符串
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          processedTaskInfo[key] = JSON.stringify(value)
+        } else {
+          processedTaskInfo[key] = value
+        }
+      }
+    }
+    if(processedTaskInfo.company_name) {
+      processedTaskInfo.company_name = JSON.stringify(processedTaskInfo.company_name)
+    }
+    console.log(processedTaskInfo,'processedTaskInfo')
     // 构建请求参数，合并taskInfo、props.params和formData
     const requestParams = {
       // 从taskInfo中获取必要参数
   
       // 表单数据
-      ...taskInfo,
+      ...processedTaskInfo,
       status_id: formData.status_id,
       collection_qty: formData.collection_qty,
       collection_uqty: formData.collection_qty,
+      device_id: props.currentDevice.id,
+      device_name: props.currentDevice.name,
+      device_number: props.currentDevice.number,
     }
+    console.log(JSON.stringify(requestParams),'requestParams')
 
     // 调用接口
     const res = await updateVersionNumberManageEntryData(requestParams)
@@ -121,6 +146,7 @@ const confirm = async () => {
 .choose-select-num {
   width: 100%;
   min-width: 260px; /* 新增，保证弹窗有宽度 */
+  padding-top: 30px;
 
   .form-container {
     display: flex;
