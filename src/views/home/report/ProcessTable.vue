@@ -11,7 +11,7 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="开始时间" prop="start_date" min-width="150" align="center">
+    <el-table-column label="开始时间" prop="start_date" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
           v-model="row.start_date" 
@@ -24,7 +24,7 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="结束时间" prop="end_date" min-width="150" align="center">
+    <el-table-column label="结束时间" prop="end_date" min-width="190" align="center">
       <template #default="{ row }">
         <el-date-picker 
           v-model="row.end_date" 

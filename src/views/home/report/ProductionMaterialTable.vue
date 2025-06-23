@@ -13,7 +13,7 @@
       </template>
     </el-table-column>
     
-    <el-table-column label="物料名称" prop="sku_name" min-width="150" align="center">
+    <el-table-column label="物料名称" prop="sku_name" min-width="190" align="center">
       <template #header>
         <div class="column-header-with-icon">
           <span>物料名称</span>
@@ -64,7 +64,7 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="物料编号" prop="sku_no" min-width="120" align="center">
+    <el-table-column label="物料编号" prop="sku_no" min-width="160" align="center">
       <template #default="{ row }">
         <el-input v-model="row.sku_no" placeholder="" />
       </template>
@@ -429,61 +429,6 @@ defineExpose({
   }
 }
 
-// 为所有弹出框添加统一的暗色主题样式
-:global(.el-select__popper),
-:global(.el-picker__popper),
-:global(.el-date-picker),
-:global(.el-date-table) {
-  background-color: rgba(0, 21, 41, 0.95) !important;
-  border-color: rgba(30, 207, 255, 0.5) !important;
-  color: #b6eaff !important;
-  
-  .el-date-table__row .available:hover {
-    color: #1ecfff !important;
-  }
-  
-  .el-date-table__row .current {
-    color: #1ecfff !important;
-    background-color: rgba(30, 207, 255, 0.2) !important;
-  }
-  
-  .el-date-picker__header-label,
-  .el-date-picker__time-header,
-  .el-picker-panel__icon-btn,
-  .el-date-picker__header-label:hover,
-  .el-month-table td .cell,
-  .el-year-table td .cell {
-    color: #b6eaff !important;
-  }
-  
-  .el-date-table th {
-    color: #8cc5ff !important;
-    border-bottom-color: rgba(30, 207, 255, 0.2) !important;
-  }
-  
-  .el-picker-panel__footer {
-    background-color: rgba(0, 21, 41, 0.95) !important;
-    border-top-color: rgba(30, 207, 255, 0.2) !important;
-  }
-  
-  .el-time-panel {
-    background-color: rgba(0, 21, 41, 0.95) !important;
-    border-color: rgba(30, 207, 255, 0.5) !important;
-  }
-  
-  .el-time-panel__content::after,
-  .el-time-panel__content::before {
-    border-color: rgba(30, 207, 255, 0.2) !important;
-  }
-  
-  .el-time-panel__btn {
-    color: #b6eaff !important;
-  }
-  
-  .el-time-panel__btn.confirm {
-    color: #1ecfff !important;
-  }
-}
 
 // 添加全局样式，用于自定义el-popover的样式
 :global(.search-dropdown-popover) {
