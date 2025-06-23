@@ -6,7 +6,7 @@
     :destroy-on-close="true"
     :modal-class="'cyber-modal'"
     title="生产版号明细"
-    width="80%"
+    width="84%"
   >
     <div class="dialog-content">
       <div v-if="loading" class="loading-container">
@@ -35,6 +35,7 @@
                   <th style="width: 100px">操作</th>
                   <th style="width: 150px">(大张)汇报数量</th>
                   <th style="width: 150px">(大张)过版数量</th>
+                  <th style="width: 120px">操作人</th>
                   <th style="width: 180px">操作时间</th>
                 </tr>
               </thead>
@@ -60,6 +61,7 @@
                   </td>
                   <td>{{ calculateBigSheetReportQty(item) }}</td>
                   <td>{{ calculateBigSheetPassQty(item) }}</td>
+                  <td>{{ item.operator_name }}</td>
                   <td>{{ formatDate(item.operate_date) }}</td>
                 </tr>
               </tbody>
