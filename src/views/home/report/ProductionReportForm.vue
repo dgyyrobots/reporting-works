@@ -120,7 +120,7 @@
 import { ref, reactive, computed, onMounted, watch,defineProps } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import ChoosePerson from './components/ChoosePerson.vue'
-import {getAllProcess } from '@/api/mes/wk/index.ts'
+import {getAllProcess,getWpCountData } from '@/api/mes/wk/index.ts'
 import { useWorkStore } from '@/store/modules/work'
 import { getWorkcenterDeviceList } from '@/api/mes/wk/index.ts'
 // 定义props
@@ -182,11 +182,35 @@ const handlePersonConfirm = (selectedPerson) => {
   }
 }
 const initProcessList = async () => {
-  const params = {
-    _: Math.floor(Date.now() / 1000)
-  }
-  const res = await getAllProcess(params)
+  // const params = {
+  //   _: Math.floor(Date.now() / 1000)
+  // }
+  // const res = await getAllProcess(params)
 
+  // processList.value = res
+
+  // const storeTaskInfo = workStore.getTaskInfo
+
+  // processList.value.map(item=>{
+  //   if(item.name == storeTaskInfo.wp_name){
+  //     formData.wp_name = item.name 
+  //     formData.wp_number = item.number
+  //     formData.wp_id = item.id
+  //   }
+  // })
+
+
+
+  
+
+  processList.value = [] // 清空之前的数据
+  
+  const params = {
+    wc_id: props.currentWorkcenter.id,
+  }
+
+  const res = await  getWpCountData (params)
+  
   processList.value = res
 
   const storeTaskInfo = workStore.getTaskInfo
@@ -198,6 +222,7 @@ const initProcessList = async () => {
       formData.wp_id = item.id
     }
   })
+
 }
 const initData = () => {
 
