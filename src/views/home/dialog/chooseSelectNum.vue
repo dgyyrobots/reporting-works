@@ -79,22 +79,25 @@ const confirm = async () => {
     // 从workStore获取taskInfo
     const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
 
-    if (!taskInfo) {
-      ElMessage.error('未获取到任务信息')
-      return
-    }
+
 
     // 构建请求参 数
     const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+    if (!jobbill_id) {
+      ElMessage.error('未获取到任务单信息')
+      return
+    }
+
+    console.log('taskInfo', taskInfo)
 
     const requestParams = {
       // 从taskInfo中获取必要参数
       // 表单数据
-      work_no: taskInfo.bill_no&&taskInfo.bill_no.match(/^[^_]+/)[0],
+      work_no: taskInfo.bill_no && taskInfo.bill_no.match(/^[^_]+/)[0],
       bill_no: taskInfo.bill_no,
       order_no: taskInfo.order_no,
       wc_id: taskInfo.wc_id,
-      wc_number: taskInfo.company_name.wc_number,
+      wc_number: taskInfo && taskInfo.company_name.wc_number,
       work_id: taskInfo.work_id,
       wp_number: taskInfo.wp_number,
       rc_no: taskInfo.rc_no,
