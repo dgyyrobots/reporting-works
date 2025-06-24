@@ -387,7 +387,7 @@ const handleStaffSelect = () => {
 }
 // 获取设备详情
 const getDeviceDetailInfo = async (number) => {
-    const deviceInfo = JSON.parse(localStorage.getItem('selectedDevice'))
+  const deviceInfo = workStore.getDeviceInfo
     const deviceNumber = number || deviceInfo.number
     if(!deviceNumber) return
     const data = {

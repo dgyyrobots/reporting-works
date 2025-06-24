@@ -107,7 +107,8 @@ const handleItemSelectChange = (item) => {
 // 获取工单ID
 const get_jobbill_id = async () => {
 
-  const deviceInfo = JSON.parse(localStorage.getItem('selectedDevice'))
+  const deviceInfo = workStore.getDeviceInfo
+
   const activeJob = deviceInfo.jobbill_no
 
   const wc_id = props.currentWorkcenter.id

@@ -176,7 +176,6 @@ watch(dialogVisible, (newVal) => {
 watch(
   () => workStore.getFleshLicenseIndex,
   (newVal) => {
-    console.log('fleshLicenseIndex 变化:', newVal)
     if (newVal) {
       fetchData()
       workStore.setLicenseCheck([])
@@ -377,8 +376,6 @@ const fetchData = async () => {
   const jobbillId = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
 
 
-  console.log(deviceId,'deviceId')
-  console.log(jobbillId,'jobbillId')
   if (!jobbillId) {
     console.log('缺少必要参数:jobbillId')
     return
@@ -422,10 +419,8 @@ const fetchData = async () => {
       page: currentPage.value,
       rows: pageSize.value,
     }
-    console.log(params,'11111111111111')
 
     const res = await getPlateListData(params)
-    console.log(res,'33333333333333')
 
     if (res && res.rows && Array.isArray(res.rows)) {
       // 处理数据，与store中的数据同步选中状态
@@ -485,7 +480,6 @@ const confirmDelete = async (item) => {
       }
       const res = await updateVersionNumberManageEntryData({data:JSON.stringify(params)})
 
-      console.log('删除响应数据:', res)
       if (res && res.ret === 0) {
         ElMessage.success('删除成功')
         // 刷新列表

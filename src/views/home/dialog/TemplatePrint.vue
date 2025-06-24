@@ -62,12 +62,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getPrintInfo ,sendPrint } from '@/api/mes/wk/index.ts'
 import { useWorkStore } from '@/store/modules/work' // 导入store
-const props = defineProps({
-  currentDevice: {
-    type: Object,
-    default: () => ({})
-  }
-})
+
 
 const emit = defineEmits(['close'])
 const workStore = useWorkStore() // 使用store

@@ -206,9 +206,7 @@ const fetchTaskInfo = async () => {
       ]),
     }
     const res = await getJobBillContent(params)
-    console.log(res,'rrrrrrrr')
 
-    
     if (res && res.rows && res.rows.length > 0) {
       const data = res.rows[0]
 
@@ -397,7 +395,6 @@ const fetchTypeAndStartTime = async () => {
       dateTimeStr = formatDateTime(dateTimeStr)
       }
       if (!dateTimeStr || typeof dateTimeStr !== 'string' || !dateTimeStr.includes(' ') || !dateTimeStr.includes('-') || !dateTimeStr.includes(':')) {
-        console.log(`无效的日期时间格式: ${dateTimeStr}`)
         throw new Error(`无效的日期时间格式: ${dateTimeStr}`)
       }
       const [datePart, timePart] = dateTimeStr.split(' ')
@@ -461,7 +458,6 @@ const fetchTypeAndStartTime = async () => {
 
     const getDeviceDetailId = async () => {
     const deviceInfo = JSON.parse(localStorage.getItem('selectedDevice'))
-    console.log('设备信息', deviceInfo)
     const data = {
     filter: JSON.stringify([{ val: [{ name: 'number', val: deviceInfo.number, action: '=' }], relation: 'OR' }]),
       filter_detail: JSON.stringify({}),
@@ -473,7 +469,6 @@ const fetchTypeAndStartTime = async () => {
     getDeviceDetail(data).then((res) => {
       if (res && res.rows && res.rows.length > 0) {
         const jobbill_no = res.rows[0].jobbill_no
-        console.log('res.rows',res.rows[0])
         if(deviceInfo.deviceInfo !== jobbill_no) {
           // 更新localStorage中的selectedDevice
           localStorage.setItem('selectedDevice', JSON.stringify(res.rows[0]))
