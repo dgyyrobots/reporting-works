@@ -378,23 +378,16 @@ const setupDataRefreshTimer = () => {
   
   // 设置新的定时器，每5秒执行一次
   dataRefreshTimer = setInterval(() => {
-    if (props.currentDevice && props.currentDevice.id && jobbill_id.value) {
-      // 使用后台刷新模式，不显示loading状态
-      fetchData(true)
-    }
+    fetchData(true)
   }, 5 * 1000) // 5秒 = 5 * 1000毫秒
 }
 
 // 监听设备变化，当设备信息有效时重新请求数据
 watch(() => props.currentDevice, async (newDevice) => {
   if (newDevice && newDevice.id) {
-    await get_jobbill_id()
-    if (jobbill_id.value) {
-      // 设备变化时使用常规刷新，显示loading
-      fetchData(false)
+     fetchData(false)
       // 设备变化时重新设置定时器
-      setupDataRefreshTimer()
-    }
+     setupDataRefreshTimer()
   }
 }, { deep: true })
 

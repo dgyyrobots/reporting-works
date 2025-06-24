@@ -109,6 +109,7 @@ const taskInfo = reactive({
 })
 // 刷新所有数据
 const refreshAllData = async () => {
+
   loading.value = true
   try {
     await fetchTaskInfo()
@@ -141,25 +142,20 @@ const setupDataRefreshTimer = () => {
   
   // 设置新的定时器，每30分钟执行一次
   dataRefreshTimer = setInterval(() => {
-    if (props.currentDevice && props.currentDevice.jobbill_no) {
-      refreshAllData()
-    }
+    refreshAllData()
   }, 30 * 60 * 1000) // 30分钟 = 30 * 60 * 1000毫秒
 }
 
-// 监听当前设备的工单号变化
-watch(
-  () => props.currentDevice.jobbill_no,
-  (newBillNo, oldBillNo) => {
-    if (newBillNo && newBillNo !== oldBillNo) {
-      // 当前设备的工单号发生变化，重新获取数据
-      refreshAllData()
+
+
+// 监听设备变化，当设备信息有效时重新请求数据
+watch(() => props.currentDevice, async (newDevice) => {
+  if (newDevice && newDevice.id) {
+     refreshAllData()
       // 重新设置定时器
       setupDataRefreshTimer()
-    }
-  },
-  { immediate: true }
-)
+  }
+}, { deep: true })
 
 // 监听store中的taskInfo变化
 watch(
@@ -185,14 +181,11 @@ const progressPercent = computed(() => {
 
 // 获取任务单信息
 const fetchTaskInfo = async () => {
+  console.log('获取任务单信息2222222222')
 
   try {
     const activeJob = props.currentDevice.jobbill_no
     const wc_id = props.currentWorkcenter.id
-    if (!activeJob) {
-
-      return
-    }
     
     const params = {
       filter: JSON.stringify([
@@ -209,7 +202,7 @@ const fetchTaskInfo = async () => {
 
     if (res && res.rows && res.rows.length > 0) {
       const data = res.rows[0]
-
+      Object.assign(taskInfo, data)
       workStore.setTaskInfo(data)
 
     } else {
@@ -245,6 +238,8 @@ const resetTaskInfo = () => {
     ud_102869_gdlx: '',
     prodesc: '',
   })
+
+  console.log(taskInfo,'任务信息已重置')
 }
 
 const fetchTimeAndNumber = async () => {

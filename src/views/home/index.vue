@@ -401,9 +401,11 @@ const getDeviceDetailInfo = async (number) => {
     getDeviceDetail(data).then((res) => {
       if (res && res.rows && res.rows.length > 0) {
         const jobbill_no = res.rows[0].jobbill_no
-        if(deviceInfo.deviceInfo !== jobbill_no) {
+        if(deviceInfo.jobbill_no !== jobbill_no) {
           // 更新localStorage中的selectedDevice
           localStorage.setItem('selectedDevice', JSON.stringify(res.rows[0]))
+          currentDevice.value = res.rows[0]
+          workStore.setDeviceInfo(res.rows[0])
         }
         // 检查store中的bill_no与当前设备的jobbill_no是否一致
         const storeTaskInfo = workStore.getTaskInfo
