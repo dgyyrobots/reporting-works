@@ -49,11 +49,11 @@ const processChartData = (data) => {
     }
   }
 
-  // 按createTime排序，从新到旧
-  data.sort((a, b) => b.createTime - a.createTime)
+  // 修改排序方向：按createTime排序，从旧到新
+  data.sort((a, b) => a.createTime - b.createTime)
   
   // 提取x轴数据（时间）
-  const times = [...new Set(data.map(item => item.createTime))].sort((a, b) => b - a)
+  const times = [...new Set(data.map(item => item.createTime))].sort((a, b) => a - b)
   // 修改这里，只显示时间部分（小时:分钟）
   const xAxisData = times.map(time => formatTimeOnly(time))
   
