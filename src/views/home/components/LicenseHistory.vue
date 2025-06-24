@@ -104,36 +104,6 @@ const handleItemSelectChange = (item) => {
   // 这里不需要额外更新selectedLicenseCheck，因为updateLicenseCheckItem已经包含了这个逻辑
 }
 
-// 获取工单ID
-const get_jobbill_id = async () => {
-
-
-  const activeJob = workStore.getDeviceInfo.jobbill_no
-
-  const wc_id = props.currentWorkcenter.id
-
-
-  const params = {
-    filter: JSON.stringify([
-      {
-        val: [
-          { name: 'wc_id', val: wc_id, action: '=' },
-          { name: 'wp_id', val: activeJob, action: '=' },
-        ],
-        relation: 'AND',
-      },
-    ]),
-  }
-
-  try {
-    const res = await getJobBillContent(params)
-    if (res && res.rows && res.rows.length > 0) {
-      jobbill_id.value = res.rows[0].id
-    }
-  } catch (error) {
-    console.error('获取工单ID失败:', error)
-  }
-}
 
 // 格式化版号
 const formatVersionNo = (versionNo) => {
@@ -190,12 +160,10 @@ const toInteger = (value) => {
 
 // 获取数据
 const fetchData = async (isBackgroundRefresh = false) => {
-  console.log('请求数据的点点滴滴的点点滴滴单点')
 
   const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
   const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
 
-  console.log('jobbill_id111111:', jobbill_id)
   // 只有在非后台刷新时才显示加载状态
   if (!isBackgroundRefresh) {
     loading.value = true
@@ -388,31 +356,21 @@ const setupDataRefreshTimer = () => {
 watch(() => workStore.deviceInfo, async (newDevice) => {
   if (newDevice && newDevice.id) {
     // 修复缩进，确保代码执行清晰
-    await fetchData(false)
+    setTimeout(() => {
+      fetchData(false)
+    }, 500);
     // 设备变化时重新设置定时器
     setupDataRefreshTimer()
   }
 }, { deep: true })
 
-// 监听设备变化，当设备信息有效时重新请求数据
-watch(() => props.currentDevice, async (newDevice) => {
-  if (newDevice && newDevice.id) {
-    setTimeout(() => {
-      fetchData(false)
-    }, 500);
-      // 设备变化时重新设置定时器
-     setupDataRefreshTimer()
-  }
-}, { deep: true })
+
 
 // 监听 fleshLicenseIndex 变化
 watch(() => workStore.getFleshLicenseIndex, (newVal) => {
   if (newVal) {
     nextTick(async () => {
       // 如果 jobbill_id 不存在，先获取它
-      if (!jobbill_id.value) {
-        await get_jobbill_id()
-      }
       fetchData()
       workStore.setLicenseCheck([])
     })
@@ -421,7 +379,6 @@ watch(() => workStore.getFleshLicenseIndex, (newVal) => {
 
 onMounted(() => {
   nextTick(async () => {
-    await get_jobbill_id()
     // 初始加载使用常规刷新，显示loading
     fetchData(false)
     // 初始化定时器

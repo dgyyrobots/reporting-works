@@ -79,10 +79,6 @@ const confirm = async () => {
     // 从workStore获取taskInfo
     const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
 
-
-
-
-console.log('taskInfo', taskInfo)
     // 构建请求参 数
     const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
     const requestParams = {

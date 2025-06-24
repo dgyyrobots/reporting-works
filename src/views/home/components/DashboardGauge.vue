@@ -95,7 +95,6 @@ const props = defineProps({
 })
 const workStore = useWorkStore() 
 const gaugeRef = ref(null)
-const jobbill_id = ref('')
 const runStatus = ref('')
 let chart = null
 const switchValue = ref(true)
@@ -401,44 +400,14 @@ const initChart = (forceRefresh = false) => {
   }
 }
 
-// 修改 get_jobbill_id 函数，添加静默模式参数
-const get_jobbill_id = async (silent = false) => {
-  try {
-    const activeJob = props.currentDevice.jobbill_no
-    const wc_id = props.currentWorkcenter.id
-    
-    if (!activeJob || !wc_id) {
-      if (!silent) console.warn('缺少必要参数，无法获取jobbill_id')
-      jobbill_id.value = ''
-      return false
-    }
-    
-    const params = {
-      filter: JSON.stringify([{"val":[{"name":"wc_id","val":wc_id,"action":"="},{"name":"bill_no","val":activeJob,"action":"="}],"relation":"AND"}])
-    }
-    
-    const res = await getJobBillContent(params)
-    
-    if (res && res.rows && res.rows.length > 0 && res.rows[0].id) {
-      jobbill_id.value = res.rows[0].id
-      return true
-    } else {
-      if (!silent) console.warn('未找到匹配的jobbill_id')
-      jobbill_id.value = ''
-      return false
-    }
-  } catch (error) {
-    if (!silent) console.error('获取jobbill_id失败:', error)
-    jobbill_id.value = ''
-    return false
-  }
-}
 
 // 修改 initCollectionQty 函数，添加后台刷新模式参数
 const initCollectionQty = async (isBackgroundRefresh = false) => {
+  const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
   try {
     // 如果没有jobbill_id，使用默认值
-    if (!jobbill_id.value) {
+    if (!jobbill_id) {
       if (!isBackgroundRefresh) {
         console.warn('没有获取到jobbill_id，使用默认值')
         collectionQty.value = 0
@@ -451,7 +420,7 @@ const initCollectionQty = async (isBackgroundRefresh = false) => {
     }
     
     const res = await getCollectionQty({
-      jobbill_id: jobbill_id.value,
+      jobbill_id: jobbill_id,
       device_id: props.currentDevice.id,
     })
     
@@ -550,8 +519,7 @@ const getDeviceSpeed = async (isBackgroundRefresh = false) => {
 
 // 修改刷新所有数据的函数
 const refreshAllData = async (isBackgroundRefresh = false) => {
-  // 后台刷新时静默获取jobbill_id
-  await get_jobbill_id(isBackgroundRefresh)
+
   await initCollectionQty(isBackgroundRefresh)
   await getDeviceSpeed(isBackgroundRefresh)
 }
@@ -598,9 +566,11 @@ const setupDataRefreshTimer = () => {
   }  
 
 
-watch(() => workStore.deviceInfo, async (newDevice) => {
+watch(() => workStore.deviceInfo,  (newDevice) => {
   if (newDevice && newDevice.id) {
-    await refreshAllData(false)
+    setTimeout(() => {
+     refreshAllData(false)
+    }, 500);
     // 初始化定时器
     setupDataRefreshTimer()
   }
