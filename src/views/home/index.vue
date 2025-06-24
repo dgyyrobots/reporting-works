@@ -168,6 +168,7 @@ const timeRegistrationRef = ref(null)
 
 let timer = null
 const workStore = useWorkStore()
+const userStore = useUserStore()
 // 修改用户名变量
 const userName = ref('用户')
 // 添加工作中心相关变量
@@ -181,79 +182,6 @@ const deviceDialogVisible = ref(false)
 const staffSelectDialogVisible = ref(false)
 
 const productionReportDialogRef = ref(null)
-
-// 在组件挂载时获取用户信息和工作中心信息
-onMounted(() => {
-  updateDateTime() // 初始化时间
-  timer = setInterval(updateDateTime, 1000) // 每秒更新一次
-
-  // 获取用户信息
-  try {
-    const userInfoStr = localStorage.getItem('userInfo')
-    if (userInfoStr) {
-      const userInfo = JSON.parse(userInfoStr)
-      // 使用与WorkcenterSelect.vue相同的字段
-      userName.value = userInfo.fullname || '用户'
-    }
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-  }
-
-  // 获取当前选中的工作中心
-  try {
-    const workcenterStr = localStorage.getItem('selectedWorkcenter')
-    if (workcenterStr) {
-      currentWorkcenter.value = JSON.parse(workcenterStr)
-    }
-  } catch (error) {
-    console.error('获取工作中心信息失败:', error)
-  }
-
-  // 获取当前选中的设备
-  try {
-    const deviceStr = localStorage.getItem('selectedDevice')
-    if (deviceStr) {
-      currentDevice.value = JSON.parse(deviceStr)
-    } else {
-      // 如果没有选择设备，自动打开设备选择弹框
-      setTimeout(() => {
-        openDeviceDialog()
-      }, 500) // 延迟500ms打开，确保组件完全加载
-    }
-  } catch (error) {
-    console.error('获取设备信息失败:', error)
-    // 出错时也打开设备选择弹框
-    setTimeout(() => {
-      openDeviceDialog()
-    }, 500)
-  }
-})
-
-// 打开工作中心选择弹框
-const openDeviceDialog = () => {
-  deviceDialogVisible.value = true
-}
-
-// 处理工作中心选择
-const handDeviceSelect = (device) => {
-  currentDevice.value = device
-  deviceDialogVisible.value = false
-
-  // 存储选择的工作中心信息
-  localStorage.setItem('selectedDevice', JSON.stringify(device))
-    // 存储设备信息到store
-    workStore.setDeviceInfo(device)
-    
-  // 重置任务信息，避免显示旧的任务信息
-  workStore.resetTaskInfo()
-  
-  console.log('当前设备:', device)
-  // 提示用户已切换工作中心
-  ElMessage.success(`已切换设备: ${device.name}`)
-}
-
-const userStore = useUserStore()
-// const { username } = storeToRefs(userStore) // 已移除未使用变量
 
 // 格式化日期为 YYYY-MM-DD 格式
 const formatDate = (date) => {
@@ -293,36 +221,88 @@ const updateDateTime = () => {
   currentWeekday.value = getWeekday(now)
   greeting.value = getGreeting(now.getHours())
 }
-// const initTestData = () => { // 已移除未使用变量
-//   const data = {
-//     action: 'get_can_view_workercenter',
-//   }
-//   getWorkcenterList(data).then((res) => {
-//     console.log('res111', res)
-//   })
-// }
-onMounted(() => {
+
+// 初始化时间相关功能
+const initTimeDisplay = () => {
   updateDateTime() // 初始化时间
   timer = setInterval(updateDateTime, 1000) // 每秒更新一次
+}
 
-  // initTestData()
-
-  setTimeout(() => {
-    console.log(currentDevice.value, 'device')
-  }, 400)
-})
-
-onBeforeUnmount(() => {
-  // 清除定时器
-  if (timer) {
-    clearInterval(timer)
-    timer = null
+// 获取用户信息
+const initUserInfo = () => {
+  try {
+    const userInfoStr = localStorage.getItem('userInfo')
+    if (userInfoStr) {
+      const userInfo = JSON.parse(userInfoStr)
+      // 使用与WorkcenterSelect.vue相同的字段
+      userName.value = userInfo.fullname || '用户'
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
   }
-})
+}
 
+// 获取工作中心信息
+const initWorkcenterInfo = () => {
+  try {
+    const workcenterStr = localStorage.getItem('selectedWorkcenter')
+    if (workcenterStr) {
+      currentWorkcenter.value = JSON.parse(workcenterStr)
+    }
+  } catch (error) {
+    console.error('获取工作中心信息失败:', error)
+  }
+}
+
+// 获取设备信息
+const initDeviceInfo = () => {
+  try {
+    const deviceStr = localStorage.getItem('selectedDevice')
+    if (deviceStr) {
+      currentDevice.value = JSON.parse(deviceStr)
+    } else {
+      // 如果没有选择设备，自动打开设备选择弹框
+      setTimeout(() => {
+        openDeviceDialog()
+      }, 500) // 延迟500ms打开，确保组件完全加载
+    }
+  } catch (error) {
+    console.error('获取设备信息失败:', error)
+    // 出错时也打开设备选择弹框
+    setTimeout(() => {
+      openDeviceDialog()
+    }, 500)
+  }
+}
+
+// 打开工作中心选择弹框
+const openDeviceDialog = () => {
+  deviceDialogVisible.value = true
+}
+
+// 处理工作中心选择
+const handDeviceSelect = (device) => {
+  currentDevice.value = device
+  deviceDialogVisible.value = false
+
+  // 存储选择的工作中心信息
+  localStorage.setItem('selectedDevice', JSON.stringify(device))
+  // 存储设备信息到store
+  workStore.setDeviceInfo(device)
+    
+  // 重置任务信息，避免显示旧的任务信息
+  workStore.resetTaskInfo()
+  
+  // 提示用户已切换工作中心
+  ElMessage.success(`已切换设备: ${device.name}`)
+}
+
+
+// 打开计时登记弹窗
 const openTimeRegistration = () => {
   timeRegistrationRef.value?.openDialog()
 }
+
 // 处理退出登录
 const handleLogout = () => {
   ElMessageBox.confirm('确定要退出登录吗?', '提示', {
@@ -371,23 +351,25 @@ const openProductionReportDialog = () => {
     productionReportDialogRef.value?.openDialog()
   } else {
     // 否则打开员工选择弹框
-    selectedStaff.value =staffList[0].classtype_name
+    selectedStaff.value = staffList[0].classtype_name
     staffSelectDialogVisible.value = true
   }
 }
 
-const cancelStaffSelect =  () => {
- staffSelectDialogVisible.value = false
- productionReportDialogRef.value?.openDialog()
+// 取消员工选择
+const cancelStaffSelect = () => {
+  staffSelectDialogVisible.value = false
+  productionReportDialogRef.value?.openDialog()
 }
+
+// 处理员工选择
 const handleStaffSelect = () => {
   const staffList = workStore.getStaffList
-
-const params = {
-  data: JSON.stringify(staffList),
-}
+  const params = {
+    data: JSON.stringify(staffList),
+  }
   sendEndWork(params).then((res) => {
-    if(res.ret===0){
+    if(res.ret === 0){
       ElMessage.success(res.msg)
       // 刷新员工列表的数据
       StaffInfoRef.value?.initData()
@@ -395,10 +377,34 @@ const params = {
       productionReportDialogRef.value?.openDialog()
     }
   })
-
-  
 }
 
+// 初始化应用
+const initApp = () => {
+  initTimeDisplay()
+  initUserInfo()
+  initWorkcenterInfo()
+  initDeviceInfo()
+}
+
+// 在组件挂载时初始化
+onMounted(() => {
+  initApp()
+  
+  // 调试用
+  setTimeout(() => {
+    console.log(currentDevice.value, 'device')
+  }, 400)
+})
+
+// 组件卸载前清理资源
+onBeforeUnmount(() => {
+  // 清除定时器
+  if (timer) {
+    clearInterval(timer)
+    timer = null
+  }
+})
 </script>
 
 <style lang="scss" scoped>
