@@ -187,14 +187,16 @@ const toInteger = (value) => {
 
 // 获取数据
 const fetchData = async (isBackgroundRefresh = false) => {
+
+  const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
   // 只有在非后台刷新时才显示加载状态
   if (!isBackgroundRefresh) {
     loading.value = true
   }
   
   try {
-    // 确保有 jobbill_id 和 device_id
-    if (!jobbill_id.value || !props.currentDevice.id) {
+    if (!jobbill_id || !props.currentDevice.id) {
       console.warn('缺少必要参数: jobbill_id 或 device_id')
       if (!isBackgroundRefresh) {
         tableData.value = []
@@ -208,7 +210,7 @@ const fetchData = async (isBackgroundRefresh = false) => {
         {
           val: [
             { name: 'device_id', val: props.currentDevice.id, action: '=' },
-            { name: 'jobbill_id', val: jobbill_id.value, action: '=' },
+            { name: 'jobbill_id', val: jobbill_id, action: '=' },
           ],
           relation: 'AND',
         },
@@ -241,8 +243,9 @@ const fetchData = async (isBackgroundRefresh = false) => {
     const res = await getPlateListData(params)
 
     if (res && res.rows && Array.isArray(res.rows)) {
+     const arr = res.rows.reverse()
       // 为每一行数据添加selected属性
-      const processedData = res.rows.map((item) => {
+      const processedData = arr.map((item) => {
         // 检查store中是否已有该项
         const existingItem = workStore.getLicenseCheck && workStore.getLicenseCheck.find 
           ? workStore.getLicenseCheck.find(storeItem => storeItem.id === item.id)

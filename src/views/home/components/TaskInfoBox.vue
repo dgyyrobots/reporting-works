@@ -173,14 +173,7 @@ watch(
   { deep: true }
 )
 
-// 监听taskInfo变化，自动存入store
-watch(
-  taskInfo,
-  (val) => {
-    workStore.setTaskInfo({ ...val })
-  },
-  { deep: true }
-)
+
 
 // 计算完成百分比
 const progressPercent = computed(() => {
@@ -213,13 +206,13 @@ const fetchTaskInfo = async () => {
       ]),
     }
     const res = await getJobBillContent(params)
+    console.log(res,'rrrrrrrr')
 
     
     if (res && res.rows && res.rows.length > 0) {
       const data = res.rows[0]
 
-      // 更新任务信息
-      Object.assign(taskInfo,data)
+      workStore.setTaskInfo(data)
 
     } else {
       // 如果没有找到数据，清空当前任务信息

@@ -82,7 +82,9 @@ const confirm = async () => {
 
 
 
-
+console.log('taskInfo', taskInfo)
+    // 构建请求参 数
+    const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
     const requestParams = {
       // 从taskInfo中获取必要参数
       // 表单数据
@@ -102,7 +104,7 @@ const confirm = async () => {
       device_id: props.currentDevice.id,
       device_name: props.currentDevice.name,
       device_number: props.currentDevice.number,
-      jobbill_id: taskInfo.jobbill_id,
+      jobbill_id: jobbill_id
     }
 
     // 调用接口
