@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch,  } from 'vue'
 import * as echarts from 'echarts'
 import { ElSwitch } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
@@ -596,6 +596,17 @@ const setupDataRefreshTimer = () => {
     // 返回整数部分
     return Math.floor(value)
   }  
+
+
+watch(() => workStore.deviceInfo, async (newDevice) => {
+  if (newDevice && newDevice.id) {
+    await refreshAllData(false)
+    // 初始化定时器
+    setupDataRefreshTimer()
+  }
+}, { deep: true }) 
+
+
 // 修改 onMounted 钩子
 onMounted(() => {
   nextTick(async() => {

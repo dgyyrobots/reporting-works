@@ -107,9 +107,8 @@ const handleItemSelectChange = (item) => {
 // 获取工单ID
 const get_jobbill_id = async () => {
 
-  const deviceInfo = workStore.getDeviceInfo
 
-  const activeJob = deviceInfo.jobbill_no
+  const activeJob = workStore.getDeviceInfo.jobbill_no
 
   const wc_id = props.currentWorkcenter.id
 
@@ -397,7 +396,6 @@ watch(() => workStore.deviceInfo, async (newDevice) => {
 
 // 监听设备变化，当设备信息有效时重新请求数据
 watch(() => props.currentDevice, async (newDevice) => {
-  console.log('设备信息变化:111111111', newDevice)
   if (newDevice && newDevice.id) {
     setTimeout(() => {
       fetchData(false)
