@@ -108,14 +108,14 @@ const handleItemSelectChange = (item) => {
 const get_jobbill_id = async () => {
   const activeJob = props.currentDevice.jobbill_no
   const wc_id = props.currentWorkcenter.id
-  if (!activeJob) return
+  // if (!activeJob) return
 
   const params = {
     filter: JSON.stringify([
       {
         val: [
           { name: 'wc_id', val: wc_id, action: '=' },
-          { name: 'bill_no', val: activeJob, action: '=' },
+          { name: 'wp_id', val: activeJob, action: '=' },
         ],
         relation: 'AND',
       },

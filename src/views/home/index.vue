@@ -241,6 +241,12 @@ const handDeviceSelect = (device) => {
 
   // 存储选择的工作中心信息
   localStorage.setItem('selectedDevice', JSON.stringify(device))
+    // 存储设备信息到store
+    workStore.setDeviceInfo(device)
+    
+  // 重置任务信息，避免显示旧的任务信息
+  workStore.resetTaskInfo()
+  
   console.log('当前设备:', device)
   // 提示用户已切换工作中心
   ElMessage.success(`已切换设备: ${device.name}`)

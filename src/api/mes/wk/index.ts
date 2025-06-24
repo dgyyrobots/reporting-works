@@ -313,3 +313,11 @@ export const getEntry4 = async (data: any) => {
         data,
     })
 }
+// 获取单个设备的详情
+export const getDeviceDetail = async (data: any) => {
+    const companyId = getStoredCompany()
+    return await request.postMultipartOriginal({
+        url: `/erp/ajax/get_obj_view_list/context_company_id:${companyId}/view_type:32/view_key:htnduinm/object_key:base_mes_device/root_view_key:htnduinm`,
+        data,
+    })
+}

@@ -24,6 +24,17 @@ export interface TaskInfoType {
     prodesc: string
 }
 
+// 定义设备信息接口
+export interface DeviceInfoType {
+    id: string | number
+    name: string
+    number: string
+    wc_id?: string | number
+    wc_name?: string
+    wc_number?: string
+    [key: string]: any
+}
+
 // 定义缓存 key，如 TASK_INFO。
 // 在 setTaskInfo 时写入缓存，在 resetTaskInfo 时清除缓存。
 // 初始化 state 时尝试从缓存读取。
@@ -46,11 +57,13 @@ export interface StaffInfoItem {
     [key: string]: any
 }
 const TASK_INFO_KEY = 'TASK_INFO'
+const DEVICE_INFO_KEY = 'DEVICE_INFO' // 
 const { wsCache } = useCache('localStorage')
 
 export const useWorkStore = defineStore('work', {
     state: (): {
         taskInfo: TaskInfoType,
+        deviceInfo: DeviceInfoType,
         fleshTaskIndex: number,
         fleshLicenseIndex: number, // 新增fleshLicenseIndex状态
         licenseCheck: LicenseCheckItem[], // 所有版号数据
@@ -79,6 +92,11 @@ export const useWorkStore = defineStore('work', {
             ud_102869_gdlx: '',
             prodesc: '',
         },
+        deviceInfo: wsCache.get(DEVICE_INFO_KEY) || { // 新增设备信息，从缓存读取
+            id: '',
+            name: '',
+            number: '',
+        },
         fleshTaskIndex: 0, // 默认值为0，不从缓存读取 // 刷新任务单
         fleshLicenseIndex: 0, // 默认值为0，不从缓存读取 // 刷新版本
         licenseCheck: [], // 不需要缓存，初始为空数组
@@ -88,6 +106,7 @@ export const useWorkStore = defineStore('work', {
     }),
     getters: {
         getTaskInfo: (state) => state.taskInfo,
+        getDeviceInfo: (state) => state.deviceInfo,
         getFleshTaskIndex: (state) => state.fleshTaskIndex,
         getFleshLicenseIndex: (state) => state.fleshLicenseIndex, // 新增getter
         getLicenseCheck: (state) => state.licenseCheck, // 新增getter
@@ -98,6 +117,11 @@ export const useWorkStore = defineStore('work', {
         setTaskInfo(info: Partial<TaskInfoType>) {
             this.taskInfo = { ...this.taskInfo, ...info }
             wsCache.set(TASK_INFO_KEY, this.taskInfo)
+        },
+
+        setDeviceInfo(info: DeviceInfoType) {
+            this.deviceInfo = { ...this.deviceInfo, ...info }
+            wsCache.set(DEVICE_INFO_KEY, this.deviceInfo)
         },
         setStaffList(staffList: StaffInfoItem[]) {
             this.staffList = staffList
@@ -126,6 +150,14 @@ export const useWorkStore = defineStore('work', {
                 prodesc: '',
             }
             wsCache.delete(TASK_INFO_KEY)
+        },
+        resetDeviceInfo() {
+            this.deviceInfo = {
+                id: '',
+                name: '',
+                number: '',
+            }
+            wsCache.delete(DEVICE_INFO_KEY)
         },
         // 更新 fleshTaskIndex
         updateTaskFleshIndex() {
