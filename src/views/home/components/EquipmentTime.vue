@@ -229,10 +229,9 @@ const getShiftDateRange = () => {
   }
 }
 // 添加对 currentDevice 的监听
-watch(() => props.currentDevice, (newDevice, oldDevice) => {
+watch(() => props.currentDevice, (newDevice) => {
   // 检查设备是否变化且有效
-  if (newDevice && newDevice.number && 
-      (!oldDevice || newDevice.number !== oldDevice.number)) {
+  if (newDevice) {
     fetchDeviceRuntime()
     // 设备变化时重新设置定时器
     setupDataRefreshTimer()
