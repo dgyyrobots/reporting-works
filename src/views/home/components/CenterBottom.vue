@@ -278,7 +278,7 @@ const handleReport = () => {
   ).then(() => {
     // 调用汇报接口
     const params = {
-      data: selectedLicenseCheck, // 获取选中版号的ID数组
+      data: JSON.stringify(selectedLicenseCheck), // 获取选中版号的ID数组
       jobbill_id: taskInfo.id
     }
     
@@ -323,7 +323,7 @@ const handleCompleteReport = () => {
   ).then(() => {
     // 调用汇报接口
     const params = {
-      data: selectedLicenseCheck, // 获取选中版号的ID数组
+      data: JSON.stringify(selectedLicenseCheck), // 获取选中版号的ID数组
       jobbill_id: taskInfo.id
     }
     
@@ -428,7 +428,7 @@ const handCollectionFinish = () => {
   row.map(item=>{
     arr.push(item.id)
   })
-  collectionFinish({ids:arr}).then(res => {
+  collectionFinish({ids:JSON.stringify(arr)}).then(res => {
     if (res.ret === 0 ) {
       ElMessage.success('操作成功!')
       // 刷新版号列表

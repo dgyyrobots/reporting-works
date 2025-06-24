@@ -2,7 +2,7 @@
   <div class="template-print-dialog">
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
-      <span>加载中...</span>
+      <span>发送中...</span>
     </div>
     <template v-else>
       <div class="dialog-content">
@@ -222,6 +222,7 @@ const handPrint = async (direct) => {
         ElMessage.success(res.msg)
         emit('close')
         loading.value = false
+        workStore.updateLicenseFleshIndex()
     } else{
         ElMessage.error(res.msg)
         loading.value = false

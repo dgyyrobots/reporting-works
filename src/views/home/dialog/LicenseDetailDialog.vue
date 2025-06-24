@@ -121,10 +121,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  deviceId: {
-    type: [String, Number],
-    default: '',
-  },
   jobbillId: {
     type: [String, Number],
     default: '',
@@ -372,10 +368,23 @@ const updateSelectedLicenseCheck = () => {
 
 // 获取数据
 const fetchData = async () => {
-  if (!props.deviceId || !props.jobbillId) {
-    console.warn('缺少必要参数: deviceId 或 jobbillId')
+  const deviceInfo = workStore.getDeviceInfo || workStore.deviceInfo || {}
+
+  const deviceId = deviceInfo.id
+
+  const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+
+  const jobbillId = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+
+
+  console.log(deviceId,'deviceId')
+  console.log(jobbillId,'jobbillId')
+  if (!jobbillId) {
+    console.log('缺少必要参数:jobbillId')
     return
   }
+
+
 
   loading.value = true
   try {
@@ -383,7 +392,7 @@ const fetchData = async () => {
       filter: JSON.stringify([
         {
           val: [
-            { name: 'device_id', val: props.deviceId, action: '=' },
+            { name: 'device_id', val: deviceId, action: '=' },
             { name: 'jobbill_id', val: props.jobbillId, action: '=' },
           ],
           relation: 'AND',
@@ -408,13 +417,15 @@ const fetchData = async () => {
       ]),
       sum_col_type: '1',
       sort: 'status_id,operate_date',
-      order: 'asc,asc',
+      order: 'desc,desc',
       show_total: '1',
       page: currentPage.value,
       rows: pageSize.value,
     }
+    console.log(params,'11111111111111')
 
     const res = await getPlateListData(params)
+    console.log(res,'33333333333333')
 
     if (res && res.rows && Array.isArray(res.rows)) {
       // 处理数据，与store中的数据同步选中状态
@@ -469,16 +480,18 @@ const confirmDelete = async (item) => {
     // 用户点击了确认按钮，执行删除操作
     try {
       const params = {
-        id: item.id,
+        data_id: item.id,
         is_delete: 1,
       }
-      const res = await updateVersionNumberManageEntryData(params)
+      const res = await updateVersionNumberManageEntryData({data:JSON.stringify(params)})
 
       console.log('删除响应数据:', res)
       if (res && res.ret === 0) {
         ElMessage.success('删除成功')
         // 刷新列表
         fetchData()
+            // 刷新版号列表
+         workStore.updateLicenseFleshIndex()
       } else {
         ElMessage.error(res?.message || '删除失败')
       }
