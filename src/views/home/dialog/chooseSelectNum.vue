@@ -79,34 +79,30 @@ const confirm = async () => {
     // 从workStore获取taskInfo
     const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
 
-        // 处理taskInfo，将对象类型的值转换为JSON字符串
-    const processedTaskInfo = {}
-    for (const key in taskInfo) {
-      if (Object.prototype.hasOwnProperty.call(taskInfo, key)) {
-        const value = taskInfo[key]
-        // 如果值是对象且不是数组，则转换为JSON字符串
-        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-          processedTaskInfo[key] = JSON.stringify(value)
-        } else {
-          processedTaskInfo[key] = value
-        }
-      }
-    }
-    if(processedTaskInfo.company_name) {
-      processedTaskInfo.company_name = JSON.stringify(processedTaskInfo.company_name)
-    }
-    // 构建请求参数，合并taskInfo、props.params和formData
+
+
+
+
     const requestParams = {
       // 从taskInfo中获取必要参数
-  
       // 表单数据
-      ...processedTaskInfo,
+      work_no:taskInfo.bill_no.match(/^[^_]+/)[0],
+      bill_no: taskInfo.bill_no,
+      order_no: taskInfo.order_no,
+      wc_id: taskInfo.wc_id,
+      wc_number: taskInfo.company_name.wc_number,
+      work_id: taskInfo.work_id,
+      wp_number: taskInfo.wp_number,
+      rc_no: taskInfo.rc_no,
+      rc_id: taskInfo.rc_id,
+      workbill_no: taskInfo.workbill_no,
       status_id: formData.status_id,
       collection_qty: formData.collection_qty,
       collection_uqty: formData.collection_qty,
       device_id: props.currentDevice.id,
       device_name: props.currentDevice.name,
       device_number: props.currentDevice.number,
+      jobbill_id: taskInfo.jobbill_id,
     }
 
     // 调用接口
