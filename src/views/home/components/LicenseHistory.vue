@@ -191,9 +191,12 @@ const toInteger = (value) => {
 
 // 获取数据
 const fetchData = async (isBackgroundRefresh = false) => {
+  console.log('请求数据的点点滴滴的点点滴滴单点')
 
   const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
   const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+
+  console.log('jobbill_id111111:', jobbill_id)
   // 只有在非后台刷新时才显示加载状态
   if (!isBackgroundRefresh) {
     loading.value = true
@@ -382,10 +385,23 @@ const setupDataRefreshTimer = () => {
   }, 5 * 1000) // 5秒 = 5 * 1000毫秒
 }
 
+
+watch(() => workStore.deviceInfo, async (newDevice) => {
+  if (newDevice && newDevice.id) {
+    // 修复缩进，确保代码执行清晰
+    await fetchData(false)
+    // 设备变化时重新设置定时器
+    setupDataRefreshTimer()
+  }
+}, { deep: true })
+
 // 监听设备变化，当设备信息有效时重新请求数据
 watch(() => props.currentDevice, async (newDevice) => {
+  console.log('设备信息变化:111111111', newDevice)
   if (newDevice && newDevice.id) {
-     fetchData(false)
+    setTimeout(() => {
+      fetchData(false)
+    }, 500);
       // 设备变化时重新设置定时器
      setupDataRefreshTimer()
   }
