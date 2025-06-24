@@ -147,7 +147,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ProductionReportDialog from './report/ProductionReportDialog.vue'
 import { sendEndWork } from '@/api/mes/wk/index.ts'
-
+import { getDeviceDetail } from '@/api/mes/wk/index.ts'
 // 控制工序选择弹窗
 const processSelectRef = ref(null)
 const StaffInfoRef = ref(null)
@@ -167,6 +167,10 @@ const timeRegistrationRef = ref(null)
 // const taskOperationRef = ref(null) // 已移除未使用变量
 
 let timer = null
+// 设备信息刷新定时器
+let deviceRefreshTimer = null
+
+
 const workStore = useWorkStore()
 const userStore = useUserStore()
 // 修改用户名变量
@@ -280,7 +284,7 @@ const openDeviceDialog = () => {
   deviceDialogVisible.value = true
 }
 
-// 处理工作中心选择
+// 设备选择
 const handDeviceSelect = (device) => {
   currentDevice.value = device
   deviceDialogVisible.value = false
@@ -378,23 +382,75 @@ const handleStaffSelect = () => {
     }
   })
 }
+// 获取设备详情
+const getDeviceDetailInfo = async (number) => {
+    const deviceInfo = JSON.parse(localStorage.getItem('selectedDevice'))
+    const deviceNumber = number || deviceInfo.number
+    if(!deviceNumber) return
+    const data = {
+    filter: JSON.stringify([{ val: [{ name: 'number', val: deviceNumber, action: '=' }], relation: 'OR' }]),
+      filter_detail: JSON.stringify({}),
+      keyword_is_detail: 0,
+      show_total: 1,
+      page: 1,
+      rows: 50,
+    }
+    getDeviceDetail(data).then((res) => {
+      if (res && res.rows && res.rows.length > 0) {
+        const jobbill_no = res.rows[0].jobbill_no
+        if(deviceInfo.deviceInfo !== jobbill_no) {
+          // 更新localStorage中的selectedDevice
+          localStorage.setItem('selectedDevice', JSON.stringify(res.rows[0]))
+        }
+        // 检查store中的bill_no与当前设备的jobbill_no是否一致
+        const storeTaskInfo = workStore.getTaskInfo
+        if (
+          !storeTaskInfo.bill_no || 
+          !jobbill_no || 
+          storeTaskInfo.bill_no !== jobbill_no
+        ) {
+          workStore.resetTaskInfo()
+        }
+      } else {
+        workStore.resetTaskInfo()
+      }
+    }).catch(error => {
+      workStore.resetTaskInfo()
+    })
+  }
+
 
 // 初始化应用
 const initApp = () => {
-  initTimeDisplay()
+  initTimeDisplay() // 更新时间
   initUserInfo()
   initWorkcenterInfo()
   initDeviceInfo()
 }
 
+// 设置设备信息刷新定时器
+const setupDeviceRefreshTimer = () => {
+  // 清除可能存在的旧定时器
+  if (deviceRefreshTimer) {
+    clearInterval(deviceRefreshTimer)
+  }
+  
+  // 设置新的定时器，每5秒执行一次
+  deviceRefreshTimer = setInterval(() => {
+    if (currentDevice.value && currentDevice.value.number) {
+      getDeviceDetailInfo()
+    }
+  }, 5000) // 5秒 = 5000毫秒
+}
+
 // 在组件挂载时初始化
 onMounted(() => {
   initApp()
+
+  getDeviceDetailInfo()
+  // 设置设备信息刷新定时器
+  setupDeviceRefreshTimer()
   
-  // 调试用
-  setTimeout(() => {
-    console.log(currentDevice.value, 'device')
-  }, 400)
 })
 
 // 组件卸载前清理资源
@@ -403,6 +459,13 @@ onBeforeUnmount(() => {
   if (timer) {
     clearInterval(timer)
     timer = null
+  }
+
+    
+  // 清除设备信息刷新定时器
+  if (deviceRefreshTimer) {
+    clearInterval(deviceRefreshTimer)
+    deviceRefreshTimer = null
   }
 })
 </script>

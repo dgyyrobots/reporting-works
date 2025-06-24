@@ -390,7 +390,7 @@ const fetchTypeAndStartTime = async () => {
 
 }
 
-    const parseDatetime = (dateTimeStr) => {
+ const parseDatetime = (dateTimeStr) => {
 
       // 判断是否为时间戳格式（纯数字）
       if (typeof dateTimeStr === 'number' || (typeof dateTimeStr === 'string' && /^\d+$/.test(dateTimeStr))) {
@@ -404,7 +404,7 @@ const fetchTypeAndStartTime = async () => {
       const [year, month, day] = datePart.split('-').map(Number)
       const [hour, minute] = timePart.split(':').map(Number)
       return new Date(year, month - 1, day, hour, minute)
-    }
+ }
 
   /**
    * 计算超时时间（实际时间 - 计划时间）
