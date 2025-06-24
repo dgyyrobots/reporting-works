@@ -3,6 +3,7 @@
     <div v-if="title || $slots.titleRight" class="card-title-bar">
       <div class="card-title-left">
         <span v-if="title" class="card-title">{{ title }}</span>
+        <span v-if="subtitle" class="card-subtitle">{{ subtitle }}</span>
       </div>
       <div class="card-title-right">
         <slot name="titleRight"></slot>
@@ -28,6 +29,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   title: String,
+  subtitle: String,
   showEmpty: {
     type: Boolean,
     default: false,
@@ -91,6 +93,15 @@ const contentPaddingStyle = computed(() => {
   letter-spacing: 2px;
   text-shadow: 0 0 6px #1ecfff88;
   line-height: 32px;
+}
+.card-subtitle {
+  display: inline-block;
+  color: #eef1f2;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 6px #1ecfff88;
+  line-height: 32px;
+  padding-left: 14px
 }
 
 /* 四角折角 */

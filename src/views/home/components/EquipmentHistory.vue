@@ -1,5 +1,8 @@
 <template>
-  <Card class="EquipmentHistory" title="设备运行历史" >
+  <Card 
+    class="EquipmentHistory" 
+    :title="'设备运行历史'" 
+    :subtitle="dateSubtitle">
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
       <span>加载中...</span>
@@ -46,30 +49,35 @@ const processChartData = (data) => {
     }
   }
 
-  // 按start排序
-  data.sort((a, b) => a.start - b.start)
+  // 按createTime排序，从新到旧
+  data.sort((a, b) => b.createTime - a.createTime)
   
-  // 提取x轴数据（小时）
-  const hours = [...new Set(data.map(item => item.start))].sort((a, b) => a - b)
-  const xAxisData = hours.map(hour => `第${hour}小时`)
+  // 提取x轴数据（时间）
+  const times = [...new Set(data.map(item => item.createTime))].sort((a, b) => b - a)
+  // 修改这里，只显示时间部分（小时:分钟）
+  const xAxisData = times.map(time => formatTimeOnly(time))
   
   // 提取数量和平均速度数据
   const quantityData = []
   const speedData = []
   
-  hours.forEach(hour => {
-    // 查找对应小时的数量数据
-    const quantityItem = data.find(item => item.start === hour && item.item === '数量')
-    if (quantityItem) {
-      quantityData.push(parseFloat(quantityItem.value))
+  times.forEach(time => {
+    // 查找对应时间的数量数据
+    const quantityItem = data.find(item => item.createTime === time && item.item === '数量')
+    if (quantityItem && quantityItem.value) {
+      // 添加错误处理，确保解析结果是有效数字
+      const parsedValue = parseFloat(quantityItem.value)
+      quantityData.push(isNaN(parsedValue) ? 0 : parsedValue)
     } else {
       quantityData.push(0)
     }
     
-    // 查找对应小时的平均速度数据
-    const speedItem = data.find(item => item.start === hour && item.item === '平均速度')
-    if (speedItem) {
-      speedData.push(parseFloat(speedItem.value))
+    // 查找对应时间的平均速度数据
+    const speedItem = data.find(item => item.createTime === time && item.item === '平均速度')
+    if (speedItem && speedItem.value) {
+      // 添加错误处理，确保解析结果是有效数字
+      const parsedValue = parseFloat(speedItem.value)
+      speedData.push(isNaN(parsedValue) ? 0 : parsedValue)
     } else {
       speedData.push(0)
     }
@@ -87,8 +95,6 @@ const initChart = (chartData) => {
     if (!chart) {
       chart = echarts.init(chartRef.value)
     }
-    
-
     
     // 计算数量的最大值，用于设置y轴范围和背景条
     const maxQuantity = Math.max(...chartData.quantityData, 1) // 至少为1，避免为0
@@ -110,9 +116,8 @@ const initChart = (chartData) => {
         top: '15%',
         left: '5%',
         right: '5%',
-        bottom: '5%',
+        bottom: '5%', // 增加底部空间以容纳旋转的时间标签
         containLabel: true,
-
       },
       legend: {
         show:false,
@@ -134,8 +139,9 @@ const initChart = (chartData) => {
         axisLabel: {
           color: '#fff',
           fontSize: 12,
-          rotate: 45,  // 添加旋转角度
-          margin: 10   // 增加标签与轴线
+          rotate: 45,  // 旋转角度
+          margin: 14,  // 增加标签与轴线的距离
+          interval: 0  // 强制显示所有标签
         },
       },
       series: [
@@ -243,6 +249,22 @@ const handleResize = () => {
   chart?.resize()
 }
 
+// 添加一个新函数，只格式化时间部分
+const formatTimeOnly = (timestamp) => {
+  if (!timestamp) return '--'
+
+  try {
+    const date = new Date(timestamp * 1000)
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    return `${hours}:${minutes}`
+  } catch (e) {
+    return '--'
+  }
+}
+
+// 保留原有的完整日期时间格式化函数
 const formatDateTime = (timestamp) => {
   if (!timestamp) return '--'
 
@@ -260,9 +282,16 @@ const formatDateTime = (timestamp) => {
   }
 }
 
+
+
+// 添加一个响应式变量用于存储日期副标题
+const dateSubtitle = ref('')
+
+// 修改initData函数，提取日期信息并更新副标题
 const initData = () => {
   // 显示加载状态
   loading.value = true
+  dateSubtitle.value = '' // 重置副标题
   
   // 检查 currentDevice 是否有效
   if (!props.currentDevice || !props.currentDevice.number) {
@@ -277,12 +306,29 @@ const initData = () => {
   
   getDeviceOutput(params).then((res) => {
     if (res && Array.isArray(res) && res.length > 0) {
-      // 处理时间格式
+      // 从数据中提取日期信息
+      const firstItem = res[0]
+      if (firstItem && firstItem.createTime) {
+        // 提取日期部分
+        const date = new Date(firstItem.createTime * 1000)
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        const dateStr = `${year}-${month}-${day}`
+        
+        // 更新副标题
+        dateSubtitle.value = `(${dateStr})`
+      }
+
+      // 这里的处理可能有问题，不应该直接修改原始时间戳
       res.forEach(item => {
         if (item.createTime) {
-          item.createTime = formatDateTime(item.createTime)
+          // 不要在这里格式化时间，保留原始时间戳用于排序
+          // item.createTime = formatDateTime(item.createTime)
         }
       })
+
+      console.log(res,'rrrrrrrrrr')
       
       list.value = res
       
