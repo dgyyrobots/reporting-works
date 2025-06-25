@@ -95,7 +95,6 @@ export default {
   postMultipart: async <T = any>(option: any) => {
     // 如果提供了 data 且是对象类型，将其转换为 FormData 格式
 
-    console.log(option, 'option')
     const formData = new FormData();
     for (const key in option.data) {
       formData.append(key, option.data[key]);
