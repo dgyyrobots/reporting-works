@@ -461,6 +461,13 @@ const handleTemplatePrint = () => {
   if(!row.length) return ElMessage.error('请至少选择一行数据')
   templatePrintVis.value = true
 }
+// 在设备切换的相关方法中添加
+watch(() => props.currentDevice, (newDevice, oldDevice) => {
+  if (newDevice.id !== oldDevice.id) {
+    // 设备已切换，重置版号相关数据
+    workStore.resetLicenseData()
+  }
+}, { deep: true })
 // 组件挂载时添加全局点击事件监听
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)

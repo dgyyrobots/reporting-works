@@ -251,6 +251,11 @@ export const useWorkStore = defineStore('work', {
             this.licenseCheck.forEach(item => {
                 item.selected = false
             })
+        },
+        resetLicenseData() {
+            this.licenseCheck = []
+            this.licenseCheckSortByCollectDate = []
+            this.selectedLicenseCheck = []
         }
     },
 })
