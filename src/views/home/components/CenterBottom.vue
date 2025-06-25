@@ -275,7 +275,7 @@ const handleReport = () => {
 
   
   if (!jobbill_id) {
-    return ElMessage.error('未找到当前设备的工单信息')
+    return ElMessage.error('未获取到任务单信息)
   }
   
   ElMessageBox.confirm(
@@ -322,7 +322,7 @@ const handleCompleteReport = () => {
 
   
   if (!jobbill_id) {
-    return ElMessage.error('未找到当前设备的工单信息')
+    return ElMessage.error('未获取到任务单信息)
   }
   ElMessageBox.confirm(
     '是否确认完工汇报？',
@@ -403,6 +403,8 @@ const handleKeyDown = (e) => {
   if (keyCode === 13) {
     if (!e.target.value) return
     scanData.value = e.target.value
+     // 添加按下Enter键时提交
+     handSubmit()
   }
 }
 const handleChangeVersion = () => {
