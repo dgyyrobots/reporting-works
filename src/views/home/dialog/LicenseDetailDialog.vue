@@ -414,7 +414,7 @@ const fetchData = async () => {
       ]),
       sum_col_type: '1',
       sort: 'status_id,operate_date',
-      order: 'desc,desc',
+      order: 'asc,desc',
       show_total: '1',
       page: currentPage.value,
       rows: pageSize.value,
