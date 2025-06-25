@@ -175,7 +175,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { Icon } from '/@/components/Icon'
-import { updateIsStart, changeActiveRow,collectionFinish , reportVersion,finishReportVersion,addVersionByCode  } from '@/api/mes/wk/index.ts'
+import { updateIsStart, changeActiveRow,collectionFinish , reportVersion,finishReportVersion,  } from '@/api/mes/wk/index.ts'
 import ChooseSelectNum from '../dialog/chooseSelectNum.vue'
 import { ElMessageBox ,ElMessage} from 'element-plus'
 import TemplatePrint from '../dialog/TemplatePrint.vue'
@@ -250,7 +250,7 @@ const handSubmit = () => {
     name:workStore.deviceInfo.name,
     number:workStore.deviceInfo.number,
   }
-  addVersionByCode({
+  updateIsStart({
     device: JSON.stringify(device),
     version_no: scanData.value,
     jobbill_id: jobbill_id,
