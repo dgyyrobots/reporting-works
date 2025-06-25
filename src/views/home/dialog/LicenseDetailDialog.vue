@@ -121,10 +121,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  jobbillId: {
-    type: [String, Number],
-    default: '',
-  },
+
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -372,15 +369,12 @@ const fetchData = async () => {
   const deviceId = deviceInfo.id
 
   const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+  const jobbill_id = taskInfo.data_id
 
-  const jobbillId = taskInfo.data_id
-
-
-  if (!jobbillId) {
-    console.log('缺少必要参数:jobbillId')
-    return
-  }
-
+if( !jobbill_id){
+  ElMessage.warning('任务ID为空')
+  return  
+}
 
 
   loading.value = true
@@ -390,7 +384,7 @@ const fetchData = async () => {
         {
           val: [
             { name: 'device_id', val: deviceId, action: '=' },
-            { name: 'jobbill_id', val: props.jobbillId, action: '=' },
+            { name: 'jobbill_id', val: jobbill_id, action: '=' },
           ],
           relation: 'AND',
         },
