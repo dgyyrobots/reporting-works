@@ -237,11 +237,23 @@ const handleQuery = () => {
 
 const handSubmit = () => {
   if (!scanData.value) return ElMessage.error('版号不能为空')
-  const taskInfo = workStore.taskInfo
+
+  const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+// 构建请求参 数
+  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+  if(!jobbill_id) {
+    ElMessage.error('未获取到任务单信息')
+    return
+  }
+  const device = {
+    id:workStore.deviceInfo.id,
+    name:workStore.deviceInfo.name,
+    number:workStore.deviceInfo.number,
+  }
   addVersionByCode({
-    device: JSON.stringify(props.currentDevice),
+    device: JSON.stringify(device),
     version_no: scanData.value,
-    jobbill_id: taskInfo.id,
+    jobbill_id: jobbill_id,
     is_device_collect: 1
   }).then(res => {
     if (res.ret === 0) {
@@ -256,13 +268,13 @@ const handSubmit = () => {
 const handleReport = () => {
   const selectedLicenseCheck = workStore.selectedLicenseCheck
   const taskInfo = workStore.taskInfo
-  
+  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
   if (!selectedLicenseCheck.length) {
     return ElMessage.error('请至少选择一行汇报')
   }
 
   
-  if (!taskInfo.id) {
+  if (!jobbill_id) {
     return ElMessage.error('未找到当前设备的工单信息')
   }
   
@@ -277,9 +289,10 @@ const handleReport = () => {
     }
   ).then(() => {
     // 调用汇报接口
+
     const params = {
       data: JSON.stringify(selectedLicenseCheck), // 获取选中版号的ID数组
-      jobbill_id: taskInfo.id
+      jobbill_id: jobbill_id
     }
     
     reportVersion(params).then(res => {
@@ -302,13 +315,13 @@ const handleReport = () => {
 const handleCompleteReport = () => {
   const selectedLicenseCheck = workStore.selectedLicenseCheck
   const taskInfo = workStore.taskInfo
-  
+  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
   if (!selectedLicenseCheck.length) {
     return ElMessage.error('请至少选择一行汇报')
   }
 
   
-  if (!taskInfo.id) {
+  if (!jobbill_id) {
     return ElMessage.error('未找到当前设备的工单信息')
   }
   ElMessageBox.confirm(
@@ -324,7 +337,7 @@ const handleCompleteReport = () => {
     // 调用汇报接口
     const params = {
       data: JSON.stringify(selectedLicenseCheck), // 获取选中版号的ID数组
-      jobbill_id: taskInfo.id
+      jobbill_id: jobbill_id
     }
     
     finishReportVersion(params).then(res => {
