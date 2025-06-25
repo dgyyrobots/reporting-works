@@ -133,9 +133,9 @@ const formatDate = (timestamp) => {
 // 获取状态文本
 const getStatusText = (statusId) => {
   const statusMap = {
-    0: '待采集',
-    1: '采集中',
-    2: '采集结束',
+    '0': '待采集',
+    '1': '采集中',
+    '2': '采集结束',
   }
   return statusMap[statusId] || '--'
 }
@@ -159,129 +159,134 @@ const toInteger = (value) => {
 }
 
 // 获取数据
+// 获取数据
 const fetchData = async (isBackgroundRefresh = false) => {
 
-  const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
-  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
 
-  // 只有在非后台刷新时才显示加载状态
-  if (!isBackgroundRefresh) {
-    loading.value = true
+// 只有在非后台刷新时才显示加载状态
+if (!isBackgroundRefresh) {
+  loading.value = true
+}
+
+try {
+  if (!jobbill_id || !props.currentDevice.id) {
+    console.warn('缺少必要参数: jobbill_id 或 device_id')
+    if (!isBackgroundRefresh) {
+      tableData.value = []
+      originalData.value = []
+    }
+    return
   }
-  
-  try {
-    if (!jobbill_id || !props.currentDevice.id) {
-      console.warn('缺少必要参数: jobbill_id 或 device_id')
-      if (!isBackgroundRefresh) {
-        tableData.value = []
-        originalData.value = []
+
+  const params = {
+    filter: JSON.stringify([
+      {
+        val: [
+          { name: 'device_id', val: props.currentDevice.id, action: '=' },
+          { name: 'jobbill_id', val: jobbill_id, action: '=' },
+        ],
+        relation: 'AND',
+      },
+    ]),
+    filter_detail: JSON.stringify({}),
+    other_params: JSON.stringify({ structure: 'entry1' }),
+    keyword_is_detail: '0',
+    sum_col: JSON.stringify([
+      'collection_uqty',
+      'collection_qty',
+      'pass_uqty',
+      'pass_qty',
+      'ok_uqty',
+      'ok_qty',
+      'no_ok_uqty',
+      'no_okqty',
+      'scrap_uqty',
+      'scrap_qty',
+      'loss_uqty',
+      'loss_qty',
+    ]),
+    sum_col_type: '1',
+    sort: 'status_id,operate_date',
+    order: 'asc,asc',
+    show_total: '1',
+    page: 1,
+    rows: 50,
+  }
+
+  const res = await getPlateListData(params)
+
+  if (res && res.rows && Array.isArray(res.rows)) {
+    const arr = res.rows.reverse()
+    // 为每一行数据添加selected属性
+    const processedData = arr.map((item) => {
+      // 检查store中是否已有该项
+      const existingItem = workStore.getLicenseCheck && workStore.getLicenseCheck.find 
+        ? workStore.getLicenseCheck.find(storeItem => storeItem.id === item.id)
+        : null
+        
+      // 检查当前表格中是否已有该项（用于保留选中状态）
+      const existingTableItem = tableData.value.find(tableItem => tableItem.id === item.id)
+      
+      return {
+        ...item,
+        selected: existingItem ? existingItem.selected : 
+                 (existingTableItem ? existingTableItem.selected : false),
+      }
+    })
+    
+    // 对数据进行排序，将"采集中"(status_id=1)的数据排在前面
+    processedData.sort((a, b) => {
+      // 如果a是采集中状态而b不是，a排在前面
+      if (a.status_id === '1' && b.status_id !== '1') {
+        return -1;
+      }
+      // 如果b是采集中状态而a不是，b排在前面
+      if (b.status_id === '1' && a.status_id !== '1') {
+        return 1;
+      }
+      // 如果两者状态相同，保持原有顺序
+      return 0;
+    });
+    
+    // 更新store中的licenseCheck - 添加防御性检查
+    if (typeof workStore.setLicenseCheck === 'function') {
+      // 如果是后台刷新，保留已选中的项
+      if (isBackgroundRefresh) {
+        const updatedData = processedData.map(newItem => {
+          const existingItem = workStore.getLicenseCheck.find(item => item.id === newItem.id)
+          if (existingItem) {
+            return { ...newItem, selected: existingItem.selected }
+          }
+          return newItem
+        })
+        workStore.setLicenseCheck(updatedData)
+      } else {
+        workStore.setLicenseCheck(processedData)
+      }
+    } else {
+      console.error('workStore.setLicenseCheck 不是一个函数')
+      // 如果方法不存在，直接设置本地数据
+      if (!isBackgroundRefresh || tableData.value.length === 0) {
+        tableData.value = processedData
+        originalData.value = processedData
+      } else {
+        // 无感刷新：只更新数据，保留选中状态
+        updateTableDataNoFlicker(processedData)
       }
       return
     }
-
-    const params = {
-      filter: JSON.stringify([
-        {
-          val: [
-            { name: 'device_id', val: props.currentDevice.id, action: '=' },
-            { name: 'jobbill_id', val: jobbill_id, action: '=' },
-          ],
-          relation: 'AND',
-        },
-      ]),
-      filter_detail: JSON.stringify({}),
-      other_params: JSON.stringify({ structure: 'entry1' }),
-      keyword_is_detail: '0',
-      sum_col: JSON.stringify([
-        'collection_uqty',
-        'collection_qty',
-        'pass_uqty',
-        'pass_qty',
-        'ok_uqty',
-        'ok_qty',
-        'no_ok_uqty',
-        'no_okqty',
-        'scrap_uqty',
-        'scrap_qty',
-        'loss_uqty',
-        'loss_qty',
-      ]),
-      sum_col_type: '1',
-      sort: 'status_id,operate_date',
-      order: 'asc,asc',
-      show_total: '1',
-      page: 1,
-      rows: 50,
-    }
-
-    const res = await getPlateListData(params)
-
-    if (res && res.rows && Array.isArray(res.rows)) {
-     const arr = res.rows.reverse()
-      // 为每一行数据添加selected属性
-      const processedData = arr.map((item) => {
-        // 检查store中是否已有该项
-        const existingItem = workStore.getLicenseCheck && workStore.getLicenseCheck.find 
-          ? workStore.getLicenseCheck.find(storeItem => storeItem.id === item.id)
-          : null
-          
-        // 检查当前表格中是否已有该项（用于保留选中状态）
-        const existingTableItem = tableData.value.find(tableItem => tableItem.id === item.id)
-        
-        return {
-          ...item,
-          selected: existingItem ? existingItem.selected : 
-                   (existingTableItem ? existingTableItem.selected : false),
-        }
-      })
-      
-      // 更新store中的licenseCheck - 添加防御性检查
-      if (typeof workStore.setLicenseCheck === 'function') {
-        // 如果是后台刷新，保留已选中的项
-        if (isBackgroundRefresh) {
-          const updatedData = processedData.map(newItem => {
-            const existingItem = workStore.getLicenseCheck.find(item => item.id === newItem.id)
-            if (existingItem) {
-              return { ...newItem, selected: existingItem.selected }
-            }
-            return newItem
-          })
-          workStore.setLicenseCheck(updatedData)
-        } else {
-          workStore.setLicenseCheck(processedData)
-        }
-      } else {
-        console.error('workStore.setLicenseCheck 不是一个函数')
-        // 如果方法不存在，直接设置本地数据
-        if (!isBackgroundRefresh || tableData.value.length === 0) {
-          tableData.value = processedData
-          originalData.value = processedData
-        } else {
-          // 无感刷新：只更新数据，保留选中状态
-          updateTableDataNoFlicker(processedData)
-        }
-        return
-      }
-      
-      originalData.value = processedData // 保存原始数据
-      
-      // 无感刷新：只在初次加载或数据为空时直接替换，否则智能更新
-      if (!isBackgroundRefresh || tableData.value.length === 0) {
-        tableData.value = processedData
-      } else {
-        updateTableDataNoFlicker(processedData)
-      }
+    
+    originalData.value = processedData // 保存原始数据
+    
+    // 无感刷新：只在初次加载或数据为空时直接替换，否则智能更新
+    if (!isBackgroundRefresh || tableData.value.length === 0) {
+      tableData.value = processedData
     } else {
-      if (!isBackgroundRefresh) {
-        originalData.value = []
-        tableData.value = []
-        if (typeof workStore.clearLicenseCheck === 'function') {
-          workStore.clearLicenseCheck()
-        }
-      }
+      updateTableDataNoFlicker(processedData)
     }
-  } catch (error) {
-    console.error('获取生产版号数据失败:', error)
+  } else {
     if (!isBackgroundRefresh) {
       originalData.value = []
       tableData.value = []
@@ -289,13 +294,22 @@ const fetchData = async (isBackgroundRefresh = false) => {
         workStore.clearLicenseCheck()
       }
     }
-  } finally {
-    if (!isBackgroundRefresh) {
-      loading.value = false
+  }
+} catch (error) {
+  console.error('获取生产版号数据失败:', error)
+  if (!isBackgroundRefresh) {
+    originalData.value = []
+    tableData.value = []
+    if (typeof workStore.clearLicenseCheck === 'function') {
+      workStore.clearLicenseCheck()
     }
   }
+} finally {
+  if (!isBackgroundRefresh) {
+    loading.value = false
+  }
 }
-
+}
 // 无感刷新：智能更新表格数据而不引起闪烁
 const updateTableDataNoFlicker = (newData) => {
   // 如果数据长度不同，可能需要添加或删除行
