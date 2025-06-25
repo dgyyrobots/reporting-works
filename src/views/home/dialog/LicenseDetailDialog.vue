@@ -373,7 +373,7 @@ const fetchData = async () => {
 
   const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
 
-  const jobbillId = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+  const jobbillId = taskInfo.data_id
 
 
   if (!jobbillId) {

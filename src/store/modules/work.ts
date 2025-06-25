@@ -21,7 +21,10 @@ export interface TaskInfoType {
     overTime: string
     remainQty: number
     ud_102869_gdlx: string
-    prodesc: string
+    prodesc: string,
+    id: string,
+    data_id: string,
+    [key: string]: any
 }
 
 // 定义设备信息接口
@@ -91,6 +94,8 @@ export const useWorkStore = defineStore('work', {
             remainQty: 0,
             ud_102869_gdlx: '',
             prodesc: '',
+            id: '',
+            data_id: ''
         },
         deviceInfo: wsCache.get(DEVICE_INFO_KEY) || { // 新增设备信息，从缓存读取
             id: '',
@@ -116,6 +121,14 @@ export const useWorkStore = defineStore('work', {
     actions: {
         setTaskInfo(info: Partial<TaskInfoType>) {
             this.taskInfo = { ...this.taskInfo, ...info }
+            // 检查是否传入了空对象或只有空值的对象
+            const hasValidData = Object.values(info).some(val =>
+                val.id !== ''
+            )
+
+            if (!hasValidData) {
+                console.warn('警告: 正在设置空数据到 taskInfo')
+            }
             wsCache.set(TASK_INFO_KEY, this.taskInfo)
         },
 
@@ -128,6 +141,8 @@ export const useWorkStore = defineStore('work', {
         },
         // 清空 taskInfo 并删除缓存
         resetTaskInfo() {
+            // console.log('resetTaskInfo-------')
+            // console.log('resetTaskInfo 调用栈:', new Error().stack)
             this.taskInfo = {
                 rc_no: '',
                 rc_id: '',
@@ -148,6 +163,8 @@ export const useWorkStore = defineStore('work', {
                 remainQty: 0,
                 ud_102869_gdlx: '',
                 prodesc: '',
+                data_id: '',
+                id: ''
             }
             wsCache.delete(TASK_INFO_KEY)
         },

@@ -404,7 +404,7 @@ const initChart = (forceRefresh = false) => {
 // 修改 initCollectionQty 函数，添加后台刷新模式参数
 const initCollectionQty = async (isBackgroundRefresh = false) => {
   const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
-  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+  const jobbill_id = taskInfo.data_id
   try {
     // 如果没有jobbill_id，使用默认值
     if (!jobbill_id) {

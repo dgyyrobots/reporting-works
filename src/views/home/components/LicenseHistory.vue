@@ -163,7 +163,7 @@ const toInteger = (value) => {
 const fetchData = async (isBackgroundRefresh = false) => {
 
 const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
-const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+const jobbill_id = taskInfo.data_id
 
 // 只有在非后台刷新时才显示加载状态
 if (!isBackgroundRefresh) {

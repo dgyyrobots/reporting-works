@@ -227,7 +227,7 @@ const handleQuery = () => {
     // 找到匹配的版号，更新显示信息
     Object.assign(currentVersionInfo, matchedVersion)
 
-    console.log(currentVersionInfo, 'currentVersionInfo')
+
     
     ElMessage.success('查询成功')
   } else {
@@ -239,8 +239,9 @@ const handSubmit = () => {
   if (!scanData.value) return ElMessage.error('版号不能为空')
 
   const taskInfo = workStore.getTaskInfo || workStore.taskInfo || {}
+
 // 构建请求参 数
-  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+  const jobbill_id = taskInfo.data_id
   if(!jobbill_id) {
     ElMessage.error('未获取到任务单信息')
     return
@@ -268,7 +269,7 @@ const handSubmit = () => {
 const handleReport = () => {
   const selectedLicenseCheck = workStore.selectedLicenseCheck
   const taskInfo = workStore.taskInfo
-  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+  const jobbill_id = taskInfo.data_id
   if (!selectedLicenseCheck.length) {
     return ElMessage.error('请至少选择一行汇报')
   }
@@ -316,7 +317,7 @@ const handleReport = () => {
 const handleCompleteReport = () => {
   const selectedLicenseCheck = workStore.selectedLicenseCheck
   const taskInfo = workStore.taskInfo
-  const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+  const jobbill_id = taskInfo.data_id
   if (!selectedLicenseCheck.length) {
     return ElMessage.error('请至少选择一行汇报')
   }
@@ -468,6 +469,7 @@ watch(() => props.currentDevice, (newDevice, oldDevice) => {
     workStore.resetLicenseData()
   }
 }, { deep: true })
+
 // 组件挂载时添加全局点击事件监听
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)

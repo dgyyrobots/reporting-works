@@ -169,7 +169,15 @@ watch(
   { deep: true }
 )
 
-
+// 添加对taskInfo的监听，当数据变化时立即更新到store
+watch(
+  taskInfo,
+  (newTaskInfo) => {
+    // 将最新的taskInfo数据更新到store中
+    workStore.setTaskInfo({...newTaskInfo})
+  },
+  { deep: true }
+)
 
 // 计算完成百分比
 const progressPercent = computed(() => {

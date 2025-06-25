@@ -82,13 +82,12 @@ const confirm = async () => {
 
 
     // 构建请求参 数
-    const jobbill_id = taskInfo.company_name && taskInfo.company_name[0].jobbill_id
+    const jobbill_id = taskInfo.data_id
     if (!jobbill_id) {
       ElMessage.error('未获取到任务单信息')
       return
     }
 
-    console.log('taskInfo', taskInfo)
 
     const requestParams = {
       // 从taskInfo中获取必要参数

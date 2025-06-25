@@ -407,15 +407,6 @@ const getDeviceDetailInfo = async (number) => {
           currentDevice.value = res.rows[0]
           workStore.setDeviceInfo(res.rows[0])
         }
-        // 检查store中的bill_no与当前设备的jobbill_no是否一致
-        const storeTaskInfo = workStore.getTaskInfo
-        if (
-          !storeTaskInfo.bill_no || 
-          !jobbill_no || 
-          storeTaskInfo.bill_no !== jobbill_no
-        ) {
-          workStore.resetTaskInfo()
-        }
       } else {
         workStore.resetTaskInfo()
       }
