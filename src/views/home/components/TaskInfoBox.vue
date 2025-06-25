@@ -181,7 +181,6 @@ const progressPercent = computed(() => {
 
 // 获取任务单信息
 const fetchTaskInfo = async () => {
-  console.log('获取任务单信息2222222222')
 
   try {
     const activeJob = props.currentDevice.jobbill_no
@@ -239,7 +238,6 @@ const resetTaskInfo = () => {
     prodesc: '',
   })
 
-  console.log(taskInfo,'任务信息已重置')
 }
 
 const fetchTimeAndNumber = async () => {
