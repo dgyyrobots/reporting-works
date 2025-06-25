@@ -275,7 +275,8 @@ const handleReport = () => {
 
   
   if (!jobbill_id) {
-    return ElMessage.error('未获取到任务单信息)
+     ElMessage.error('未获取到任务单信息')
+     return
   }
   
   ElMessageBox.confirm(
@@ -322,7 +323,8 @@ const handleCompleteReport = () => {
 
   
   if (!jobbill_id) {
-    return ElMessage.error('未获取到任务单信息)
+     ElMessage.error('未获取到任务单信息')
+     return
   }
   ElMessageBox.confirm(
     '是否确认完工汇报？',
