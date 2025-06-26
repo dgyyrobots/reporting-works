@@ -458,7 +458,7 @@ const fetchTypeAndStartTime = async () => {
 
 
     const getDeviceDetailId = async () => {
-    const deviceInfo = JSON.parse(localStorage.getItem('selectedDevice'))
+    const deviceInfo = workStore.deviceInfo || JSON.parse(localStorage.getItem('selectedDevice'))
     const data = {
     filter: JSON.stringify([{ val: [{ name: 'number', val: deviceInfo.number, action: '=' }], relation: 'OR' }]),
       filter_detail: JSON.stringify({}),

@@ -328,7 +328,6 @@ const initData = () => {
         }
       })
 
-      console.log(res,'rrrrrrrrrr')
       
       list.value = res
       

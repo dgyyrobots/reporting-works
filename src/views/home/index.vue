@@ -261,9 +261,9 @@ const initWorkcenterInfo = () => {
 // 获取设备信息
 const initDeviceInfo = () => {
   try {
-    const deviceStr = localStorage.getItem('selectedDevice')
-    if (deviceStr) {
-      currentDevice.value = JSON.parse(deviceStr)
+    const deviceInfo = workStore.deviceInfo || JSON.parse(localStorage.getItem('selectedDevice'))
+    if (deviceInfo) {
+      currentDevice.value = deviceInfo
     } else {
       // 如果没有选择设备，自动打开设备选择弹框
       setTimeout(() => {
