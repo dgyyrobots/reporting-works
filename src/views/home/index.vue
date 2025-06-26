@@ -525,7 +525,6 @@ onBeforeUnmount(() => {
     .title {
       text-align: center;
       font-weight: bold;
-      text-shadow: 0 0 20px rgba(#40c4ff, 0.7);
       color: #40c4ff;
       font-size: 28px;
       margin: 0;
