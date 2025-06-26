@@ -708,10 +708,9 @@ onBeforeUnmount(() => {
 
       .center-box {
         width: 100%;
-        border-radius: 6px;
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(64, 196, 255, 0.15);
+
         transition: all 0.3s;
 
         &:hover {
@@ -721,6 +720,8 @@ onBeforeUnmount(() => {
 
         &.box-1 {
           height: calc((100% - 12px) * 0.7);
+          border: 1px solid rgba(64, 196, 255, 0.15);
+          border-radius: 4px;
         }
 
         &.box-2 {
