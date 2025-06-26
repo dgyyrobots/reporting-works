@@ -672,21 +672,15 @@ onBeforeUnmount(() => {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      border-radius: 6px;
       overflow: hidden;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
     }
 
     /* 左侧面板 */
     .left-panel {
       width: 28%;
-
       .left-box {
         width: 100%;
-        border-radius: 6px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(64, 196, 255, 0.15);
         transition: all 0.3s;
 
         &:hover {
@@ -741,10 +735,7 @@ onBeforeUnmount(() => {
 
       .right-box {
         width: 100%;
-        border-radius: 6px;
         overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(64, 196, 255, 0.15);
         transition: all 0.3s;
 
         &:hover {

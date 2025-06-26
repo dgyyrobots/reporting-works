@@ -9,10 +9,10 @@
         <slot name="titleRight"></slot>
       </div>
     </div>
-    <div class="corner top-left"></div>
-    <div class="corner top-right"></div>
+    <!-- <div class="corner top-left"></div> -->
+    <!-- <div class="corner top-right"></div>
     <div class="corner bottom-left"></div>
-    <div class="corner bottom-right"></div>
+    <div class="corner bottom-right"></div> -->
     <div class="card-content" :style="contentPaddingStyle">
       <div v-if="showEmpty" class="no-data">
         <Icon icon="svg-icon:empty-box" />
@@ -57,6 +57,7 @@ const contentPaddingStyle = computed(() => {
   border: 0.5px solid #00cfff;
   box-sizing: border-box;
   overflow: visible;
+  border-radius: 4px;
 }
 
 .card-title-bar {
@@ -66,9 +67,11 @@ const contentPaddingStyle = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  z-index: 3;
+  padding: 2px 16px;
+  z-index: 1;
   box-shadow: 0 0 8px 0 #1ecfff88;
+  border-radius: 0px 4px 0 0;
+  box-sizing: border-box;
 }
 
 .card-title-left {
