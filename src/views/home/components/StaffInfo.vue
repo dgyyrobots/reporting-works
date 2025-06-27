@@ -23,6 +23,7 @@
             'status-offline': row[3] !== '上工',
           }"
         >
+          <span class="status-dot"></span>
           {{ row[3] }}
         </div>
       </div>
@@ -239,19 +240,35 @@ onUnmounted(() => {
   }
   
   .status {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 13px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
     font-weight: 500;
+    padding-right: 14px;
+    
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
     
     &.status-online {
-      background: rgba(34, 204, 85, 0.2);
       color: #22cc55;
+      
+      .status-dot {
+        background-color: #22cc55;
+        box-shadow: 0 0 4px #22cc55;
+      }
     }
     
     &.status-offline {
-      background: rgba(153, 153, 153, 0.2);
       color: #999999;
+      
+      .status-dot {
+        background-color: #999999;
+      }
     }
   }
   
