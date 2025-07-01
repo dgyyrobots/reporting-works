@@ -81,7 +81,6 @@ const initData = () => {
     filter: JSON.stringify([{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
   }
   getWorkcenterDeviceList(data).then((res) => {
-    console.log(res,'rrrrrrrrrrrrr')
     deviceList.value = res.rows
     loading.value = false 
   }).catch((error) => {
