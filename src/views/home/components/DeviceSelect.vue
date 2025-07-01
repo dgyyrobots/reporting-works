@@ -51,6 +51,12 @@ const userName = ref('用户')
 // 添加loading状态
 const loading = ref(false)
 
+// 监听visible属性变化，当弹框打开时重新请求数据
+watch(() => props.visible, (newVisible) => {
+  if (newVisible && props.currentWorkcenter && props.currentWorkcenter.id) {
+    initData()
+  }
+})
 onMounted(() => {
   nextTick( async() => {
     try {
@@ -75,6 +81,7 @@ const initData = () => {
     filter: JSON.stringify([{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
   }
   getWorkcenterDeviceList(data).then((res) => {
+    console.log(res,'rrrrrrrrrrrrr')
     deviceList.value = res.rows
     loading.value = false 
   }).catch((error) => {
