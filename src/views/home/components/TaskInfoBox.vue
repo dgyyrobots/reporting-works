@@ -34,7 +34,7 @@
         <span class="label">实际开始：</span>
         <span class="value">
           {{ taskInfo.act_start_time || '--' }} —— {{ taskInfo.act_end_time }}
-          <span style="color: #ffe600; margin-left: 12px">[计划数量：{{ taskInfo.uqty || '0' }}{{ taskInfo.unit }}]</span>
+          <span style="color: #ffe600; margin-left: 12px">[计划数量：{{ formatNumber(taskInfo.uqty) || '0' }}{{ taskInfo.unit }}]</span>
         </span>
       </div>
       <div class="row">
