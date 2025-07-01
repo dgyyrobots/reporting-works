@@ -53,12 +53,12 @@
     <div v-if="taskInfo.bill_no && taskInfo.bill_no !== ''" class="footer">
       <span class="done">
         已完成：
-        <span class="done-num">{{ taskInfo.exe_uqty }}</span>
+        <span class="done-num">{{ formatNumber(taskInfo.exe_uqty, 1) }}</span>
         {{ taskInfo.unit || '-' }}
       </span>
       <span class="remain">
         未完成：
-        <span class="remain-num">{{ taskInfo.remainQty || '0' }}</span>
+        <span class="remain-num">{{ formatNumber(taskInfo.remainQty, 1) || '0' }}</span>
         {{ taskInfo.unit || '-' }}
       </span>
     </div>
@@ -186,7 +186,21 @@ const progressPercent = computed(() => {
   return percent.toFixed(2)
 })
 
-
+// 格式化数字，保留指定小数位
+const formatNumber = (value, decimals = 1) => {
+  if (value === null || value === undefined) return '0'
+  
+  // 如果是字符串，先尝试转换为数字
+  if (typeof value === 'string') {
+    value = parseFloat(value)
+  }
+  
+  // 如果转换后不是有效数字，返回0
+  if (isNaN(value)) return '0'
+  
+  // 返回保留指定小数位的数字
+  return value.toFixed(decimals)
+}
 // 获取任务单信息
 const fetchTaskInfo = async () => {
 
