@@ -78,7 +78,7 @@ const initData = () => {
   // 实际API调用示例
   const wc_id = props.currentWorkcenter.id
   const data = {
-    filter: JSON.stringify([{"val":[{"name":"status_id","val":"1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
+    filter: JSON.stringify([{"val":[{"name":"status_id","val":"0,1,2,3","action":"IN"},{"name":"wc_id","val":wc_id,"action":"="}],"relation":"AND"}]),
   }
   getWorkcenterDeviceList(data).then((res) => {
     deviceList.value = res.rows
