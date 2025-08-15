@@ -190,7 +190,7 @@ const initChart = (forceRefresh = false) => {
       // 最外层圆环形
       {
         type: 'gauge',
-        radius: '84%',
+        radius: '80%',
         center: ['50%', '50%'],
         splitNumber: 10,
         max: 100,
@@ -242,7 +242,7 @@ const initChart = (forceRefresh = false) => {
           },
         ],
         itemStyle: {
-          borderRadius: '90%',
+          borderRadius: '86%',
           opacity: 1,
           color: {
             type: 'linear',
@@ -323,7 +323,7 @@ const initChart = (forceRefresh = false) => {
         animation: false,
         hoverAnimation: false,
         clockwise: false,
-        radius: '90%',
+        radius: '86%',
         center: ['50%', '50%'],
         data: [10],
         itemStyle: {
@@ -355,7 +355,7 @@ const initChart = (forceRefresh = false) => {
         animation: false,
         hoverAnimation: false,
         clockwise: false,
-        radius: '100%',
+        radius: '96%',
         center: ['50%', '50%'],
         data: [10],
         itemStyle: {
