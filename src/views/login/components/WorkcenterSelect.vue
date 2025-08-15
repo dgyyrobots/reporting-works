@@ -93,6 +93,7 @@ const selectWorkcenter = (item) => {
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
+    padding: 12px 0;
   }
   
   .workcenter-grid {

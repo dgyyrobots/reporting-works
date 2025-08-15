@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import deviceIcon from '/@/assets/workcenter/workcenter_icon.png'
 
 import { getWorkcenterDeviceList } from '@/api/mes/wk/index.ts'
@@ -57,6 +57,14 @@ watch(() => props.visible, (newVisible) => {
     initData()
   }
 })
+
+// 添加对currentWorkcenter的监听
+watch(() => props.currentWorkcenter, (newWorkcenter) => {
+  if (newWorkcenter && newWorkcenter.id) {
+    initData()
+  }
+}, { deep: true })
+
 onMounted(() => {
   nextTick( async() => {
     try {
@@ -74,6 +82,7 @@ onMounted(() => {
 })
 
 const initData = () => {
+  console.log(props.currentWorkcenter,'props.currentWorkcenter')
   loading.value = true // 开始加载
   // 实际API调用示例
   const wc_id = props.currentWorkcenter.id
@@ -88,7 +97,6 @@ const initData = () => {
   }).finally(() => {
     loading.value = false // 结束加载
   })
-  
 }
 
 // 设备数据

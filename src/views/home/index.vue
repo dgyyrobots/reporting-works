@@ -11,7 +11,13 @@
       </div>
       <h1 class="title">车间报工系统</h1>
       <div class="right-info">
-
+        <!-- 添加切换工作台按钮 -->
+        <button class="switch-workcenter-btn" @click="openWorkcenterDialog">
+          <i class="switch-icon"></i>
+          <span v-if="currentWorkcenter.name">{{ currentWorkcenter.name }}</span>
+          <span v-else>选择工作台</span>
+        </button>
+        
         <!-- 添加切换设备按钮 -->
         <button class="switch-device-btn" @click="openDeviceDialog">
           <i class="switch-icon"></i>
@@ -93,6 +99,19 @@
       <DeviceSelect :current-workcenter="currentWorkcenter" @select="handDeviceSelect" />
     </el-dialog>
 
+    <!-- 添加工作台选择弹框 -->
+    <el-dialog
+      v-model="workcenterDialogVisible"
+      class="workcenter-dialog"
+      :close-on-click-modal="false"
+      :modal-class="'cyber-modal'"
+      :show-close="true"
+      title="选择工作台"
+      width="80%"
+    >
+      <WorkcenterSelect @select="handleWorkcenterSelect" />
+    </el-dialog>
+
     <ProductionReportDialog  :current-workcenter="currentWorkcenter"  :current-device="currentDevice" ref="productionReportDialogRef" />
   </div>
 
@@ -138,6 +157,8 @@ import TimeRegistration from './dialog/TimeRegistration.vue'
 import DeviceSelect from './components/DeviceSelect.vue'
 // 引入工序选择组件替代任务单操作组件
 import ProcessSelect from './dialog/ProcessSelect.vue'
+// 添加WorkcenterSelect组件导入
+import WorkcenterSelect from '../login/components/WorkcenterSelect.vue'
 // import TaskOperation from './dialog/TaskOperation.vue'
 import { useUserStore } from '/@/store/modules/user'
 import { useWorkStore } from '/@/store/modules/work' // 引入 work store
@@ -181,7 +202,8 @@ const currentWorkcenter = ref({})
 const currentDevice = ref({})
 
 const deviceDialogVisible = ref(false)
-
+// 添加工作台弹窗控制变量
+const workcenterDialogVisible = ref(false)
 const staffSelectDialogVisible = ref(false)
 
 const productionReportDialogRef = ref(null)
@@ -283,11 +305,15 @@ const openDeviceDialog = () => {
   deviceDialogVisible.value = true
 }
 
+// 添加打开工作台选择弹框方法
+const openWorkcenterDialog = () => {
+  workcenterDialogVisible.value = true
+}
+
 // 设备选择
 const handDeviceSelect = (device) => {
   currentDevice.value = device
   deviceDialogVisible.value = false
-
 
   // 存储选择的工作中心信息
   localStorage.setItem('selectedDevice', JSON.stringify(device))
@@ -303,6 +329,28 @@ const handDeviceSelect = (device) => {
   getDeviceDetailInfo(device.number)
 }
 
+// 添加处理工作台选择方法
+const handleWorkcenterSelect = (workcenter) => {
+  currentWorkcenter.value = workcenter
+  workcenterDialogVisible.value = false
+  
+  // 存储选择的工作台信息
+  localStorage.setItem('selectedWorkcenter', JSON.stringify(workcenter))
+  
+  // 清除当前设备信息，因为切换工作台后需要重新选择设备
+  currentDevice.value = {}
+  localStorage.removeItem('selectedDevice')
+  workStore.resetDeviceInfo()
+  workStore.resetTaskInfo()
+  
+  // 提示用户已切换工作台
+  ElMessage.success(`已切换工作台: ${workcenter.name}`)
+  
+  // 自动打开设备选择弹框
+  setTimeout(() => {
+    openDeviceDialog()
+  }, 500)
+}
 
 // 打开计时登记弹窗
 const openTimeRegistration = () => {
@@ -557,6 +605,7 @@ onBeforeUnmount(() => {
         margin-right: 8px;
       }
 
+      .switch-workcenter-btn,
       .switch-device-btn,
       .logout-btn {
         margin-left: 12px;
@@ -586,6 +635,7 @@ onBeforeUnmount(() => {
           margin-right: 5px;
           filter: drop-shadow(0 0 2px rgba(64, 196, 255, 0.8));
         }
+        
         .switch-icon {
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2340c4ff'%3E%3Cpath d='M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z'/%3E%3C/svg%3E");
           background-size: cover;
@@ -798,18 +848,6 @@ onBeforeUnmount(() => {
         font-weight: bold;
         text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
       }
-
-      .el-dialog__headerbtn {
-        .el-dialog__close {
-          color: #40c4ff;
-
-          &:hover {
-            color: #fff;
-            transform: rotate(90deg);
-            transition: all 0.3s;
-          }
-        }
-      }
     }
 
     .el-dialog__body {
@@ -959,4 +997,952 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 20px;
 }
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
 </style>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.device-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid #1ecfff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(30, 207, 255, 0.4);
+    overflow: hidden;
+
+    .el-dialog__body {
+      padding: 20px !important;
+      color: #fff !important;
+    }
+
+    .el-dialog__header {
+      height: 50px !important;
+      color: #1ecfff !important;
+      background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      padding: 10px 20px !important;
+      margin-right: 0 !important;
+
+      .el-dialog__title {
+        color: #1ecfff !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
+        letter-spacing: 1px;
+      }
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+
+        .el-dialog__close {
+          color: #1ecfff !important;
+          transition: all 0.3s;
+
+          &:hover {
+            color: #fff !important;
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 21, 41, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 207, 255, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(30, 207, 255, 0.7);
+  }
+}
+
+/* 添加全局卡片样式 */
+.card-header {
+  background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #1ecfff;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(30, 207, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+.card-content {
+  padding: 12px;
+  color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.device-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid #1ecfff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(30, 207, 255, 0.4);
+    overflow: hidden;
+
+    .el-dialog__body {
+      padding: 20px !important;
+      color: #fff !important;
+    }
+
+    .el-dialog__header {
+      height: 50px !important;
+      color: #1ecfff !important;
+      background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      padding: 10px 20px !important;
+      margin-right: 0 !important;
+
+      .el-dialog__title {
+        color: #1ecfff !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
+        letter-spacing: 1px;
+      }
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+
+        .el-dialog__close {
+          color: #1ecfff !important;
+          transition: all 0.3s;
+
+          &:hover {
+            color: #fff !important;
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 21, 41, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 207, 255, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(30, 207, 255, 0.7);
+  }
+}
+
+/* 添加全局卡片样式 */
+.card-header {
+  background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #1ecfff;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(30, 207, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+.card-content {
+  padding: 12px;
+  color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.device-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid #1ecfff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(30, 207, 255, 0.4);
+    overflow: hidden;
+
+    .el-dialog__body {
+      padding: 20px !important;
+      color: #fff !important;
+    }
+
+    .el-dialog__header {
+      height: 50px !important;
+      color: #1ecfff !important;
+      background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      padding: 10px 20px !important;
+      margin-right: 0 !important;
+
+      .el-dialog__title {
+        color: #1ecfff !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
+        letter-spacing: 1px;
+      }
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+
+        .el-dialog__close {
+          color: #1ecfff !important;
+          transition: all 0.3s;
+
+          &:hover {
+            color: #fff !important;
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 21, 41, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 207, 255, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(30, 207, 255, 0.7);
+  }
+}
+
+/* 添加全局卡片样式 */
+.card-header {
+  background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #1ecfff;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(30, 207, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+.card-content {
+  padding: 12px;
+  color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.device-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid #1ecfff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(30, 207, 255, 0.4);
+    overflow: hidden;
+
+    .el-dialog__body {
+      padding: 20px !important;
+      color: #fff !important;
+    }
+
+    .el-dialog__header {
+      height: 50px !important;
+      color: #1ecfff !important;
+      background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      padding: 10px 20px !important;
+      margin-right: 0 !important;
+
+      .el-dialog__title {
+        color: #1ecfff !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
+        letter-spacing: 1px;
+      }
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+
+        .el-dialog__close {
+          color: #1ecfff !important;
+          transition: all 0.3s;
+
+          &:hover {
+            color: #fff !important;
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 21, 41, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 207, 255, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(30, 207, 255, 0.7);
+  }
+}
+
+/* 添加全局卡片样式 */
+.card-header {
+  background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #1ecfff;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(30, 207, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+.card-content {
+  padding: 12px;
+  color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.device-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid #1ecfff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(30, 207, 255, 0.4);
+    overflow: hidden;
+
+    .el-dialog__body {
+      padding: 20px !important;
+      color: #fff !important;
+    }
+
+    .el-dialog__header {
+      height: 50px !important;
+      color: #1ecfff !important;
+      background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      padding: 10px 20px !important;
+      margin-right: 0 !important;
+
+      .el-dialog__title {
+        color: #1ecfff !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
+        letter-spacing: 1px;
+      }
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+
+        .el-dialog__close {
+          color: #1ecfff !important;
+          transition: all 0.3s;
+
+          &:hover {
+            color: #fff !important;
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 21, 41, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 207, 255, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(30, 207, 255, 0.7);
+  }
+}
+
+/* 添加全局卡片样式 */
+.card-header {
+  background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #1ecfff;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(30, 207, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+.card-content {
+  padding: 12px;
+  color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 全局样式，不使用scoped */
+.cyber-modal {
+  background-color: rgba(0, 21, 41, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* 强制覆盖Element Plus对话框样式 */
+.el-overlay-dialog {
+  .el-dialog.device-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid #1ecfff;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(30, 207, 255, 0.4);
+    overflow: hidden;
+
+    .el-dialog__body {
+      padding: 20px !important;
+      color: #fff !important;
+    }
+
+    .el-dialog__header {
+      height: 50px !important;
+      color: #1ecfff !important;
+      background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+      border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+      padding: 10px 20px !important;
+      margin-right: 0 !important;
+
+      .el-dialog__title {
+        color: #1ecfff !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 10px rgba(30, 207, 255, 0.5) !important;
+        letter-spacing: 1px;
+      }
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+
+        .el-dialog__close {
+          color: #1ecfff !important;
+          transition: all 0.3s;
+
+          &:hover {
+            color: #fff !important;
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 21, 41, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 207, 255, 0.5);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(30, 207, 255, 0.7);
+  }
+}
+
+/* 添加全局卡片样式 */
+.card-header {
+  background: linear-gradient(to right, rgba(0, 21, 41, 0.9), rgba(30, 207, 255, 0.1), rgba(0, 21, 41, 0.9));
+  border-bottom: 1px solid rgba(30, 207, 255, 0.3);
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #1ecfff;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(30, 207, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+.card-content {
+  padding: 12px;
+  color: #fff;
+}
+.staff-select-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .shift-info {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    :deep(.el-radio__label) {
+      color: #fff !important;
+    }
+    .el-radio {
+      margin-right: 0;
+    }
+  }
+  
+  .staff-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1ecfff;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 添加工作台选择弹窗样式 */
+:deep(.workcenter-dialog) {
+  .el-dialog {
+    background-color: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(64, 196, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    .el-dialog__header {
+      border-bottom: 1px solid rgba(64, 196, 255, 0.3);
+      padding: 15px 20px;
+      margin-right: 0;
+
+      .el-dialog__title {
+        color: #40c4ff;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(64, 196, 255, 0.4);
+      }
+    }
+
+    .el-dialog__body {
+      padding: 20px;
+      color: #40c4ff;
+    }
+  }
+}
+</style>
+
+
