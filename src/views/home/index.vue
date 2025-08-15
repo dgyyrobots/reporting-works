@@ -26,15 +26,15 @@
 
     <!-- 按钮导航栏 -->
     <div class="button-nav">
-      <button class="nav-btn">上机登记</button>
+      <!-- <button class="nav-btn">上机登记</button> -->
       <button class="nav-btn red" @click="openProcessSelectDialog">任务单操作</button>
-      <button class="nav-btn red">生产操作</button>
+      <!-- <button class="nav-btn red">生产操作</button> -->
       <button class="nav-btn" @click="openTimeRegistration">计时登记</button>
-      <button class="nav-btn">异常登记</button>
-      <button class="nav-btn">质量管理</button>
+      <!-- <button class="nav-btn">异常登记</button>
+      <button class="nav-btn">质量管理</button> -->
       <button class="nav-btn" @click="openProductionReportDialog">生产日报</button>
-      <button class="nav-btn">其他操作</button>
-      <button class="nav-btn">帮助</button>
+      <!-- <button class="nav-btn">其他操作</button>
+      <button class="nav-btn">帮助</button> -->
     </div>
 
     <!-- 主要内容区 -->
@@ -42,7 +42,8 @@
       <!-- 左侧面板 -->
       <div class="panel left-panel">
         <div class="left-box box-1">
-          <PayInfo />
+          <!-- <PayInfo /> -->
+          <TaskInfoBox v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
         <div class="left-box box-2">
           <StaffInfo ref="StaffInfoRef" v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
@@ -65,12 +66,9 @@
       <!-- 右侧面板 -->
       <div class="panel right-panel">
         <div class="right-box box-1">
-          <TaskInfoBox v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
-        </div>
-        <div class="right-box box-2">
           <EquipmentHistory v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
-        <div class="right-box box-3">
+        <div class="right-box box-2">
           <LicenseHistory v-if="currentDevice" :current-device="currentDevice" :current-workcenter="currentWorkcenter" />
         </div>
       </div>
@@ -688,15 +686,16 @@ onBeforeUnmount(() => {
         }
 
         &.box-1 {
-          height: calc((100% - 24px) * 0.28);
+         height: calc((100% - 24px) * 0.38);
+         
         }
 
         &.box-2 {
-          height: calc((100% - 24px) * 0.36);
+          height: calc((100% - 12px) * 0.28);
         }
 
         &.box-3 {
-          height: calc((100% - 24px) * 0.36);
+          height: calc((100% - 24px) * 0.34);
         }
       }
     }
@@ -744,15 +743,11 @@ onBeforeUnmount(() => {
         }
 
         &.box-1 {
-          height: calc((100% - 24px) * 0.36);
+          height: calc((100% - 12px) * 0.36);
         }
 
         &.box-2 {
-          height: calc((100% - 24px) * 0.32);
-        }
-
-        &.box-3 {
-          height: calc((100% - 24px) * 0.32);
+          height: calc((100% - 12px) * 0.64);
         }
       }
     }
