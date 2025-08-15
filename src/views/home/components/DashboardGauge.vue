@@ -46,14 +46,14 @@
     </div>
     <!-- 顶部左侧：顺产换板 + el-switch -->
     <div class="top-abs top-left">
-      <span class="switch-label">顺序换板：</span>
+      <!-- <span class="switch-label">顺序换板：</span>
       <el-switch
         v-model="switchValue"
         active-color="#22e222"
         inactive-color="#444"
         size="small"
         style="--el-switch-on-color: #22e222; --el-switch-off-color: #444"
-      />
+      /> -->
     </div>
     <!-- 顶部右侧：黄色圆点 + 空转 -->
     <div class="top-abs top-right">
