@@ -575,7 +575,7 @@ onUnmounted(() => {
     gap: 12px;
     margin-bottom: 14px;
     justify-content: flex-start;
-    padding: 12px 0 8px 0;
+    padding: 12px 0 10px 0;
   }
 
   .panel-container {

@@ -717,13 +717,13 @@ onBeforeUnmount(() => {
         }
 
         &.box-1 {
-          height: calc((100% - 12px) * 0.6);
+          height: calc((100% - 12px) * 0.60);
           border: 1px solid rgba(64, 196, 255, 0.15);
           border-radius: 4px;
         }
 
         &.box-2 {
-          height: calc((100% - 12px) * 0.4);
+          height: calc((100% - 12px) * 0.40);
         }
       }
     }
