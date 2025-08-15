@@ -5,12 +5,13 @@
         <span class="date">{{ currentDate }}</span>
         <span class="weekday">{{ currentWeekday }}</span>
         <span class="time">{{ currentTime }}</span>
-      </div>
-      <h1 class="title">车间报工系统</h1>
-      <div class="right-info">
         <span>{{ greeting }}</span>
         <span>欢迎您,</span>
         <span>{{ userName }}</span>
+      </div>
+      <h1 class="title">车间报工系统</h1>
+      <div class="right-info">
+
         <!-- 添加切换设备按钮 -->
         <button class="switch-device-btn" @click="openDeviceDialog">
           <i class="switch-icon"></i>
@@ -517,6 +518,7 @@ onBeforeUnmount(() => {
         padding: 4px 8px;
         border-radius: 4px;
         border: 1px solid rgba(#40c4ff, 0.2);
+        margin-right: 14px;
       }
     }
 
